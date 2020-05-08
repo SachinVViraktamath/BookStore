@@ -1,36 +1,35 @@
 package com.bridgelabz.bookstore.utility;
 
-import java.io.UnsupportedEncodingException;
+import java.util.Date;
 
 import org.springframework.stereotype.Component;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTCreationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
 public class JwtUtility {
 
 	private static final String SCERET = "qwertyuiop";
 
-	public String jwtToken(long a) throws UnsupportedEncodingException {
-		String token = null;
-		try {
-			token = JWT.create().withClaim("userId", a).sign(Algorithm.HMAC512(SCERET));
-		} catch (IllegalArgumentException | JWTCreationException e) {
-			e.printStackTrace();
+	private final long TOKEN_VALIDITY=5*60*60;
+	
+	public String generateToken(Long id, Token expire) {
+		if(expire.equals(Token.WITH_EXPIRE_TIME)) {
+		return Jwts.builder().setSubject(String.valueOf(id))
+				.setExpiration(new Date(System.currentTimeMillis() +TOKEN_VALIDITY * 1000))
+				.signWith(SignatureAlgorithm.HS512,SCERET).compact();
+		}else {
+			return Jwts.builder().setSubject(String.valueOf(id)).signWith(SignatureAlgorithm.ES512,SCERET).compact();
 		}
-		return token;
-	}
-
-	public long parse(String string)
-			throws JWTVerificationException, IllegalArgumentException, UnsupportedEncodingException {
-		Long userId = 0l;
-		if (string != null) {
-			userId = JWT.require(Algorithm.HMAC512(SCERET)).build().verify(string).getClaim("userId").asLong();
-		}
-		return userId;
 	}
 	
+	public Long parse(String token)
+	{
+		System.out.println("Parsing");
+		Claims claim=Jwts.parser().setSigningKey(SCERET).parseClaimsJws(token).getBody();
+		Long id=Long.parseLong(claim.getSubject());
+		return id;
+	}
 }

@@ -1,5 +1,7 @@
 package com.bridgelabz.bookstore.entity;
 
-public class Userentity {
+public class UserData {
+	
+	
 
 }
