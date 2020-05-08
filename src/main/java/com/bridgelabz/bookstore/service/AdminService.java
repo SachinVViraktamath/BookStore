@@ -8,7 +8,7 @@ import com.bridgelabz.bookstore.exception.AdminNotFoundException;
 
 public interface AdminService {
 
-	AdminEntity adminRegistartion(AdminDto adminInformation) ;
+	AdminEntity adminRegistartion(AdminDto adminInformation)throws AdminNotFoundException ;
 
 	boolean verifyAdmin(String token) throws AdminNotFoundException;
 

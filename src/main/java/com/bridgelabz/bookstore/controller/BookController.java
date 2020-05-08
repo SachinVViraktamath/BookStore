@@ -65,15 +65,4 @@ public class BookController {
 
 	}
 
-	public ResponseEntity<Response> getNameOfBook(@RequestHeader("jwt") String jwt, @RequestParam("id") Long id) {
-		if (utility.verifyUser(jwt)) {
-			String bookName = bookService.getBookName(id);
-			if (bookName != null)
-				return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Particular book not found", bookName));
-			else
-				return ResponseEntity.badRequest()
-						.body(new Response(HttpStatus.NOT_FOUND, "books for user not found", bookName));
-		} else
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "Not a valid User"));
-	}
 }

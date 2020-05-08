@@ -1,12 +1,12 @@
 package com.bridgelabz.bookstore.exception;
 
 
-
 import org.springframework.http.HttpStatus;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
 
 @Data
 @NoArgsConstructor
@@ -30,4 +30,8 @@ public class AdminNotFoundException extends Exception {
 		this.code = code;
 	}
 
+
 }
+
+
+

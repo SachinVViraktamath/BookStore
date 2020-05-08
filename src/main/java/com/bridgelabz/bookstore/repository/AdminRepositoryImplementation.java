@@ -10,9 +10,12 @@ import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
+import com.bridgelabz.bookstore.dto.UpdateAdminPassword;
+import com.bridgelabz.bookstore.entity.AdminEntity;
+
 
 @Repository
-public class AdminRepositoryImplementation implements IAdminRepository {
+public class AdminRepositoryImplementation implements AdminRepository {
 	
 	@PersistenceContext
 	private EntityManager entityManager;
