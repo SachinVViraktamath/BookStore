@@ -1,7 +1,5 @@
 package com.bridgelabz.bookstore.exception;
 
-import java.time.LocalDateTime;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -13,10 +11,16 @@ import com.bridgelabz.bookstore.response.ExceptionResponse;
 public class BookStoreExceptionHandler extends ResponseEntityExceptionHandler {
 	
 	@ExceptionHandler(BookNotFoundException.class)
-	public final ResponseEntity<ExceptionResponse> tokenException(BookNotFoundException ex) {	
-		ExceptionResponse exp = new ExceptionResponse(ex.getCode(),ex.getMessage(),LocalDateTime.now());
+	public final ResponseEntity<ExceptionResponse> bookNotFoundException(BookNotFoundException ex) {	
+		ExceptionResponse exp = new ExceptionResponse(ex.getCode(),ex.getMessage());
 		return ResponseEntity.status(exp.getCode()).body(exp);
 	}
 	
-
+	@ExceptionHandler(AdminNotFoundException.class)
+	public final ResponseEntity<ExceptionResponse> adminNotFoundException(AdminNotFoundException ex) {	
+		ExceptionResponse exp = new ExceptionResponse(ex.getCode(),ex.getMessage());
+		return ResponseEntity.status(exp.getCode()).body(exp);
+	}
+	
+	
 }
