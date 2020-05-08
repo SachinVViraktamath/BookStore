@@ -9,7 +9,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Component
-public class JwtUtility {
+public class JwtService {
 
 	private static final String SCERET = "qwertyuiop";
 
@@ -32,4 +32,9 @@ public class JwtUtility {
 		Long id=Long.parseLong(claim.getSubject());
 		return id;
 	}
+	
+	public enum Token {
+		WITH_EXPIRE_TIME,WITHOUT_EXPIRE_TIME
+	}
+
 }
