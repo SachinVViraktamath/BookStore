@@ -12,25 +12,14 @@ import lombok.ToString;
 @NoArgsConstructor
 @ToString
 public class BookNotFoundException extends Exception {
-	
+
 	private static final long serialVersionUID = 1L;
-	private String message;
 	HttpStatus code;
-	private LocalDateTime time;
 
+	public BookNotFoundException(HttpStatus code, String message) {
 
-	public BookNotFoundException(HttpStatus code,String message,LocalDateTime time) {
-		this.message = message;
-		this.code=code;
-		this.time=time;
-	}
-
-	public String getMessage() {
-		return message;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
+		super(message);
+		this.code = code;
 	}
 
 	public HttpStatus getCode() {
@@ -41,14 +30,4 @@ public class BookNotFoundException extends Exception {
 		this.code = code;
 	}
 
-	public LocalDateTime getTime() {
-		return time;
-	}
-
-	public void setTime(LocalDateTime time) {
-		this.time = time;
-	}
-	
-	
-	
 }

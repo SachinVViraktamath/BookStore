@@ -14,15 +14,14 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter
-@Setter 
 @NoArgsConstructor
+@Data
 @Table(name="book")
 public class Book {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long bookId;
+	private Long bookId;
 	
 	@Column(name="book_name",columnDefinition="varchar(80) default not null")
 	private String bookName;

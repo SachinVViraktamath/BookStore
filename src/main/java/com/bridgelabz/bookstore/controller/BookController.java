@@ -65,7 +65,7 @@ public class BookController {
 
 	}
 
-	public ResponseEntity<Response> getNameOfBook(@RequestHeader("jwt") String jwt, @RequestParam("id") long id) {
+	public ResponseEntity<Response> getNameOfBook(@RequestHeader("jwt") String jwt, @RequestParam("id") Long id) {
 		if (utility.verifyUser(jwt)) {
 			String bookName = bookService.getBookName(id);
 			if (bookName != null)
