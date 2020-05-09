@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.bridgelabz.bookstore.dto.UpdateUserPassword;
-import com.bridgelabz.bookstore.dto.UserDto;
+import com.bridgelabz.bookstore.dto.UserInfoDto;
 import com.bridgelabz.bookstore.dto.UserLogin;
 import com.bridgelabz.bookstore.entity.UserData;
 import com.bridgelabz.bookstore.exception.UserNotFoundException;
@@ -25,68 +25,66 @@ import com.bridgelabz.bookstore.service.UserService;
 import com.bridgelabz.bookstore.utility.JwtService;
 import com.bridgelabz.bookstore.utility.MailService;
 
-
 import com.bridgelabz.bookstore.utility.JwtService.Token;
 
 @Service
-public class UserServiceImplementation implements UserService{
-	
-	
+public class UserServiceImplementation implements UserService {
+
 	private static final Logger logger = LoggerFactory.getLogger(UserServiceImplementation.class);
-	private UserData user=new UserData();
+	private UserData user = new UserData();
 
 	@Autowired
 	private MailingandResponseOperation response;
-	
+
 	@Autowired
 	private MailingOperation mailObject;
-	
+
 	@Autowired
 	private UserRepository repository;
-	
+
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
-	
+
 	@Autowired
 	private JwtService jwt;
-	
-	
+
 	@Transactional
 	@Override
-	public UserData userRegistration(UserDto userdto)  throws UserNotFoundException{
-		Date date=new Date();
-		UserData checkmail= repository.FindByEmail(userdto.getEmail());
-		
-		if(checkmail==null) {
-			user.setFirstName(userdto.getUserName());
-			user.setLastName(userdto.getUserLastName());
-			user.setPassword(bcrypt.encode(userdto.getPassword()));
-			user.setEmail(userdto.getEmail());
-			user.setGender(userdto.getGender());
-			user.setPhNo(userdto.getPhoneNumber());
+	public UserData userRegistration(UserInfoDto UserInfoDto) throws UserNotFoundException {
+		Date date = new Date();
+		UserData checkmail = repository.FindByEmail(UserInfoDto.getEmail());
+
+		if (checkmail == null) {
+			user.setFirstName(UserInfoDto.getUserName());
+			user.setLastName(UserInfoDto.getUserLastName());
+			user.setPassword(bcrypt.encode(UserInfoDto.getPassword()));
+			user.setEmail(UserInfoDto.getEmail());
+			user.setGender(UserInfoDto.getGender());
+			user.setPhNo(UserInfoDto.getPhoneNumber());
 			user.setCreationTime(date);
 			user.setUpdateTime(date);
-			user.setVerified(false);	
+			user.setVerified(false);
 			repository.save(user);
-			
-			UserData isUserAvailableTwo = repository.FindByEmail(userdto.getEmail());
-			
+
+			UserData isUserAvailableTwo = repository.FindByEmail(UserInfoDto.getEmail());
+
 			System.out.println(isUserAvailableTwo.getUserId());
-			
-			String email=user.getEmail();
-			
-			String responsemail = "http://localhost:8080/verify/" + jwt.generateToken(isUserAvailableTwo.getUserId(),Token.WITH_EXPIRE_TIME);
+
+			String email = user.getEmail();
+
+			String responsemail = "http://localhost:8080/verify/"
+					+ jwt.generateToken(isUserAvailableTwo.getUserId(), Token.WITH_EXPIRE_TIME);
 			System.out.println(response);
 			mailObject.setEmail(user.getEmail());
 			mailObject.setMessage(responsemail);
 			mailObject.setSubject("verification");
-			MailService.sendEmail(mailObject.getEmail(), mailObject.getSubject(), mailObject.getMessage());			
+			MailService.sendEmail(mailObject.getEmail(), mailObject.getSubject(), mailObject.getMessage());
 			return user;
-			
+
 		}
-		return null;	
+		return null;
 	}
-	
+
 	@Transactional
 	@Override
 	public boolean userVerification(String token) throws UserNotFoundException {
@@ -94,48 +92,46 @@ public class UserServiceImplementation implements UserService{
 		repository.findbyId(id);
 		return true;
 	}
-	
-	public UserData userLogin(UserLogin login) throws UserNotFoundException{
-		
+
+	public UserData userLogin(UserLogin login) throws UserNotFoundException {
+
 		UserData getMail = repository.FindByEmail(login.getEmail());
-		
-		if(getMail.isVerified()) {
+
+		if (getMail.isVerified()) {
 			try {
 				if (getMail.getEmail().equals(login.getEmail())) {
-					
+
 					boolean passwordCheck = bcrypt.matches(login.getPassword(), getMail.getPassword());
-					
-					if(passwordCheck) {
+
+					if (passwordCheck) {
 						mailObject.setEmail(getMail.getEmail());
 						mailObject.setSubject("sendig by fundoo app admin");
 						mailObject.setMessage("susccessfully login to fundoo app");
-						MailService.sendEmail(mailObject.getEmail(), mailObject.getSubject(), mailObject.getMessage());			
+						MailService.sendEmail(mailObject.getEmail(), mailObject.getSubject(), mailObject.getMessage());
 						return getMail;
-					}
-					else {
+					} else {
 						mailObject.setEmail(getMail.getEmail());
 						mailObject.setSubject("sendig by fundoo app admin");
 						mailObject.setMessage("susccessfully login to fundoo app");
 						MailService.sendEmail(mailObject.getEmail(), mailObject.getSubject(), mailObject.getMessage());
 					}
 
+				}
+				return null;
+
 			}
-					return null;
-			
-		}
-		
-			catch(Exception e) {
-					throw new UserNotFoundException(HttpStatus.BAD_REQUEST, "Login unsuccessfull");
+
+			catch (Exception e) {
+				throw new UserNotFoundException(HttpStatus.BAD_REQUEST, "Login unsuccessfull");
 			}
-		
+
 		}
 		return null;
 	}
-	
 
-	public UserData forgetPassword(String email) throws UserNotFoundException{
+	public UserData forgetPassword(String email) throws UserNotFoundException {
 		UserData userMail = repository.FindByEmail(email);
-		//log.info("userdetails for forgetpassword" + userMail);
+		// log.info("userdetails for forgetpassword" + userMail);
 		if (userMail != null) {
 			if (userMail.isVerified()) {
 				mailObject.setEmail(userMail.getEmail());
@@ -144,14 +140,13 @@ public class UserServiceImplementation implements UserService{
 				return user;
 			}
 		} else {
-				throw new UserNotFoundException(HttpStatus.BAD_REQUEST, "Login unsuccessfull");
+			throw new UserNotFoundException(HttpStatus.BAD_REQUEST, "Login unsuccessfull");
 		}
 		return null;
 	}
-	
-	
-	
-	public UserData updatePassword(UpdateUserPassword forgetpass, String token) throws JWTVerificationException, Exception {
+
+	public UserData updatePassword(UpdateUserPassword forgetpass, String token)
+			throws JWTVerificationException, Exception {
 		if (forgetpass.getNewPassword().equals(forgetpass.getConfirmPassword())) {
 			logger.info("id in verification", jwt.parse(token));
 			Long id = jwt.parse(token);

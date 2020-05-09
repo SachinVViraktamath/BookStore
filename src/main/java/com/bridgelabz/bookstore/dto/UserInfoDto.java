@@ -1,8 +1,5 @@
 package com.bridgelabz.bookstore.dto;
 
-/*
-  UserDto Class for the BookStore
- */
 import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
@@ -16,8 +13,8 @@ import lombok.Setter;
 @NoArgsConstructor
 @Setter
 @Getter
-public class UserDto {
-	
+public class UserInfoDto {
+
 	@NotNull
 	private String userName;
 	@NotNull
@@ -30,5 +27,4 @@ public class UserDto {
 	private String gender;
 	@NotNull
 	private long phoneNumber;
-	
 }

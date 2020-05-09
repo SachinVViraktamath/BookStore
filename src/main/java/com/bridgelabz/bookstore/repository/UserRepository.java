@@ -41,8 +41,5 @@ public interface UserRepository extends JpaRepository<UserData,Long>{
 		@Query(value = "update user set is_verified =  true where user_Id=?", nativeQuery = true)
 		void updateIsVarified(Long id);
 
-
-		
-
 		
 }
