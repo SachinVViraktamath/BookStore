@@ -1,16 +1,14 @@
 package com.bridgelabz.bookstore.serviceimplemantation;
 
-import java.util.Optional;
+
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import com.bridgelabz.bookstore.dto.AdminDto;
 import com.bridgelabz.bookstore.dto.AdminLogin;
 import com.bridgelabz.bookstore.dto.UpdateAdminPassword;
@@ -19,7 +17,6 @@ import com.bridgelabz.bookstore.exception.AdminNotFoundException;
 import com.bridgelabz.bookstore.repository.AdminRepository;
 import com.bridgelabz.bookstore.response.MailingOperation;
 import com.bridgelabz.bookstore.response.MailingandResponseOperation;
-import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.AdminService;
 import com.bridgelabz.bookstore.utility.JwtService;
 import com.bridgelabz.bookstore.utility.JwtService.Token;
