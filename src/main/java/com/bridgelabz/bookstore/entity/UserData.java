@@ -31,13 +31,16 @@ public class UserData {
 	private long userId;
 	
 	@Column(name = "First_Name")
+	@NotNull
 	@NotBlank(message = "First Name is mandatory")
 	private String firstName;
 	
 	@Column(name = "Last_Name")
+	@NotNull
 	private String lastName;
 	
 	@Column(name = "Password")
+	@NotNull
 	@NotBlank(message = "Password is mandatory")
 	private String password;
 	
@@ -50,12 +53,9 @@ public class UserData {
 	private String gender;
 
 	@Column(name = "Phone_No")
+	@NotNull
 	@NotBlank(message = "contact is mandatory")
-	private String phNo;
-	
-	@Column(name = "DOB")
-	@NotBlank(message = "DOB is mandatory")
-	private Date dob;
+	private long phNo;
 
 	@Column(name = "Register_Date")
 	@NotNull
@@ -64,8 +64,7 @@ public class UserData {
 	@Column(name = "Last_Updated")
 	private Date updateTime;
 
-	@Column(name = "is_Verified")
-	@NotNull
+	@Column(name = "is_Verified",columnDefinition = "boolean default values",nullable=false)
 	private boolean isVerified;
 	
 }
