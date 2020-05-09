@@ -50,23 +50,23 @@ public class UserServiceImplementation implements UserService {
 
 	@Transactional
 	@Override
-	public UserData userRegistration(UserInfoDto UserInfoDto) throws UserNotFoundException {
+	public UserData userRegistration(UserInfoDto userInfoDto) throws UserNotFoundException {
 		Date date = new Date();
-		UserData checkmail = repository.FindByEmail(UserInfoDto.getEmail());
+		UserData checkmail = repository.FindByEmail(userInfoDto.getEmail());
 
 		if (checkmail == null) {
-			user.setFirstName(UserInfoDto.getUserName());
-			user.setLastName(UserInfoDto.getUserLastName());
-			user.setPassword(bcrypt.encode(UserInfoDto.getPassword()));
-			user.setEmail(UserInfoDto.getEmail());
-			user.setGender(UserInfoDto.getGender());
-			user.setPhNo(UserInfoDto.getPhoneNumber());
+			user.setFirstName(userInfoDto.getUserName());
+			user.setLastName(userInfoDto.getUserLastName());
+			user.setPassword(bcrypt.encode(userInfoDto.getPassword()));
+			user.setEmail(userInfoDto.getEmail());
+			user.setGender(userInfoDto.getGender());
+			user.setPhNo(userInfoDto.getPhoneNumber());
 			user.setCreationTime(date);
 			user.setUpdateTime(date);
 			user.setVerified(false);
 			repository.save(user);
 
-			UserData isUserAvailableTwo = repository.FindByEmail(UserInfoDto.getEmail());
+			UserData isUserAvailableTwo = repository.FindByEmail(userInfoDto.getEmail());
 
 			System.out.println(isUserAvailableTwo.getUserId());
 
