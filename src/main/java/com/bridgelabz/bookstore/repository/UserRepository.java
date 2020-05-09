@@ -17,6 +17,7 @@ import com.bridgelabz.bookstore.entity.UserData;
 @Transactional		
 public interface UserRepository extends JpaRepository<UserData,Long>{
 	
+	
 		@Query(value = "insert into user (First_Name,Last_Name,Password,Email,Gender,Phone_No,DOB,Register_Date,Last_Updated) values (?,?,?,?,?,?)", nativeQuery = true)
 		void insertData(String firstName, String lastName, String password, String email, String gender,String phNo,String dob,Date creationTime,Date updateTime);
 

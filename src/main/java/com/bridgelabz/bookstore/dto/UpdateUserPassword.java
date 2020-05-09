@@ -11,6 +11,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class UpdateUserPassword {
 	
+	
 	private String newPassword;
 	private String confirmPassword;
 

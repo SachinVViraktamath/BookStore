@@ -6,6 +6,7 @@ public class UpdateAdminPassword {
 	private String newPassword;
 	private String confirmPassword;
 	
+	
 	public String getOldpassword() {
 		return Oldpassword;
 	}
@@ -23,6 +24,7 @@ public class UpdateAdminPassword {
 	}
 	public void setConfirmPassword(String confirmPassword) {
 		this.confirmPassword = confirmPassword;
+		
 	}
 	
 }

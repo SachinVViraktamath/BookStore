@@ -35,7 +35,6 @@ public class UserServiceImplementation implements UserService{
 	private static final Logger logger = LoggerFactory.getLogger(UserServiceImplementation.class);
 	private UserData user=new UserData();
 
-	
 	@Autowired
 	private MailingandResponseOperation response;
 	
@@ -50,6 +49,7 @@ public class UserServiceImplementation implements UserService{
 	
 	@Autowired
 	private JwtService jwt;
+	
 	
 	@Transactional
 	@Override
