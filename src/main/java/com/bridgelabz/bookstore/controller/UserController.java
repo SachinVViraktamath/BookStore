@@ -32,16 +32,16 @@ public class UserController {
 	private JwtService jwt; 
 	
 	@PostMapping("/register/")
-	public ResponseEntity<Response> registeration(@RequestBody UserInfoDto UserInfoDto) throws UserNotFoundException{
-		UserData user =service.userRegistration(UserInfoDto);
+	public ResponseEntity<Response> registeration(@RequestBody UserInfoDto userInfoDto) throws UserNotFoundException{
+		UserData user =service.userRegistration(userInfoDto);
 		
 		if(user!=null) {
 	
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "Registered Successfully",UserInfoDto));
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "Registered Successfully",userInfoDto));
 		}
 		
 		else {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "User Already Exist",UserInfoDto));
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "User Already Exist",userInfoDto));
 		}
 				
 	}
