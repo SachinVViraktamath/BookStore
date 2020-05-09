@@ -21,9 +21,10 @@ import com.bridgelabz.bookstore.response.MailingOperation;
 import com.bridgelabz.bookstore.response.MailingandResponseOperation;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.AdminService;
-import com.bridgelabz.bookstore.utility.JwtUtility;
+import com.bridgelabz.bookstore.utility.JwtService;
+import com.bridgelabz.bookstore.utility.JwtService.Token;
 import com.bridgelabz.bookstore.utility.MailService;
-import com.bridgelabz.bookstore.utility.Token;
+
 
 @Service
 public class AdminServiceImplementation implements AdminService{
@@ -41,7 +42,7 @@ public class AdminServiceImplementation implements AdminService{
 	private BCryptPasswordEncoder passwordEncryption;
 	
 	@Autowired
-	private JwtUtility JwtTokenGenerate;
+	private JwtService JwtTokenGenerate;
 
 	
 	@Transactional
@@ -88,14 +89,14 @@ public class AdminServiceImplementation implements AdminService{
 	@Override
 	public AdminEntity loginToAdmin(AdminLogin information) throws AdminNotFoundException {
 		AdminEntity user = repository.getAdmin(information.getAdminEmailId())
-				.orElseThrow(() -> new AdminNotFoundException("user is not exist", HttpStatus.NOT_FOUND));
+				.orElseThrow(() -> new AdminNotFoundException(HttpStatus.NOT_FOUND, "user is not exist"));
 		if ((user.isAdminIsVerified() == true) && (passwordEncryption.matches(information.getAdminPassword(), user.getAdminPassword()))) {
 			return user;
 		} else {
 			String mailResponse = response.fromMessage("http://localhost:8080/verify",
-					JwtTokenGenerate.generateToken(user.getAdminId()),);
+					JwtTokenGenerate.generateToken(user.getAdminId(),Token.WITH_EXPIRE_TIME));
 			MailService.sendEmail(information.getAdminEmailId(), "Verification", mailResponse);
-			throw new AdminNotFoundException("Login unsuccessfull", HttpStatus.BAD_REQUEST);
+			throw new AdminNotFoundException(HttpStatus.BAD_REQUEST, "Login unsuccessfull");
 		}
 	}
 	
@@ -113,7 +114,7 @@ public class AdminServiceImplementation implements AdminService{
 				.orElseThrow(() -> new AdminNotFoundException( HttpStatus.NOT_FOUND,"user is not exist"));
 		if (adminUser.isAdminIsVerified() == true) {
 			String mailResponse = response.fromMessage("http://localhost:8080/verify",
-					JwtTokenGenerate.generateToken(adminUser.getAdminId(),));
+					JwtTokenGenerate.generateToken(adminUser.getAdminId(),Token.WITH_EXPIRE_TIME));
 			MailService.sendEmail(adminUser.getAdminEmailId(), "Verification", mailResponse);
 			return adminUser;
 		} else {

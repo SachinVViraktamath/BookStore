@@ -17,19 +17,19 @@ public class AdminEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long adminId;
 	
-	@Column(name = "admin_firstname", columnDefinition="varchar(80) not null" )	
+	
 	private String adminFirstname;
 	
-	@Column(name = "admin_lastname", columnDefinition="varchar(80) not null" )	
+	
 	private String adminLastname;
 	
-	@Column(name = "admin_email_id", columnDefinition="varchar(100) not null" )	
+	
 	private String adminEmailId;
 	
-	@Column(name = "admin_password", columnDefinition="varchar(255) not null" )	
+	
 	private String adminPassword;
 	
-	@Column(name = "admin_phone_number", columnDefinition="varchar(80) not null" )	
+		
 	private long adminPhoneNumber;
 	
 	public String getAdminFirstname() {
