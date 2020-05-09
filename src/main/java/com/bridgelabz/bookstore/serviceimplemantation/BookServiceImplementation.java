@@ -31,4 +31,9 @@ public class BookServiceImplementation implements BookService {
 		return null;
 	}
 
+	@Override
+	public List<Book> searchAllBooks(String jwt) {
+		return null;
+	}
+
 }
