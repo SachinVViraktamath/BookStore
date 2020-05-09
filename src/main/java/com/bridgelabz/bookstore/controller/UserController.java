@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.bridgelabz.bookstore.dto.UpdateUserPassword;
-import com.bridgelabz.bookstore.dto.UserDto;
+import com.bridgelabz.bookstore.dto.UserInfoDto;
 import com.bridgelabz.bookstore.dto.UserLogin;
 import com.bridgelabz.bookstore.entity.UserData;
 import com.bridgelabz.bookstore.exception.UserNotFoundException;
@@ -32,16 +32,16 @@ public class UserController {
 	private JwtService jwt; 
 	
 	@PostMapping("/register/")
-	public ResponseEntity<Response> registeration(@RequestBody UserDto userdto) throws UserNotFoundException{
-		UserData user =service.userRegistration(userdto);
+	public ResponseEntity<Response> registeration(@RequestBody UserInfoDto UserInfoDto) throws UserNotFoundException{
+		UserData user =service.userRegistration(UserInfoDto);
 		
 		if(user!=null) {
 	
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "Registered Successfully",userdto));
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "Registered Successfully",UserInfoDto));
 		}
 		
 		else {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "User Already Exist",userdto));
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "User Already Exist",UserInfoDto));
 		}
 				
 	}
