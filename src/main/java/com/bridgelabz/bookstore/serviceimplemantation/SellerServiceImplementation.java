@@ -40,7 +40,7 @@ private static JwtService generate;
 public Boolean register(SellerDto dto) {
 	System.out.println("!!!!!");
 		SellerEntity seller = repository.getseller(dto.getEmail());  
-		System.out.println("!!!!");
+		System.out.println("!!!");
 		if(seller==null) {
 			BeanUtils.copyProperties(dto, SellerEntity.class);
 			String epassword=encoder.encode(dto.getPassword());
