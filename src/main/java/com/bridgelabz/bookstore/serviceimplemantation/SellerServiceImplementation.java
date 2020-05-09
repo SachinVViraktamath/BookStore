@@ -34,13 +34,12 @@ private MailResponse response;
 private static JwtService generate;
 @Autowired
  private MailService mail;
-//@Autowired
-//private MailObject mailObject;
+
 @Override
 @Transactional
 public Boolean register(SellerDto dto) {
 	System.out.println("!!!!!");
-		SellerEntity seller = repository.getseller(dto.getEmail());
+		SellerEntity seller = repository.getseller(dto.getEmail());  
 		System.out.println("!!!!");
 		if(seller==null) {
 			BeanUtils.copyProperties(dto, SellerEntity.class);
@@ -68,11 +67,10 @@ public SellerEntity login(LoginDto login) {
 	if(seller!=null) {
 	if((seller.getIsVerified()==1) && (encoder.matches(login.getPassword(), seller.getPassword()))) {
 		generate.generateToken(seller.getSellerId(), Token.WITHOUT_EXPIRE_TIME);
-		}
-			
+		}	
 	}
 			return seller;
-}
+			}
 
 @Override
 @Transactional

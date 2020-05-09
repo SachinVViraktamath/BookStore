@@ -1,12 +1,19 @@
 package com.bridgelabz.bookstore.dto;
 
+import com.sun.istack.NotNull;
+
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 @Data
+//@Getter
+//@Setter
 public class PasswordUpdate {
+	@NotNull
 	String NewPassword;
+	@NotNull
 	String  ConfirmPassword;
-	
 	public String getNewPassword() {
 		return NewPassword;
 	}
@@ -19,5 +26,6 @@ public class PasswordUpdate {
 	public void setConfirmPassword(String confirmPassword) {
 		ConfirmPassword = confirmPassword;
 	}
+	
 	
 }
