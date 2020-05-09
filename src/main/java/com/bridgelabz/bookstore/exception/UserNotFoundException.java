@@ -16,6 +16,7 @@ public class UserNotFoundException extends Exception{
 		return code;
 	}
 
+	
 	public void setCode(HttpStatus code) {
 		this.code = code;
 	}
