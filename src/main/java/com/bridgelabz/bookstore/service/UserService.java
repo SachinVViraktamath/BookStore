@@ -9,9 +9,11 @@ import com.bridgelabz.bookstore.exception.UserNotFoundException;
 
 public interface UserService {
 
+
 	UserData userRegistration(UserDto userdto) throws UserNotFoundException;
 	boolean userVerification(String token)throws UserNotFoundException;
 	UserData userLogin(UserLogin login) throws UserNotFoundException;
 	UserData forgetPassword(String email)throws UserNotFoundException;
 	UserData updatePassword(UpdateUserPassword update,String token) throws JWTVerificationException, Exception;
+
 }
