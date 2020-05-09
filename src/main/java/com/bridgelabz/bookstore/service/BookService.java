@@ -15,4 +15,6 @@ public interface BookService {
 	public Book displaySingleBookForUser(String jwt);
 
 	public String getBookName(long id);
+
+	public List<Book> searchAllBooks(String jwt);
 }

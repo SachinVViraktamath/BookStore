@@ -68,4 +68,17 @@ public class BookController {
 
 	}
 
+	public ResponseEntity<Response> searchBooksForUser(@RequestHeader("jwt") String jwt) {
+		if (true) {
+			List<Book> books = bookService.searchAllBooks(jwt);
+			if (books != null)
+				return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book searched and Found", books));
+			else
+				return ResponseEntity.badRequest()
+						.body(new Response(HttpStatus.NOT_FOUND, "Book searched and not Found", books));
+		} else
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.UNAUTHORIZED, "Not a valid User"));
+
+	}
+
 }
