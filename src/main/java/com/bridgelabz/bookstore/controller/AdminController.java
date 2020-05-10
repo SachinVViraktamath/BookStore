@@ -42,7 +42,7 @@ public class AdminController {
 		AdminEntity result = service.adminRegistartion(admiInformation);
 
 		return ResponseEntity.badRequest()
-				.body(new Response(HttpStatus.NOT_ACCEPTABLE, "Registration Successfull", result));
+				.body(new Response(HttpStatus.ACCEPTED, "Registration Successfull", result));
 		
 
 	}
@@ -66,7 +66,7 @@ public class AdminController {
 	public ResponseEntity<Response> loginAdmin(@RequestBody AdminLogin adminLogin) throws AdminNotFoundException {
 		AdminEntity userInformation = service.loginToAdmin(adminLogin);
 		return ResponseEntity.badRequest()
-				.body(new Response(HttpStatus.NOT_ACCEPTABLE, "Login Successfull", userInformation));		
+				.body(new Response(HttpStatus.ACCEPTED, "Login Successfull", userInformation));		
 	}
 	
 	
@@ -76,10 +76,10 @@ public class AdminController {
 		AdminEntity result = service.isAdminExist(email);
 		if (result!=null) {
 			return ResponseEntity.badRequest()
-					.body(new Response(HttpStatus.ACCEPTED, "Admin exited", result));
+					.body(new Response(HttpStatus.ACCEPTED, "Admin existed", result));
 		}
 		return ResponseEntity.badRequest()
-				.body(new Response(HttpStatus.ACCEPTED, "admin Does not exit in the given email id", result));
+				.body(new Response(HttpStatus.NOT_FOUND, "admin does not exit in the given email id", result));
 
 	}
 

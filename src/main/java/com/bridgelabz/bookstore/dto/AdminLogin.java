@@ -2,16 +2,11 @@ package com.bridgelabz.bookstore.dto;
 
 public class AdminLogin {
 
-	private String adminName;
+	
 	private String adminEmailId;
 	private String adminPassword;
-	private long adminPhoneNumber;
-	public String getAdminName() {
-		return adminName;
-	}
-	public void setAdminName(String adminName) {
-		this.adminName = adminName;
-	}
+	
+
 	public String getAdminEmailId() {
 		return adminEmailId;
 	}
@@ -24,10 +19,5 @@ public class AdminLogin {
 	public void setAdminPassword(String adminPassword) {
 		this.adminPassword = adminPassword;
 	}
-	public long getAdminPhoneNumber() {
-		return adminPhoneNumber;
-	}
-	public void setAdminPhoneNumber(long adminPhoneNumber) {
-		this.adminPhoneNumber = adminPhoneNumber;
-	}
+	
 }

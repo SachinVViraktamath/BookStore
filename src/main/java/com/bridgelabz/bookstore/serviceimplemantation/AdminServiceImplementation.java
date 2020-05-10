@@ -51,7 +51,7 @@ public class AdminServiceImplementation implements AdminService{
 			String epassword = passwordEncryption.encode(adminInformation.getAdminPassword());
 			adminInfo.setAdminPassword(epassword);					
 			adminInfo = repository.save(adminInfo);
-			String mailResponse = response.fromMessage("http://localhost:8080/user/verify",
+			String mailResponse = response.fromMessage("http://localhost:8080/user/verify/",
 					JwtService.generateToken(adminInfo.getAdminId(),Token.WITH_EXPIRE_TIME));
 			mailObject.setEmail(adminInfo.getAdminEmailId());
 			mailObject.setMessage(mailResponse);
@@ -59,7 +59,7 @@ public class AdminServiceImplementation implements AdminService{
 			MailService.sendEmail(mailObject.getEmail(), mailObject.getSubject(), mailObject.getMessage());
 		} else 
 		{
-			throw new AdminNotFoundException(HttpStatus.NON_AUTHORITATIVE_INFORMATION,"Email id is not exist");
+			throw new AdminNotFoundException(HttpStatus.NOT_ACCEPTABLE,"Admin user already exist");
 			
 			//throw new AdminNotFoundException(HttpStatus.FORBIDDEN,"Email id is not exist");
 		
@@ -85,14 +85,14 @@ public class AdminServiceImplementation implements AdminService{
 	@Override
 	public AdminEntity loginToAdmin(AdminLogin information) throws AdminNotFoundException {
 		AdminEntity user = repository.getAdmin(information.getAdminEmailId())
-				.orElseThrow(() -> new AdminNotFoundException(HttpStatus.NOT_FOUND, "user is not exist"));
+				.orElseThrow(() -> new AdminNotFoundException(HttpStatus.NOT_FOUND, "admin is not exist"));
 		if ((user.isAdminIsVerified() == true) && (passwordEncryption.matches(information.getAdminPassword(), user.getAdminPassword()))) {
 			return user;
 		} else {
 			String mailResponse = response.fromMessage("http://localhost:8080/verify",
 					JwtService.generateToken(user.getAdminId(),Token.WITH_EXPIRE_TIME));
 			MailService.sendEmail(information.getAdminEmailId(), "Verification", mailResponse);
-			throw new AdminNotFoundException(HttpStatus.BAD_REQUEST, "Login unsuccessfull");
+			throw new AdminNotFoundException(HttpStatus.ACCEPTED, "Login unsuccessfull");
 		}
 	}
 	
@@ -107,7 +107,7 @@ public class AdminServiceImplementation implements AdminService{
 	public AdminEntity isAdminExist(String email) throws AdminNotFoundException {
 
 		AdminEntity adminUser = repository.getAdmin(email)
-				.orElseThrow(() -> new AdminNotFoundException( HttpStatus.NOT_FOUND,"user is not exist"));
+				.orElseThrow(() -> new AdminNotFoundException( HttpStatus.NOT_FOUND,"admin is not exist"));
 		if (adminUser.isAdminIsVerified() == true) {
 			String mailResponse = response.fromMessage("http://localhost:8080/verify",
 					JwtService.generateToken(adminUser.getAdminId(),Token.WITH_EXPIRE_TIME));
@@ -126,7 +126,7 @@ public class AdminServiceImplementation implements AdminService{
 		boolean passwordupdateflag=false;
 		
 			id = (Long) JwtService.parse(token);
-			AdminEntity userinfo=repository.getAdminById(id).orElseThrow(() -> new AdminNotFoundException( HttpStatus.NOT_FOUND,"user is not exist"));                   
+			AdminEntity userinfo=repository.getAdminById(id).orElseThrow(() -> new AdminNotFoundException( HttpStatus.NOT_FOUND,"admin is not exist"));                   
 		
 		
 			if(passwordEncryption.matches(information.getOldpassword(),userinfo.getAdminPassword())) {
@@ -134,7 +134,7 @@ public class AdminServiceImplementation implements AdminService{
 			information.setConfirmPassword(epassword);
 			 repository.upDateAdminPassword(information, id);
 			}else {
-				throw new AdminNotFoundException(HttpStatus.NON_AUTHORITATIVE_INFORMATION,"Email id is not exist");
+				throw new AdminNotFoundException(HttpStatus.NOT_FOUND,"Email id is not exist");
 				
 			}
 			return passwordupdateflag;
