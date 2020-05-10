@@ -23,8 +23,8 @@ public class SellerController {
 	
 @Autowired
  private SellerService service;
-@Autowired
-private JwtService generator;
+
+private static JwtService generator;
 
 @PostMapping("seller/Registration")
 public ResponseEntity<Response> sellerRegistration(@RequestBody SellerDto dto){

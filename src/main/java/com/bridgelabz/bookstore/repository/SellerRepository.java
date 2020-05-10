@@ -23,17 +23,14 @@ public class SellerRepository {
     public SellerEntity save(SellerEntity seller) {
         Session session = entityManger.unwrap(Session.class);
         session.saveOrUpdate(seller);
-        System.out.println("*****");
         return seller;
     }
     //* Query to get the seller information bby email */
 
 	public SellerEntity getseller(String email) {
-		System.out.println("$$$$$$$");
 		Session session = entityManger.unwrap(Session.class);
 		Query q = session.createQuery("FROM SellerEntity where email=:email");
 		q.setParameter("email", email);
-System.out.println("#####");
 		return  (SellerEntity) q.uniqueResult();
 	}
 

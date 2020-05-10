@@ -38,9 +38,7 @@ private static JwtService generate;
 @Override
 @Transactional
 public Boolean register(SellerDto dto) {
-	System.out.println("!!!!!");
 		SellerEntity seller = repository.getseller(dto.getEmail());  
-		System.out.println("!!!");
 		if(seller==null) {
 			BeanUtils.copyProperties(dto, SellerEntity.class);
 			String epassword=encoder.encode(dto.getPassword());
@@ -79,13 +77,22 @@ public Boolean verify(String token) {
 	repository.verify(id);
 	return true;
 }
+
 @Transactional
 @Override
 public List<SellerEntity> getSellers() {
 	List<SellerEntity> sellers = repository.getSellers();
 	SellerEntity seller = sellers.get(0);
 	return sellers;
-	// return (List<UserInformation>) elasticrepo.findAll();
+	
 }
+
+@Override
+@Transactional
+public Long getSellerIdFromToken(String token) {
+	Long id = generate.parse(token);
+	return id;
+}
+
 
 }

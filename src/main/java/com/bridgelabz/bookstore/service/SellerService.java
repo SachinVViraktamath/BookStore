@@ -12,5 +12,5 @@ public Boolean register(SellerDto dto);
 public SellerEntity login(LoginDto login);
 public Boolean verify(String token);
 public List<SellerEntity> getSellers();
- 
+ public Long getSellerIdFromToken(String token);
 }
