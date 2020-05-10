@@ -16,9 +16,14 @@ private static final long serialVersionUID = 1L;
 	HttpStatus code;
 
 	public SellerNotFoundException(HttpStatus code, String message) {
+<<<<<<< HEAD
 
-          super(message);
-        this.code = code;
+	
+=======
+		
+		  super(message);
+>>>>>>> 5e139f402036eb1b5fcf0d008fb5088645b03d59
+		this.code = code;
 	}
 
 	public HttpStatus getCode() {
