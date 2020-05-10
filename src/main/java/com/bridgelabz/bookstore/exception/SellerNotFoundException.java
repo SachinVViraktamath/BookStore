@@ -16,7 +16,7 @@ public class SellerNotFoundException extends RuntimeException {
 
 	public SellerNotFoundException(HttpStatus code, String message) {
 
-		super(message);
+	
 		this.code = code;
 	}
 
