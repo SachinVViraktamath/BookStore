@@ -28,8 +28,6 @@ public class UserController {
 	@Autowired
 	private UserService service;
 	
-	@Autowired
-	private JwtService jwt; 
 	
 	@PostMapping("/register/")
 	public ResponseEntity<Response> registeration(@RequestBody UserInfoDto userInfoDto) throws UserNotFoundException{
