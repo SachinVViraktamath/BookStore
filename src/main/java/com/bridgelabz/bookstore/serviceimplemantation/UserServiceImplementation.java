@@ -45,8 +45,7 @@ public class UserServiceImplementation implements UserService {
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
 
-	@Autowired
-	private JwtService jwt;
+	//private JwtService jwt;
 
 	@Transactional
 	@Override
@@ -73,7 +72,7 @@ public class UserServiceImplementation implements UserService {
 			String email = user.getEmail();
 
 			String responsemail = "http://localhost:8080/verify/"
-					+ jwt.generateToken(isUserAvailableTwo.getUserId(), Token.WITH_EXPIRE_TIME);
+					+ JwtService.generateToken(isUserAvailableTwo.getUserId(), Token.WITH_EXPIRE_TIME);
 			System.out.println(response);
 			mailObject.setEmail(user.getEmail());
 			mailObject.setMessage(responsemail);
@@ -88,7 +87,7 @@ public class UserServiceImplementation implements UserService {
 	@Transactional
 	@Override
 	public boolean userVerification(String token) throws UserNotFoundException {
-		Long id = (long) jwt.parse(token);
+		Long id = (long) JwtService.parse(token);
 		repository.findbyId(id);
 		return true;
 	}
@@ -136,7 +135,7 @@ public class UserServiceImplementation implements UserService {
 			if (userMail.isVerified()) {
 				mailObject.setEmail(userMail.getEmail());
 				mailObject.setSubject("sending by admin");
-				mailObject.setMessage("http://localhost:8082/updatePassword/" + jwt.parse(email));
+				mailObject.setMessage("http://localhost:8082/updatePassword/" + JwtService.parse(email));
 				return user;
 			}
 		} else {
@@ -148,8 +147,8 @@ public class UserServiceImplementation implements UserService {
 	public UserData updatePassword(UpdateUserPassword forgetpass, String token)
 			throws JWTVerificationException, Exception {
 		if (forgetpass.getNewPassword().equals(forgetpass.getConfirmPassword())) {
-			logger.info("id in verification", jwt.parse(token));
-			Long id = jwt.parse(token);
+			logger.info("id in verification", JwtService.parse(token));
+			Long id = JwtService.parse(token);
 			UserData isIdVerified = repository.findbyId(id);
 			if (isIdVerified.isVerified()) {
 				isIdVerified.setPassword(forgetpass.getConfirmPassword());

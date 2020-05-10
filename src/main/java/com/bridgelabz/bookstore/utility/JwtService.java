@@ -13,9 +13,9 @@ public class JwtService {
 
 	private static final String SCERET = "qwertyuiop";
 
-	private final long TOKEN_VALIDITY=5*60*60;
+	private final static long TOKEN_VALIDITY=5*60*60;
 	
-	public String generateToken(Long id, Token expire) {
+	public static String generateToken(Long id, Token expire) {
 		if(expire.equals(Token.WITH_EXPIRE_TIME)) {
 		return Jwts.builder().setSubject(String.valueOf(id))
 				.setExpiration(new Date(System.currentTimeMillis() +TOKEN_VALIDITY * 1000))
@@ -25,7 +25,7 @@ public class JwtService {
 		}
 	}
 	
-	public Long parse(String token)
+	public static Long parse(String token)
 	{
 		System.out.println("Parsing");
 		Claims claim=Jwts.parser().setSigningKey(SCERET).parseClaimsJws(token).getBody();
