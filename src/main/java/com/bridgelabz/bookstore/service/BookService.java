@@ -7,14 +7,17 @@ import com.bridgelabz.bookstore.entity.Book;
 
 public interface BookService {
 
-
-	public boolean sellerAddingBooks(BookDto bookdto);
-
-	public List<Book> displayBooksForUser(String jwt);
-
-	public Book displaySingleBookForUser(String jwt);
+	public Book displaySingleBook();
 
 	public String getBookName(long id);
 
 	public List<Book> searchAllBooks(String jwt);
+
+	public List<Book> sortByPriceAsc();
+
+	public List<Book> sortByPriceDesc();
+
+	public List<Book> sortByNewest();
+
+	public List<Book> displayBooks();
 }

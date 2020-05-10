@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.entity.Book;
+import com.bridgelabz.bookstore.entity.SellerEntity;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.BookService;
+import com.bridgelabz.bookstore.service.SellerService;
 
 @RestController
 @RequestMapping("/book")
@@ -27,57 +29,74 @@ public class BookController {
 	@Autowired
 	private BookService bookService;
 
-	@PostMapping("/add")
-	public ResponseEntity<Response> addNewBooks(@RequestHeader("jwt") String jwt, @RequestBody BookDto bookdto) {
-		if (true) {
-			if (bookService.sellerAddingBooks(bookdto))
-				return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "seller books are added", bookdto));
-			else
-				return ResponseEntity.badRequest()
-						.body(new Response(HttpStatus.NOT_ACCEPTABLE, "seller books are not added", bookdto));
-		} else
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "Not a valid Seller"));
-
-	}
-
 	@GetMapping("/displayAll")
-	public ResponseEntity<Response> displayAllBooks(@RequestHeader("jwt") String jwt) {
-		if (true) {
-			List<Book> books = bookService.displayBooksForUser(jwt);
-			if (books != null)
-				return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "books for user displayed", books));
-			else
-				return ResponseEntity.badRequest()
-						.body(new Response(HttpStatus.NOT_FOUND, "books for user not displayed", books));
-		} else
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "Not a valid User"));
+	public ResponseEntity<Response> displayAllBooks() {
+
+		List<Book> books = bookService.displayBooks();
+		if (books != null)
+			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "books for user displayed", books));
+		else
+			return ResponseEntity.badRequest()
+					.body(new Response(HttpStatus.NOT_FOUND, "books for user not displayed", books));
 
 	}
 
 	@GetMapping("/displayOne")
-	public ResponseEntity<Response> displayParticularBook(@RequestHeader("jwt") String jwt) {
-		if (true) {
-			Book book = bookService.displaySingleBookForUser(jwt);
-			if (book != null)
-				return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Particular book not displayed", book));
-			else
-				return ResponseEntity.badRequest()
-						.body(new Response(HttpStatus.NOT_FOUND, "Particular book not displayed", book));
-		} else
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "Not a valid User"));
+	public ResponseEntity<Response> displayParticularBook() {
+		Book book = bookService.displaySingleBook();
+		if (book != null)
+			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Particular book not displayed", book));
+		else
+			return ResponseEntity.badRequest()
+					.body(new Response(HttpStatus.NOT_FOUND, "Particular book not displayed", book));
 
 	}
 
-	public ResponseEntity<Response> searchBooksForUser(@RequestHeader("jwt") String jwt) {
-		if (true) {
-			List<Book> books = bookService.searchAllBooks(jwt);
-			if (books != null)
-				return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book searched and Found", books));
-			else
-				return ResponseEntity.badRequest()
-						.body(new Response(HttpStatus.NOT_FOUND, "Book searched and not Found", books));
-		} else
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.UNAUTHORIZED, "Not a valid User"));
+	@GetMapping("/search")
+	public ResponseEntity<Response> searchBooksForUser(@RequestParam("title") String title) {
+
+		List<Book> books = bookService.searchAllBooks(title);
+		if (books != null)
+			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Books searched and Found", books));
+		else
+			return ResponseEntity.badRequest()
+					.body(new Response(HttpStatus.NOT_FOUND, "Books searched and not Found", books));
+
+	}
+
+	@GetMapping("/sortbyprice/Asc")
+	public ResponseEntity<Response> sortByPriceLowtoHigh() {
+
+		List<Book> books = bookService.sortByPriceAsc();
+		if (books != null)
+			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book by Price low to high Found", books));
+		else
+			return ResponseEntity.badRequest()
+					.body(new Response(HttpStatus.NOT_FOUND, "Book by Price low to high not Found", books));
+
+	}
+
+	@GetMapping("/sortbyprice/Desc")
+	public ResponseEntity<Response> sortByPriceHightoLow() {
+
+		List<Book> books = bookService.sortByPriceDesc();
+		if (books != null)
+			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book by Price high to low Found", books));
+		else
+			return ResponseEntity.badRequest()
+					.body(new Response(HttpStatus.NOT_FOUND, "Book by Price high to low not Found", books));
+
+	}
+
+	@GetMapping("/sortbynewest")
+	public ResponseEntity<Response> sortByNewestArrivals() {
+
+		List<Book> books = bookService.sortByNewest();
+		if (books != null)
+			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book by Newest Arrivals Found", books));
+		else
+			return ResponseEntity.badRequest()
+					.body(new Response(HttpStatus.NOT_FOUND, "Book by Newest Arrivals not Found", books));
 
 	}
 

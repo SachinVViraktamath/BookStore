@@ -12,17 +12,7 @@ import com.bridgelabz.bookstore.service.BookService;
 public class BookServiceImplementation implements BookService {
 
 	@Override
-	public boolean sellerAddingBooks(BookDto bookdto) {
-		return false;
-	}
-
-	@Override
-	public List<Book> displayBooksForUser(String jwt) {
-		return null;
-	}
-
-	@Override
-	public Book displaySingleBookForUser(String jwt) {
+	public Book displaySingleBook() {
 		return null;
 	}
 
@@ -33,6 +23,26 @@ public class BookServiceImplementation implements BookService {
 
 	@Override
 	public List<Book> searchAllBooks(String jwt) {
+		return null;
+	}
+
+	@Override
+	public List<Book> sortByPriceAsc() {
+		return null;
+	}
+
+	@Override
+	public List<Book> sortByPriceDesc() {
+		return null;
+	}
+
+	@Override
+	public List<Book> sortByNewest() {
+		return null;
+	}
+
+	@Override
+	public List<Book> displayBooks() {
 		return null;
 	}
 
