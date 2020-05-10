@@ -5,18 +5,23 @@ import org.springframework.http.HttpStatus;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+ 
+/*..exception for seller...*/
 
 @Data
 @NoArgsConstructor
 @ToString
 public class SellerNotFoundException extends RuntimeException {
 
-	private static final long serialVersionUID = 1L;
 	HttpStatus code;
 
 	public SellerNotFoundException(HttpStatus code, String message) {
 
+
 	
+		
+		  super(message);
+
 		this.code = code;
 	}
 
