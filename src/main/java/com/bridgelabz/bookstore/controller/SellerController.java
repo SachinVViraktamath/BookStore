@@ -24,11 +24,10 @@ public class SellerController {
 @Autowired
  private SellerService service;
 
-private static JwtService generator;
 
 @PostMapping("seller/Registration")
 public ResponseEntity<Response> sellerRegistration(@RequestBody SellerDto dto){
-	System.out.println("####");
+	
 	boolean reg = service.register(dto);
 	if (reg) {
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Seller Registered Successfully", dto));
@@ -42,7 +41,7 @@ public ResponseEntity<Response> sellerRegistration(@RequestBody SellerDto dto){
 public ResponseEntity<Response> Login(@RequestBody LoginDto login) {
 	SellerEntity seller = service.login(login);
 	if (seller != null) {
-		String token = generator.generateToken(seller.getSellerId(), null);
+		String token = JwtService.generateToken(seller.getSellerId(), null);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Login Successfully", login));
 	}
 	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "Login failed",login));
