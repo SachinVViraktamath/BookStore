@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
-
+import org.springframework.web.bind.annotation.RestController;
 import com.bridgelabz.bookstore.dto.AdminDto;
 import com.bridgelabz.bookstore.dto.AdminLogin;
 import com.bridgelabz.bookstore.dto.UpdateAdminPassword;
@@ -20,6 +20,8 @@ import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.serviceimplemantation.AdminServiceImplementation;
 
 
+
+@RestController
 public class AdminController {
 
 	
