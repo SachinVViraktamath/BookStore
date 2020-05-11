@@ -66,6 +66,7 @@ public class Users {
 	@JoinColumn(name = "userId")
 	private List<UserAddress> address;
 	
+	
 	@OneToOne(cascade = CascadeType.ALL, targetEntity = UserBookCart.class)
 	@JoinColumn(name = "userId")
 	private List<UserBookCart> cartBooks;
