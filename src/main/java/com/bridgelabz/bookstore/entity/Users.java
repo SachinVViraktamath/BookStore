@@ -2,7 +2,6 @@ package com.bridgelabz.bookstore.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,10 +16,11 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Data
 @Entity
@@ -72,6 +72,9 @@ public class Users {
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JoinTable(name = "user_book", joinColumns = { @JoinColumn(name = "userId") }, inverseJoinColumns = {
 			@JoinColumn(name = "bookId") })
+	
+	@JsonIgnore
+	private List<Book> userBook;
 	
 	
 	@OneToOne(cascade = CascadeType.ALL, targetEntity = UserBookCart.class)

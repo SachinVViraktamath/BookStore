@@ -2,8 +2,6 @@ package com.bridgelabz.bookstore.serviceimplemantation;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
-
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import org.springframework.beans.BeanUtils;
@@ -11,16 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-
-import com.auth0.jwt.exceptions.JWTVerificationException;
-
-import com.bridgelabz.bookstore.entity.Seller;
-
-import com.bridgelabz.bookstore.exception.AdminNotFoundException;
-
-
-
 import com.bridgelabz.bookstore.dto.UserPasswordDto;
 import com.bridgelabz.bookstore.dto.UserRegisterDto;
 import com.bridgelabz.bookstore.dto.UserAddressDto;
@@ -29,12 +17,8 @@ import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.UserException;
-<<<<<<< HEAD
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.UserAddressRepository;
-=======
-
->>>>>>> 04dd952da95c9674787fa84e69beb992414dfbb4
 import com.bridgelabz.bookstore.repository.UserRepository;
 import com.bridgelabz.bookstore.response.MailingOperation;
 import com.bridgelabz.bookstore.response.MailingandResponseOperation;
@@ -175,14 +159,13 @@ public class UserServiceImplementation implements UserService {
 		Long id = (Long) JwtService.parse(token);
 		
 			if(wish!=null) {
-				Optional<Book> book=bookRep.getBookById(id);
+				Book book=bookRep.getBookById(id).
+						orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " Not book Added to WishList"));
 				wish.getUserBook().add(book);	
 				return book;
 		}
 			return null;
 	}
-	
-	
 	
 	@Transactional
 	@Override
@@ -197,14 +180,13 @@ public class UserServiceImplementation implements UserService {
 	@Transactional
 	@Override
 	public Book removeWishList(Long bookId, String token, String email) throws UserException {
-		Users user=new Users();
-		Users wish=repository.getUser(email).
-				orElseThrow(() -> new UserNotFoundException(HttpStatus.NOT_FOUND, " WishList is empty"));
+		Users wish=repository.FindByEmail(email).
+				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " Book Removed from WishList"));
 		
 		Long id = (Long) JwtService.parse(token);
-		
 			if(wish!=null) {
-				Book book=bookRep.findbyId(id);
+				Book book=bookRep.getBookById(id). 
+						orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " Book Removed from WishList"));
 				wish.getUserBook().remove(book);	
 				return book;
 		}
