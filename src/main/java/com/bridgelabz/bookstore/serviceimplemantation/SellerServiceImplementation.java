@@ -7,7 +7,6 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -18,14 +17,11 @@ import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.SellerLoginDto;
 import com.bridgelabz.bookstore.dto.SellerPasswordUpdateDto;
 import com.bridgelabz.bookstore.dto.SellerDto;
-import com.bridgelabz.bookstore.entity.AdminEntity;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Seller;
-import com.bridgelabz.bookstore.exception.AdminNotFoundException;
 import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.SellerRepository;
-import com.bridgelabz.bookstore.response.MailResponse;
 import com.bridgelabz.bookstore.service.AmazonS3AccessService;
 import com.bridgelabz.bookstore.service.SellerService;
 import com.bridgelabz.bookstore.utility.JwtService;
@@ -41,7 +37,6 @@ public class SellerServiceImplementation implements SellerService {
 	@Autowired
 	private BCryptPasswordEncoder encoder;
 
-	private MailResponse response;
 	@Autowired
 	BookRepository bookRepository;
 

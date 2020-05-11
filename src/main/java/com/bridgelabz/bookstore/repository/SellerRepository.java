@@ -11,7 +11,6 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.bridgelabz.bookstore.dto.SellerPasswordUpdateDto;
-import com.bridgelabz.bookstore.entity.AdminEntity;
 import com.bridgelabz.bookstore.entity.Seller;
 
 @Repository
