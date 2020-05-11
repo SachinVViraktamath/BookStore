@@ -8,16 +8,14 @@ import com.bridgelabz.bookstore.exception.BookException;
 
 public interface BookService {
 
-	List<Book> displayBooks();
+	List<Book> displayBooks() throws BookException;
 
 	Book displaySingleBook(Long id) throws BookException;
 
-	List<Book> searchAllBooks(String title);
+	List<Book> sortByPriceAsc() throws BookException;
 
-	List<Book> sortByPriceAsc();
+	List<Book> sortByPriceDesc() throws BookException;
 
-	List<Book> sortByPriceDesc();
-
-	List<Book> sortByNewest();
+	List<Book> sortByNewest() throws BookException;
 
 }
