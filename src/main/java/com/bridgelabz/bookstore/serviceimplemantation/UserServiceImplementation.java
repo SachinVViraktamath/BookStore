@@ -1,15 +1,14 @@
 package com.bridgelabz.bookstore.serviceimplemantation;
 
 import java.time.LocalDateTime;
-
 import javax.transaction.Transactional;
 import javax.validation.Valid;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+<<<<<<< HEAD
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 
@@ -18,6 +17,8 @@ import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.exception.AdminNotFoundException;
 
 
+=======
+>>>>>>> 12059e74e893b5afe514b1ec617d65c6d8355978
 import com.bridgelabz.bookstore.dto.UserPasswordDto;
 import com.bridgelabz.bookstore.dto.UserRegisterDto;
 import com.bridgelabz.bookstore.dto.UserLoginDto;
@@ -50,50 +51,39 @@ public class UserServiceImplementation implements UserService {
 
 	@Transactional
 	@Override
-	public Users userRegistration(@Valid UserRegisterDto userInfoDto)  throws UserException {
-		Users user = new Users();
-		
-		Users isEmail =repository.FindByEmail(userInfoDto.getEmail());
-		if (isEmail==null){
-			
+	public Users userRegistration(@Valid UserRegisterDto userInfoDto) throws UserException {
+		Users user = new Users();		
+		Users isEmail =repository.FindByEmail(userInfoDto.getEmail()).
+				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));		
 			BeanUtils.copyProperties(userInfoDto, isEmail);
-			user.setPassword(bcrypt.encode(userInfoDto.getPassword()));
-			
+			user.setPassword(bcrypt.encode(userInfoDto.getPassword()));			
 			user.setCreationTime(LocalDateTime.now());
 			user.setUpdateTime(LocalDateTime.now());
 			user=repository.save(user);
 			String mailResponse = "http://localhost:8080/user/verify/" +JwtService.generateToken(user.getUserId(),Token.WITH_EXPIRE_TIME);
-			
 			MailService.sendEmail(user.getEmail(),"verification", mailResponse);
 			return user;
-		
-		}
-		else {
-			throw new UserException(HttpStatus.NOT_ACCEPTABLE," User already exist");
-
-		}
+	
 	}
 
 	@Transactional
 	@Override
 	public Users userVerification(String token) throws UserException {
 		long id = JwtService.parse(token);
-		Users userInfo = repository.findbyId(id);
-		if (userInfo != null) {
-			if (!userInfo.isVerified()) {
+		Users userInfo = repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
+	      if (!userInfo.isVerified()) {
 				userInfo.setVerified(true);
 				repository.findbyId(userInfo.getUserId());
 				return userInfo;
 			} else {
 				throw new UserException(HttpStatus.NOT_ACCEPTABLE," User already exist");
 			}
-		}
-		return null;
+		
 	}
 
 	public Users userLogin( UserLoginDto login) throws UserException {
-
-		Users user = repository.FindByEmail(login.getEmail());
+		Users user = repository.FindByEmail(login.getEmail()).
+				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
 		if ((user.isVerified() == true) && (bcrypt.matches(login.getPassword(), user.getPassword()))) {
 			return user;
 		} else {
@@ -105,19 +95,16 @@ public class UserServiceImplementation implements UserService {
 	}
 
 	public Users forgetPassword(String email) throws UserException {
-		Users userMail = repository.FindByEmail(email);
-		// log.info("userdetails for forgetpassword" + userMail);
-		if (userMail != null) {
+		Users userMail = repository.FindByEmail(email).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
+		// log.info("userdetails for forgetpassword" + userMail);		
 			if (userMail.isVerified()) {
 				mailObject.setEmail(userMail.getEmail());
 				mailObject.setSubject("sending by admin");
 				mailObject.setMessage("http://localhost:8082/updatePassword/" + JwtService.parse(email));
 				return userMail;
 			}
-		} else {
-			throw new UserException(HttpStatus.BAD_REQUEST, "Login unsuccessfull");
-		}
-		return null;
+			return userMail;
+		
 	}
 
 	public boolean updatePassword(UserPasswordDto forgetpass, String token) throws UserException {
@@ -125,19 +112,17 @@ public class UserServiceImplementation implements UserService {
 		boolean passwordupdateflag=false;
 			
 		id = (Long) JwtService.parse(token);
-		Users userinfo=repository.findbyId(id);
+		Users userinfo=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
 		
 		if(bcrypt.matches(forgetpass.getOldPassword(),userinfo.getPassword())) {
 		String epassword = bcrypt.encode(forgetpass.getCnfPassword());
 		forgetpass.setCnfPassword(epassword);
 		 repository.updatePassword(forgetpass, id);
 			return passwordupdateflag;
-
 		}else {
 			
-			throw new UserException(HttpStatus.BAD_REQUEST, "Login unsuccessfull");
+			throw new UserException(HttpStatus.BAD_REQUEST, "password update failed");
 		}
-		
 
 	}
 
