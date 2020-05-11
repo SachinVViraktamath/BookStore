@@ -30,103 +30,96 @@ import io.swagger.annotations.ApiOperation;
 @RestController
 @RequestMapping("/user")
 public class UserController {
-	
+
 	@Autowired
 	private UserService service;
-	
+
 	@Autowired
 	private UserAddressService serviceAdd;
 
 	@ApiOperation(value = "Api to Register User for BookStore", response = Response.class)
 	@PostMapping("/register")
-	public ResponseEntity<Response> registeration(@RequestBody UserRegisterDto userInfoDto) throws UserException{
-		Users user =service.userRegistration(userInfoDto);
-		
-		if(user!=null) {
-	
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "Registered Successfully",userInfoDto));
+	public ResponseEntity<Response> registeration(@RequestBody UserRegisterDto userInfoDto) throws UserException {
+		Users user = service.userRegistration(userInfoDto);
+		if (user != null) {
+			return ResponseEntity.badRequest()
+					.body(new Response(HttpStatus.ACCEPTED, "Registered Successfully", userInfoDto));
 		}
-		
-		else {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "User Already Exist",userInfoDto));
-		}
-				
+		return ResponseEntity.badRequest()
+				.body(new Response(HttpStatus.NOT_ACCEPTABLE, "User Already Exist in email id", userInfoDto));
+
 	}
-	
+
 	@ApiOperation(value = "Api to verify User for BookStore", response = Response.class)
 	@GetMapping("/verify/{token}")
-	public ResponseEntity<Response> verification(@PathVariable("token") String token) throws UserException{
-			Users user=service.userVerification(token);
-		
-			if (user!=null) {
-				return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED,"Successfully verified", 200));
-			}
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"user already verified..", 400));
+	public ResponseEntity<Response> verification(@PathVariable("token") String token) throws UserException {
+		Users user = service.userVerification(token);
+		if (user != null) {
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED, "Successfully verified", 200));
 		}
-	
+		return ResponseEntity.badRequest()
+				.body(new Response(HttpStatus.NOT_ACCEPTABLE, "verification failed", 400));
+	}
+
 	@ApiOperation(value = "Api to Login User for BookStore", response = Response.class)
 	@PostMapping("/login/")
 	public ResponseEntity<Response> login(@RequestBody UserLoginDto login) throws UserException {
 		Users user = service.userLogin(login);
-		
-		if(user!=null) {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED,"Login Successfull",200));
+		if (user != null) {
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED, "Login Successfull", 200));
 		}
-		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"something went wrong..", 400));
+		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "Login failed Please login again", 400));
 
 	}
+
 	@ApiOperation(value = "Api to check if UserExists in BookStore", response = Response.class)
 	@PostMapping("/forgetPassword")
-	public ResponseEntity<Response> forgetPassword(@RequestBody String email ) throws UserException {
+	public ResponseEntity<Response> forgetPassword(@RequestBody String email) throws UserException {
 		Users user = service.forgetPassword(email);
-		
-		if(user!=null) {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," Success Login",200));
+		if (user != null) {
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED, " password changed Successfully ", 200));
 		}
-		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"user does not exists .", 400));
+		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "user does not exists .", 400));
 
 	}
-	
+
 	@ApiOperation(value = "Api to Update User Password for BookStore", response = Response.class)
 	@PutMapping("/updatePassword/{token}")
-	public ResponseEntity<Response> updatePassword(@RequestBody UserPasswordDto password,@Valid @PathVariable("token") String token) throws UserException {
+	public ResponseEntity<Response> updatePassword(@RequestBody UserPasswordDto password,
+			@Valid @PathVariable("token") String token) throws UserException {
 		Users user = service.userVerification(token);
-
-		if (user!=null) {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," Successfully Updated ",200));
-		} else {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"something went wrong..", 400));
+		if (user != null) {
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED, " Successfully Updated ", 200));
 		}
+		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "failed to update password", 400));
+
 	}
-	
+
 	@ApiOperation(value = "Api to Add User Address for BookStore", response = Response.class)
 	@PostMapping("/addAddress/create")
-	public ResponseEntity<Response> addAddress(@RequestBody UserAddressDto addDto, @RequestHeader String token){
-		
-		UserAddress add=serviceAdd.addAddress(addDto, token);
-		
-		if(add!=null) {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," User Address added Successfully  ",200));
+	public ResponseEntity<Response> addAddress(@RequestBody UserAddressDto addDto, @RequestHeader String token)
+			throws UserException {
+		UserAddress add = serviceAdd.addAddress(addDto, token);
+		if (add != null) {
+			return ResponseEntity.badRequest()
+					.body(new Response(HttpStatus.ACCEPTED, " User Address added Successfully  ", 200));
 		}
-		
-		else {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"something went wrong..", 400));
-		}
+
+		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "something went wrong..", 400));
+
 	}
-	
+
 	@ApiOperation(value = "Api to Update User Address for BookStore", response = Response.class)
 	@PutMapping("/updateAddress/{addressId}")
-	public ResponseEntity<Response> updateAddress(String token,@PathVariable long addressId, @RequestBody UserAddressDto addDto ){
-		UserAddress add=serviceAdd.updateAddress(token, addDto, addressId);
-		
-		if(add!=null) {
-			
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," User Address Updated Successfully  ",200));
+	public ResponseEntity<Response> updateAddress(String token, @PathVariable long addressId,
+			@RequestBody UserAddressDto addDto) throws UserException {
+		UserAddress add = serviceAdd.updateAddress(token, addDto, addressId);
+		if (add != null) {
+			return ResponseEntity.badRequest()
+					.body(new Response(HttpStatus.ACCEPTED, " User Address Updated Successfully  ", 200));
+		}
 
-		}
-		else {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"something went wrong..", 400));
-		}
-		
+		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "failed to update the user address", 400));
+
 	}
 }
