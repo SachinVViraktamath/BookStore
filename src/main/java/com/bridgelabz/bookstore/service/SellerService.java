@@ -2,21 +2,24 @@ package com.bridgelabz.bookstore.service;
 
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.bridgelabz.bookstore.dto.BookDto;
-import com.bridgelabz.bookstore.dto.LoginDto;
-import com.bridgelabz.bookstore.dto.PasswordUpdate;
+import com.bridgelabz.bookstore.dto.SellerLoginDto;
+import com.bridgelabz.bookstore.dto.SellerPasswordUpdateDto;
 import com.bridgelabz.bookstore.dto.SellerDto;
-import com.bridgelabz.bookstore.entity.SellerEntity;
+import com.bridgelabz.bookstore.entity.Seller;
+import com.bridgelabz.bookstore.exception.SellerException;
 
 public interface SellerService {
 	
-public Boolean register(SellerDto dto);
-public SellerEntity login(LoginDto login);
+public Seller register(SellerDto dto);
+public Seller login(SellerLoginDto login);
 public Boolean verify(String token);
-public List<SellerEntity> getSellers();
- public SellerEntity getSellerFromToken(String token);
- public boolean addBookBySeller(String token,BookDto dto );
+public List<Seller> getSellers();
  public Boolean bookVerify(String token,Long bookId);
- public Boolean updatePassword(PasswordUpdate update, String token);
+ public Boolean updatePassword(SellerPasswordUpdateDto update, String token);
  //public SellerEntity forgetPassword(String Email);
+boolean addBookBySeller(String token, BookDto dto, MultipartFile multipartFile) throws SellerException;
+
 }
