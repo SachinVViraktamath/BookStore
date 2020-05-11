@@ -1,16 +1,16 @@
 package com.bridgelabz.bookstore.serviceimplemantation;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.UserBookCart;
-import com.bridgelabz.bookstore.entity.UserData;
 import com.bridgelabz.bookstore.entity.Users;
-import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.BookRepository;
@@ -28,62 +28,81 @@ public class CartServiceImplementation implements CartService {
 	private UserRepository userRepository;
 	
 	
-	
+	@Transactional
 	@Override
-	public List<UserBookCart> addBooksInTOTheCart(String token, long bookId) {
-		Long id = (long) JwtService.parse(token);
-		long quantity = 1;
+	public List<UserBookCart> addBooksInTOTheCart(String token, long bookId) throws UserException, BookException {
+		UserBookCart cart = new UserBookCart();
+		ArrayList<Book> booklist = new ArrayList<>();
+		Long id = (long) JwtService.parse(token);		
 		Users user = userRepository.findbyId(id)
 		.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));		
 		Book book = bookRepository.getBookById(bookId)
-		.orElseThrow(() -> new  BookException(HttpStatus.NOT_FOUND, "Book is not exist"));	
+		.orElseThrow(() -> new  BookException(HttpStatus.NOT_FOUND, "Book is not exist"));
 		List<Book> books = null;
-		for (UserBookCart d : user.getCartBooks()) {
-			books = d.getBooksList();
-		}		
-		UserBookCart cart = new UserBookCart();
-		ArrayList<Book> booklist = new ArrayList<>();
+		for (UserBookCart bookcart : user.getCartBooks()) {
+			books =bookcart.getBooksList();
+		}			
 		if (books == null) {
+			long quantity = 1;
 			booklist.add(book);
-			cart.setPlaceTime(LocalDateTime.now());
+			cart.setDateOfbookaddedToCart(LocalDateTime.now());
 			cart.setBooksList(booklist);
-			cart.setQuantityOfBooks(quantity);
+			cart.setBookQuantity(quantity);		
 			user.getCartBooks().add(cart);
 			return userRepository.save(user).getCartBooks();
 		}
-		/**
-		 * Checking whether book is already present r not
-		 */
-		Optional<Book> cartbook = books.stream().filter(t -> t.getBookId() == bookId).findFirst();
-
-		if (cartbook.isPresent()) {
-			throw new UserException(401, env.getProperty("505"));
-		} else {
-			booklist.add(book);
-			cart.setPlaceTime(LocalDateTime.now());
-			cart.setBooksList(booklist);
-			cart.setQuantityOfBooks(quantity);
-			user.getCartBooks().add(cart);
-		}
+		
+		
 
 		return userRepository.save(user).getCartBooks();
 	}
 
+	@Transactional
 	@Override
-	public List<UserBookCart> getBooksfromCart(String token) {
-		// TODO Auto-generated method stub
+	public List<UserBookCart> getBooksfromCart(String token) throws UserException {
+		Long id = (long) JwtService.parse(token);
+		Users user = userRepository.findbyId(id)
+				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));
+		List<UserBookCart> cartBooks = user.getCartBooks();		
+		return cartBooks;		
+	}
+
+	@Transactional
+	@Override
+	public List<UserBookCart> addBooksQuantityToCart(String token, long noteId, long quantity) throws UserException, BookException{
+		Long id = (long) JwtService.parse(token);
+		Users user = userRepository.findbyId(id)
+				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));
+		Book book = bookRepository.getBookById(id)
+				.orElseThrow(() -> new  BookException(HttpStatus.NOT_FOUND, "Book is not exist"));
+			for(UserBookCart cart:user.getCartBooks()) {				
+				boolean isBookexist = cart.getBooksList().stream().noneMatch(books -> books.getBookId() == id);				
+				if (!isBookexist) {
+					if(quantity <= book.getBookQuantity())
+					{
+					cart.setBookQuantity(quantity);					
+					return userRepository.save(user).getCartBooks();
+					}
+				} 
+			}
+			
 		return null;
 	}
 
 	@Override
-	public List<UserBookCart> addBooksQuantityToCart(String token, long noteId, long quantity) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<UserBookCart> removeBooksFromCart(String token, long bookId) {
-		// TODO Auto-generated method stub
+	public List<UserBookCart> removeBooksFromCart(String token, long bookId) throws UserException, BookException {
+		Long id = (long) JwtService.parse(token);
+		Users user = userRepository.findbyId(id)
+				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));
+		Book book = bookRepository.getBookById(bookId)
+				.orElseThrow(() -> new  BookException(HttpStatus.NOT_FOUND, "Book is not exist"));
+			for(UserBookCart cartdetails:user.getCartBooks()) {
+			boolean isBookexist = cartdetails.getBooksList().stream().noneMatch(books -> books.getBookId() == bookId);
+			if (!isBookexist) {
+				cartdetails.getBooksList().remove(book);
+				return userRepository.save(user).getCartBooks();
+			} 
+		}
 		return null;
 	}
 

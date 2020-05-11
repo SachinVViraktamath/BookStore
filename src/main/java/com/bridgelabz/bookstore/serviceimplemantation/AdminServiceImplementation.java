@@ -60,10 +60,7 @@ public class AdminServiceImplementation implements AdminService{
 			MailService.sendEmail(mailObject.getEmail(), mailObject.getSubject(), mailObject.getMessage());
 		} else 
 		{
-			throw new AdminException(HttpStatus.NOT_ACCEPTABLE,"Admin user already exist");
-			
-			//throw new AdminNotFoundException(HttpStatus.FORBIDDEN,"Email id is not exist");
-		
+			throw new AdminException(HttpStatus.NOT_ACCEPTABLE,"Admin user already exist");	
 		}
 		return adminInfo;
 	}
@@ -78,10 +75,6 @@ public class AdminServiceImplementation implements AdminService{
 		return true;
 	}
 
-	
-	
-	
-	
 	@Transactional
 	@Override
 	public Admin loginToAdmin(AdminLoginDto information) throws AdminException {
@@ -97,8 +90,6 @@ public class AdminServiceImplementation implements AdminService{
 			throw new AdminException(HttpStatus.ACCEPTED, "Login unsuccessfull");
 		}
 	}
-	
-	
 	
 	
 	@Transactional
@@ -122,22 +113,17 @@ public class AdminServiceImplementation implements AdminService{
 	@Override
 	public boolean updatepassword(AdminPasswordDto information, String token) throws AdminException {
 		Long id = null;	
-		boolean passwordupdateflag=false;
-		
+		boolean passwordupdateflag=false;		
 			id = (Long) JwtService.parse(token);
 			Admin userinfo=repository.getAdminById(id).orElseThrow(() -> new AdminException( HttpStatus.NOT_FOUND,"admin is not exist"));                   
-		
-		
 			if(passwordEncryption.matches(information.getOldpassword(),userinfo.getAdminPassword())) {
 			String epassword = passwordEncryption.encode(information.getConfirmPassword());
 			information.setConfirmPassword(epassword);
 			 repository.upDateAdminPassword(information, id);
 			}else {
-				throw new AdminException(HttpStatus.NOT_FOUND,"Email id is not exist");
-				
+				throw new AdminException(HttpStatus.NOT_FOUND,"Email id is not exist");				
 			}
-			return passwordupdateflag;
-	}
+			return passwordupdateflag;	}
 
 
 	@Override
@@ -151,11 +137,5 @@ public class AdminServiceImplementation implements AdminService{
 		}
 		
 	}
-
-
-
-	
-	
-	
 }
 
