@@ -10,10 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.bridgelabz.bookstore.dto.AdminDto;
-import com.bridgelabz.bookstore.dto.AdminLogin;
-import com.bridgelabz.bookstore.dto.UpdateAdminPassword;
-import com.bridgelabz.bookstore.entity.AdminEntity;
-import com.bridgelabz.bookstore.exception.AdminNotFoundException;
+import com.bridgelabz.bookstore.dto.AdminLoginDto;
+import com.bridgelabz.bookstore.dto.AdminPasswordDto;
+import com.bridgelabz.bookstore.entity.Admin; 
+import com.bridgelabz.bookstore.exception.AdminException;
+import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.repository.AdminRepository;
 import com.bridgelabz.bookstore.response.MailingOperation;
 import com.bridgelabz.bookstore.response.MailingandResponseOperation;
@@ -43,9 +44,9 @@ public class AdminServiceImplementation implements AdminService{
 	
 	@Transactional
 	@Override
-	public AdminEntity adminRegistartion(AdminDto adminInformation) throws AdminNotFoundException {
+	public Admin adminRegistartion(AdminDto adminInformation) throws AdminException {
 		
-		AdminEntity adminInfo = new AdminEntity();
+		Admin adminInfo = new Admin();
 		if (repository.getAdmin(adminInformation.getAdminEmailId()).isPresent()==false){
 			BeanUtils.copyProperties(adminInformation, adminInfo);		
 			String epassword = passwordEncryption.encode(adminInformation.getAdminPassword());
@@ -59,7 +60,7 @@ public class AdminServiceImplementation implements AdminService{
 			MailService.sendEmail(mailObject.getEmail(), mailObject.getSubject(), mailObject.getMessage());
 		} else 
 		{
-			throw new AdminNotFoundException(HttpStatus.NOT_ACCEPTABLE,"Admin user already exist");
+			throw new AdminException(HttpStatus.NOT_ACCEPTABLE,"Admin user already exist");
 			
 			//throw new AdminNotFoundException(HttpStatus.FORBIDDEN,"Email id is not exist");
 		
@@ -70,7 +71,7 @@ public class AdminServiceImplementation implements AdminService{
 	
 	@Transactional
 	@Override
-	public boolean verifyAdmin(String token) throws AdminNotFoundException {
+	public boolean verifyAdmin(String token) throws AdminException {
 		//System.out.println("id in verification" + (long) generate.parseJWT(token));
 		Long id = (long) JwtService.parse(token);
 		repository.verify(id);
@@ -83,31 +84,29 @@ public class AdminServiceImplementation implements AdminService{
 	
 	@Transactional
 	@Override
-	public AdminEntity loginToAdmin(AdminLogin information) throws AdminNotFoundException {
-		AdminEntity user = repository.getAdmin(information.getAdminEmailId())
-				.orElseThrow(() -> new AdminNotFoundException(HttpStatus.NOT_FOUND, "admin is not exist"));
-		if ((user.isAdminIsVerified() == true) && (passwordEncryption.matches(information.getAdminPassword(), user.getAdminPassword()))) {
+	public Admin loginToAdmin(AdminLoginDto information) throws AdminException {
+		Admin user = repository.getAdmin(information.getAdminEmailId())
+				.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, "admin is not exist"));
+		if ((user.
+				isAdminIsVerified() == true) && (passwordEncryption.matches(information.getAdminPassword(), user.getAdminPassword()))) {
 			return user;
 		} else {
 			String mailResponse = response.fromMessage("http://localhost:8080/verify",
 					JwtService.generateToken(user.getAdminId(),Token.WITH_EXPIRE_TIME));
 			MailService.sendEmail(information.getAdminEmailId(), "Verification", mailResponse);
-			throw new AdminNotFoundException(HttpStatus.ACCEPTED, "Login unsuccessfull");
+			throw new AdminException(HttpStatus.ACCEPTED, "Login unsuccessfull");
 		}
 	}
 	
 	
 	
 	
-	
-	
-	
 	@Transactional
 	@Override
-	public AdminEntity isAdminExist(String email) throws AdminNotFoundException {
+	public Admin isAdminExist(String email) throws AdminException {
 
-		AdminEntity adminUser = repository.getAdmin(email)
-				.orElseThrow(() -> new AdminNotFoundException( HttpStatus.NOT_FOUND,"admin is not exist"));
+		Admin adminUser = repository.getAdmin(email)
+				.orElseThrow(() -> new AdminException( HttpStatus.NOT_FOUND,"admin is not exist"));
 		if (adminUser.isAdminIsVerified() == true) {
 			String mailResponse = response.fromMessage("http://localhost:8080/verify",
 					JwtService.generateToken(adminUser.getAdminId(),Token.WITH_EXPIRE_TIME));
@@ -121,12 +120,12 @@ public class AdminServiceImplementation implements AdminService{
 	
 	@Transactional
 	@Override
-	public boolean updatepassword(UpdateAdminPassword information, String token) throws AdminNotFoundException {
+	public boolean updatepassword(AdminPasswordDto information, String token) throws AdminException {
 		Long id = null;	
 		boolean passwordupdateflag=false;
 		
 			id = (Long) JwtService.parse(token);
-			AdminEntity userinfo=repository.getAdminById(id).orElseThrow(() -> new AdminNotFoundException( HttpStatus.NOT_FOUND,"admin is not exist"));                   
+			Admin userinfo=repository.getAdminById(id).orElseThrow(() -> new AdminException( HttpStatus.NOT_FOUND,"admin is not exist"));                   
 		
 		
 			if(passwordEncryption.matches(information.getOldpassword(),userinfo.getAdminPassword())) {
@@ -134,10 +133,23 @@ public class AdminServiceImplementation implements AdminService{
 			information.setConfirmPassword(epassword);
 			 repository.upDateAdminPassword(information, id);
 			}else {
-				throw new AdminNotFoundException(HttpStatus.NOT_FOUND,"Email id is not exist");
+				throw new AdminException(HttpStatus.NOT_FOUND,"Email id is not exist");
 				
 			}
 			return passwordupdateflag;
+	}
+
+
+	@Override
+	public boolean approveBook(Long BookId) throws BookException {		
+		boolean isbookApproved=repository.approvedTheBook(BookId);                   
+		if(isbookApproved==false) {
+			throw new BookException(HttpStatus.NOT_FOUND,"book is not exist");
+		}else
+		{
+			return true;
+		}
+		
 	}
 
 

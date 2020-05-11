@@ -19,6 +19,7 @@ public class SwaggerConfiguration {
 	 * @author sachin viraktamath 
 	 * SwaggerConfiguration class contain swagger configuration
 	 *         
+	
 
 	 *        
 	 */
@@ -30,8 +31,8 @@ public class SwaggerConfiguration {
 				.build().apiInfo(metaData());
 	}
 	private ApiInfo metaData() {
-		   Contact contact=new Contact("Bridgelabz",
-		            "https://github.com/SachinVViraktamath/BookstoreApi-s.git","Bridgelabz@gmail.com");
+		   Contact contact=new Contact("Amruth Sagar",
+		            "https://github.com/SachinVViraktamath/BookstoreApi-s.git","amrutha.sagar@bridgelabz.com");
 
 		    return new ApiInfoBuilder()
 		            .title("Book Store Application")

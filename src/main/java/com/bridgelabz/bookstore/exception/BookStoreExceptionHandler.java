@@ -16,8 +16,8 @@ public class BookStoreExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.status(exp.getCode()).body(exp);
 	}
 
-	@ExceptionHandler(AdminNotFoundException.class)
-	public final ResponseEntity<ExceptionResponse> adminNotFoundException(AdminNotFoundException ex) {
+	@ExceptionHandler(AdminException.class)
+	public final ResponseEntity<ExceptionResponse> adminNotFoundException(AdminException ex) {
 		ExceptionResponse exp = new ExceptionResponse(ex.getCode(), ex.getMessage());
 		return ResponseEntity.status(exp.getCode()).body(exp);
 	}

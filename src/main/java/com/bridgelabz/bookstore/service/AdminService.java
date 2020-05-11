@@ -1,23 +1,27 @@
 package com.bridgelabz.bookstore.service;
 
 import com.bridgelabz.bookstore.dto.AdminDto;
-import com.bridgelabz.bookstore.dto.AdminLogin;
-import com.bridgelabz.bookstore.dto.UpdateAdminPassword;
-import com.bridgelabz.bookstore.entity.AdminEntity;
-import com.bridgelabz.bookstore.exception.AdminNotFoundException;
+import com.bridgelabz.bookstore.dto.AdminLoginDto;
+import com.bridgelabz.bookstore.dto.AdminPasswordDto;
+import com.bridgelabz.bookstore.entity.Admin;
+import com.bridgelabz.bookstore.entity.Book;
+import com.bridgelabz.bookstore.exception.AdminException;
+import com.bridgelabz.bookstore.exception.BookException;
+
 
 public interface AdminService {
 
-	AdminEntity adminRegistartion(AdminDto adminInformation)throws AdminNotFoundException ;
+	Admin adminRegistartion(AdminDto adminInformation)throws AdminException ;
 
-	boolean verifyAdmin(String token) throws AdminNotFoundException;
+	boolean verifyAdmin(String token) throws AdminException;
 
-	AdminEntity loginToAdmin(AdminLogin adminLogin) throws AdminNotFoundException;
+	Admin loginToAdmin(AdminLoginDto adminLogin) throws AdminException;
 	
-	AdminEntity isAdminExist(String email) throws AdminNotFoundException;
+	Admin isAdminExist(String email) throws AdminException;
 
-	boolean updatepassword(UpdateAdminPassword information, String token) throws AdminNotFoundException;
+	boolean updatepassword(AdminPasswordDto information, String token) throws AdminException;
 
+	boolean approveBook(Long email) throws BookException;
 	
 
 	
