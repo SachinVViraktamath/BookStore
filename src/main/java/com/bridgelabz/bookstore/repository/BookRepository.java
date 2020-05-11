@@ -1,6 +1,7 @@
 package com.bridgelabz.bookstore.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -17,7 +18,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 	@Query(value = "select * from book", nativeQuery = true)
 	public List<Book> getAllBooks();
 
+	//Book By Id
 	@Query(value = "select * from book where book_id=?1", nativeQuery = true)
-	public Book getBookById(Long id);
+	public Optional<Book> getBookById(Long id);
 
 }

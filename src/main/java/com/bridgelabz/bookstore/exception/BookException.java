@@ -1,6 +1,5 @@
 package com.bridgelabz.bookstore.exception;
 
-
 import org.springframework.http.HttpStatus;
 
 import lombok.Data;
@@ -10,12 +9,12 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @ToString
-public class BookNotFoundException extends Exception {
+public class BookException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 	HttpStatus code;
 
-	public BookNotFoundException(HttpStatus code, String message) {
+	public BookException(HttpStatus code, String message) {
 
 		super(message);
 		this.code = code;
