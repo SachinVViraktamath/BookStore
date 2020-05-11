@@ -42,7 +42,7 @@ public class UserServiceImplementation implements UserService {
 
 	@Transactional
 	@Override
-	public Users userRegistration(@Valid UserRegisterDto userInfoDto) throws UserException {
+	public Users userRegistration(@Valid UserRegisterDto userInfoDto)  throws UserException {
 		Users user = new Users();
 		
 		Users isEmail =repository.FindByEmail(userInfoDto.getEmail());

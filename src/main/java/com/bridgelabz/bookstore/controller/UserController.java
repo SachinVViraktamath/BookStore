@@ -36,7 +36,8 @@ public class UserController {
 	
 	@Autowired
 	private UserAddressService serviceAdd;
-	
+
+	@ApiOperation(value = "Api to Register User for BookStore", response = Response.class)
 	@PostMapping("/register")
 	public ResponseEntity<Response> registeration(@RequestBody UserRegisterDto userInfoDto) throws UserException{
 		Users user =service.userRegistration(userInfoDto);
@@ -52,7 +53,7 @@ public class UserController {
 				
 	}
 	
-	
+	@ApiOperation(value = "Api to verify User for BookStore", response = Response.class)
 	@GetMapping("/verify/{token}")
 	public ResponseEntity<Response> verification(@PathVariable("token") String token) throws UserException{
 			Users user=service.userVerification(token);
@@ -63,7 +64,7 @@ public class UserController {
 			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"user already verified..", 400));
 		}
 	
-
+	@ApiOperation(value = "Api to Login User for BookStore", response = Response.class)
 	@PostMapping("/login/")
 	public ResponseEntity<Response> login(@RequestBody UserLoginDto login) throws UserException {
 		Users user = service.userLogin(login);
@@ -74,7 +75,7 @@ public class UserController {
 		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"something went wrong..", 400));
 
 	}
-	
+	@ApiOperation(value = "Api to check if UserExists in BookStore", response = Response.class)
 	@PostMapping("/forgetPassword")
 	public ResponseEntity<Response> forgetPassword(@RequestBody String email ) throws UserException {
 		Users user = service.forgetPassword(email);
@@ -98,7 +99,7 @@ public class UserController {
 		}
 	}
 	
-	
+	@ApiOperation(value = "Api to Add User Address for BookStore", response = Response.class)
 	@PostMapping("/addAddress/create")
 	public ResponseEntity<Response> addAddress(@RequestBody UserAddressDto addDto, @RequestHeader String token){
 		
@@ -113,6 +114,7 @@ public class UserController {
 		}
 	}
 	
+	@ApiOperation(value = "Api to Update User Address for BookStore", response = Response.class)
 	@PutMapping("/updateAddress/{addressId}")
 	public ResponseEntity<Response> updateAddress(String token,@PathVariable long addressId, @RequestBody UserAddressDto addDto ){
 		UserAddress add=serviceAdd.updateAddress(token, addDto, addressId);
