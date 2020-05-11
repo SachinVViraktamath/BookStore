@@ -19,12 +19,16 @@ import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.SellerEntity;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.BookService;
+import com.bridgelabz.bookstore.service.ElasticSearchService;
 import com.bridgelabz.bookstore.service.SellerService;
 
 @RestController
 @RequestMapping("/book")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class BookController {
+
+	@Autowired
+	private ElasticSearchService elasticService;
 
 	@Autowired
 	private BookService bookService;
@@ -42,8 +46,8 @@ public class BookController {
 	}
 
 	@GetMapping("/displayOne")
-	public ResponseEntity<Response> displayParticularBook() {
-		Book book = bookService.displaySingleBook();
+	public ResponseEntity<Response> displayParticularBook(@RequestParam("id") Long id) {
+		Book book = bookService.displaySingleBook(id);
 		if (book != null)
 			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Particular book not displayed", book));
 		else
@@ -53,9 +57,13 @@ public class BookController {
 	}
 
 	@GetMapping("/search")
-	public ResponseEntity<Response> searchBooksForUser(@RequestParam("title") String title) {
-
-		List<Book> books = bookService.searchAllBooks(title);
+	public ResponseEntity<Response> searchBooks(@RequestParam("title") String title) {
+		List<Book> books = null;
+		try {
+			books = elasticService.getBookByTitleAndAuthor(title);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		if (books != null)
 			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Books searched and Found", books));
 		else
