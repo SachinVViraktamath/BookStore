@@ -9,43 +9,29 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-@Entity
 @Data
-@NoArgsConstructor
+@Entity
+@Table(name = "Reviews")
 @AllArgsConstructor
-@ToString
-@Table(name = "book")
-public class Book {
+@NoArgsConstructor
+public class Reviews {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long bookId;
+	private Long reviewId;
+	private String review;
+	private int rating;
+	private LocalDateTime createdAt;
 
-	private String bookName;
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "reviewId")
+	private List<Users> user;
 
-	private String bookAuthor;
-
-	private double bookPrice;
-
-	private String bookImage;
-
-	private String bookDescription;
-
-	private boolean isBookApproved;
-
-	private int bookQuantity;
-
-	private LocalDateTime bookCreatedAt;
-
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "bookId")
-	private List<Reviews> reviews;
 }
