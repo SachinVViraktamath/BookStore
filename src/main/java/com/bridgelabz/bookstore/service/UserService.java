@@ -1,19 +1,20 @@
 package com.bridgelabz.bookstore.service;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.bridgelabz.bookstore.dto.UpdateUserPassword;
-import com.bridgelabz.bookstore.dto.UserInfoDto;
-import com.bridgelabz.bookstore.dto.UserLogin;
-import com.bridgelabz.bookstore.entity.UserData;
-import com.bridgelabz.bookstore.exception.UserNotFoundException;
+import javax.validation.Valid;
+
+import com.bridgelabz.bookstore.dto.UserPasswordDto;
+import com.bridgelabz.bookstore.dto.UserRegisterDto;
+import com.bridgelabz.bookstore.dto.UserLoginDto;
+import com.bridgelabz.bookstore.entity.Users;
+import com.bridgelabz.bookstore.exception.UserException;
 
 public interface UserService {
 
 
-	UserData userRegistration(UserInfoDto userInfoDto) throws UserNotFoundException;
-	boolean userVerification(String token)throws UserNotFoundException;
-	UserData userLogin(UserLogin login) throws UserNotFoundException;
-	UserData forgetPassword(String email)throws UserNotFoundException;
-	UserData updatePassword(UpdateUserPassword update,String token) throws JWTVerificationException, Exception;
+	Users userRegistration(@Valid UserRegisterDto userInfoDto) throws UserException;
+	Users userVerification(String token)throws UserException;
+	Users userLogin(UserLoginDto login) throws UserException;
+	Users forgetPassword(String email)throws UserException;
+	boolean updatePassword(UserPasswordDto forgetpass, String token) throws UserException;
 
 }
