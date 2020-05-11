@@ -8,16 +8,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.bridgelabz.bookstore.dto.UpdateUserPassword;
+import com.bridgelabz.bookstore.dto.UserAddressDto;
 import com.bridgelabz.bookstore.dto.UserInfoDto;
 import com.bridgelabz.bookstore.dto.UserLogin;
+import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.UserData;
 import com.bridgelabz.bookstore.exception.UserNotFoundException;
 import com.bridgelabz.bookstore.response.Response;
+import com.bridgelabz.bookstore.service.UserAddressService;
 import com.bridgelabz.bookstore.service.UserService;
 import com.bridgelabz.bookstore.utility.JwtService;
 
@@ -28,6 +32,8 @@ public class UserController {
 	@Autowired
 	private UserService service;
 	
+	@Autowired
+	private UserAddressService serviceAdd;
 	
 	@PostMapping("/register/")
 	public ResponseEntity<Response> registeration(@RequestBody UserInfoDto userInfoDto) throws UserNotFoundException{
@@ -87,4 +93,37 @@ public class UserController {
 		} else {
 			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"something went wrong..", 400));
 		}
-	}}
+	}
+	
+	
+	
+	
+	@PostMapping("/addAddress/create")
+	public ResponseEntity<Response> addAddress(@RequestBody UserAddressDto addDto, @RequestHeader String token){
+		
+		UserAddress add=serviceAdd.addAddress(addDto, token);
+		
+		if(add!=null) {
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," User Address added Successfully  ",200));
+		}
+		
+		else {
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"something went wrong..", 400));
+		}
+	}
+	
+	@PutMapping("/updateAddress/{addressId}")
+	public ResponseEntity<Response> updateAddress(String token,@PathVariable long addressId, @RequestBody UserAddressDto addDto ){
+		UserAddress add=serviceAdd.updateAddress(token, addDto, addressId);
+		
+		if(add!=null) {
+			
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," User Address Updated Successfully  ",200));
+
+		}
+		else {
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"something went wrong..", 400));
+		}
+		
+	}
+}

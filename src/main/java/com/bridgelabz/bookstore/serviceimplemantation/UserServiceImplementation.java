@@ -16,7 +16,9 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.bridgelabz.bookstore.dto.UpdateUserPassword;
 import com.bridgelabz.bookstore.dto.UserInfoDto;
 import com.bridgelabz.bookstore.dto.UserLogin;
+import com.bridgelabz.bookstore.entity.SellerEntity;
 import com.bridgelabz.bookstore.entity.UserData;
+import com.bridgelabz.bookstore.exception.AdminNotFoundException;
 import com.bridgelabz.bookstore.exception.UserNotFoundException;
 import com.bridgelabz.bookstore.repository.UserRepository;
 import com.bridgelabz.bookstore.response.MailingOperation;
@@ -45,43 +47,38 @@ public class UserServiceImplementation implements UserService {
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
 
-	//private JwtService jwt;
-
+	@SuppressWarnings("null")
 	@Transactional
 	@Override
 	public UserData userRegistration(UserInfoDto userInfoDto) throws UserNotFoundException {
+		
 		Date date = new Date();
 		UserData checkmail = repository.FindByEmail(userInfoDto.getEmail());
-
+		System.out.println("@@@");
 		if (checkmail == null) {
-			user.setFirstName(userInfoDto.getUserName());
-			user.setLastName(userInfoDto.getUserLastName());
-			user.setPassword(bcrypt.encode(userInfoDto.getPassword()));
-			user.setEmail(userInfoDto.getEmail());
-			user.setGender(userInfoDto.getGender());
-			user.setPhNo(userInfoDto.getPhoneNumber());
-			user.setCreationTime(date);
-			user.setUpdateTime(date);
-			user.setVerified(false);
-			repository.save(user);
+			BeanUtils.copyProperties(userInfoDto, UserData.class);
 
-			UserData isUserAvailableTwo = repository.FindByEmail(userInfoDto.getEmail());
-
-			System.out.println(isUserAvailableTwo.getUserId());
-
-			String email = user.getEmail();
+			String pwd = bcrypt.encode(userInfoDto.getPassword());
+			checkmail.setPassword(pwd);
+			checkmail.setCreationTime(date);
+			checkmail.setUpdateTime(date);
+			checkmail.setVerified(false);
+			repository.save(checkmail);
 
 			String responsemail = "http://localhost:8080/verify/"
-					+ JwtService.generateToken(isUserAvailableTwo.getUserId(), Token.WITH_EXPIRE_TIME);
+					+ JwtService.generateToken(checkmail.getUserId(), Token.WITH_EXPIRE_TIME);
 			System.out.println(response);
 			mailObject.setEmail(user.getEmail());
 			mailObject.setMessage(responsemail);
 			mailObject.setSubject("verification");
 			MailService.sendEmail(mailObject.getEmail(), mailObject.getSubject(), mailObject.getMessage());
-			return user;
 
 		}
-		return null;
+		else {
+			throw new UserNotFoundException(HttpStatus.NOT_ACCEPTABLE,"Admin user already exist");
+
+		}
+		return checkmail;
 	}
 
 	@Transactional
