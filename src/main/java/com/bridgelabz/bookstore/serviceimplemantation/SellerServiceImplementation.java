@@ -5,16 +5,21 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
+import com.bridgelabz.bookstore.dto.PasswordUpdate;
 import com.bridgelabz.bookstore.dto.SellerDto;
+import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.SellerEntity;
 import com.bridgelabz.bookstore.exception.SellerNotFoundException;
+import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.SellerRepository;
 import com.bridgelabz.bookstore.response.MailResponse;
 import com.bridgelabz.bookstore.service.SellerService;
@@ -32,20 +37,24 @@ public class SellerServiceImplementation implements SellerService {
 	private BCryptPasswordEncoder encoder;
 
 	private MailResponse response;
+	@Autowired
+	BookRepository bookRepository;
+	
 
-
+@Autowired
+private ModelMapper mapper;
 	@Override
 	@Transactional
 	public Boolean register(SellerDto dto) {
 		SellerEntity seller = repository.getseller(dto.getEmail());
 		if (seller == null) {
-			BeanUtils.copyProperties(dto, SellerEntity.class);
+			seller=mapper.map(dto, SellerEntity.class);
 			String epassword = encoder.encode(dto.getPassword());
 			seller.setPassword(epassword);
 			seller.setIsVerified(0);
 			seller.setDateTime(LocalDateTime.now());
 			repository.save(seller);
-			String mailResponse = "http://localhost:8080 verify"
+			String mailResponse = "http://localhost:8080/verify/"
 					+ JwtService.generateToken(seller.getSellerId(), Token.WITH_EXPIRE_TIME);
 			MailService.sendEmail(dto.getEmail(), "verification from", mailResponse);
 		
@@ -94,9 +103,67 @@ public class SellerServiceImplementation implements SellerService {
 
 	@Override
 	@Transactional
-	public Long getSellerIdFromToken(String token) {
+	 public SellerEntity getSellerFromToken(String token) {
 		Long id = JwtService.parse(token);
-		return id;
+		SellerEntity seller=repository.getSellerById(id);
+		if(seller!=null) {
+		
+	}else {
+		throw new SellerNotFoundException(HttpStatus.BAD_REQUEST, "not a valid seller");
 	}
+		
+		return seller;
+	}
+
+	@Override
+	@Transactional
+	public boolean addBookBySeller(String token, BookDto dto) {
+		Book book = new Book();
+Long sellerId = JwtService.parse(token);
+		SellerEntity seller = repository.getSellerById(sellerId);
+		if (seller.getIsVerified() == 1) {
+			book=mapper.map(dto, Book.class);
+				book.setBookApproved(false);
+				book.setBookCreatedAt(LocalDateTime.now());
+				bookRepository.save(book);
+				String mailResponse = "verification of book/verifyBooks/admin/"
+						+ JwtService.generateToken(book.getBookId(), Token.WITH_EXPIRE_TIME);
+			}
+
+			
+
+		
+		return true;
+	}
+
+	@Override
+	@Transactional
+	public Boolean bookVerify(String token, Long bookId) {
+		Long id = JwtService.parse(token);
+		if (repository.addBookBySeller(id, bookId) == true) {
+			return true;
+		} else {
+		
+	throw new SellerNotFoundException(HttpStatus.BAD_REQUEST, "book not verified ");
+		}
+	}
+
+@Override
+@Transactional
+public Boolean updatePassword(PasswordUpdate update, String token) {
+	try {
+		Long id = null;
+		id = (Long) JwtService.parse(token);
+		String epassword = encoder.encode(update.getConfirmPassword());
+		String epassword1 = encoder.encode(update.getNewPassword());
+		if (epassword == epassword1) {
+			update.setConfirmPassword(epassword);
+		}
+		return repository.update(update, id);
+	} catch (Exception e) {
+		throw new SellerNotFoundException(HttpStatus.BAD_REQUEST, "updation failed");
+	}
+
+}
 
 }

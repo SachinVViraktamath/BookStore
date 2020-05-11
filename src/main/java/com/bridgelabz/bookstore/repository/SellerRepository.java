@@ -36,8 +36,8 @@ public class SellerRepository {
 
 	public boolean verify(Long id) {
 		Session session = entityManger.unwrap(Session.class);
-		Query<SellerEntity> q = session.createQuery("update SellerEntity set is_verified =:p" + " " + " " + " where sellerId=:i");
-		q.setParameter("p", true);
+		Query<SellerEntity> q = session.createQuery("update SellerEntity set isVerified =:p" + " " + " " + " where sellerId=:i");
+		q.setParameter("p", 1);
 		q.setParameter("i", id);
 		int status = q.executeUpdate();
 		if (status > 0) {
@@ -68,5 +68,24 @@ public class SellerRepository {
 		Session session = entityManger.unwrap(Session.class);
 		List<SellerEntity> userList = session.createQuery("FROM SellerEntity").getResultList();
 		return userList;
+	}
+	public SellerEntity getSellerById(Long id) {
+		Session session = entityManger.unwrap(Session.class);
+		Query q = session.createQuery("FROM SellerEntity where sellerId=:id");
+		q.setParameter("id", id);
+		return  (SellerEntity) q.uniqueResult();
+	}
+	public boolean addBookBySeller(Long id,Long bookId) {
+		 Session session = entityManger.unwrap(Session.class);
+		 Query q=session.createQuery("update Book set sellerId:id,isBookApproved:true" +" " +"where bookId:bookId");
+	q.setParameter("id", id);
+	q.setParameter("bookId", bookId);
+		 int addBook=q.executeUpdate();
+	if(addBook>0) {
+		return true;
+	}else {
+		return false;
+	}
+		 
 	}
 }

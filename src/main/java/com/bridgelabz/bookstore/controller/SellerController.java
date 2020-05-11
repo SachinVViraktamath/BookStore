@@ -8,10 +8,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
+import com.bridgelabz.bookstore.dto.PasswordUpdate;
 import com.bridgelabz.bookstore.dto.SellerDto;
 import com.bridgelabz.bookstore.entity.SellerEntity;
 import com.bridgelabz.bookstore.response.Response;
@@ -61,6 +65,34 @@ public ResponseEntity<Response> verify(@PathVariable("token") String token) thro
 public ResponseEntity<Response> getAllUsers() {
 	List<SellerEntity> sellers = service.getSellers();
 	return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "listed all the sellers", sellers));
+}
+@PutMapping("seller/updateSellerPassword")
+public ResponseEntity<Response> updatePassword(@RequestBody PasswordUpdate update,@PathVariable("token") String token) throws Exception {
+	Boolean passwordUpdate=service.updatePassword(update, token);
+	if(passwordUpdate) {
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Password update", update));
+	}
+	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "updation failed", token));
+}
+
+@PostMapping("/addBookBySeller/book")
+public ResponseEntity<Response> addBookBySeller(@RequestBody BookDto dto, @PathVariable("token") String token) {
+	boolean addBook = service.addBookBySeller(token, dto);
+	if (addBook) {
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, "verification mail has send successfully", token));
+	}
+	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "verification failed", token));
+}
+
+@PutMapping("/verifyBooks/admin")
+public ResponseEntity<Response> verifyBookByAdmin(@PathVariable Long id, @RequestHeader("token") String token) {
+	boolean verify = service.bookVerify(token, id);
+	if (verify) {
+
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "book approved", token));
+	}
+	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, " book rejected", token));
 }
 }
 
