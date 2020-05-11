@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.SellerLoginDto;
@@ -25,6 +26,7 @@ import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.SellerRepository;
 import com.bridgelabz.bookstore.response.MailResponse;
+import com.bridgelabz.bookstore.service.AmazonS3AccessService;
 import com.bridgelabz.bookstore.service.SellerService;
 import com.bridgelabz.bookstore.utility.JwtService;
 import com.bridgelabz.bookstore.utility.JwtService.Token;
@@ -45,7 +47,8 @@ public class SellerServiceImplementation implements SellerService {
 
 	@Autowired
 	private ModelMapper mapper;
-
+	@Autowired
+	AmazonS3AccessService service;
 	@Override
 	@Transactional
 	public Seller register(SellerDto dto) throws SellerException {
@@ -100,22 +103,29 @@ public class SellerServiceImplementation implements SellerService {
 
 
 
+
 	@Override
 	@Transactional
-	public boolean addBookBySeller(String token, BookDto dto) throws SellerException {
+	public boolean addBookBySeller(String token, BookDto dto,MultipartFile multipartFile) throws SellerException {
 		Book book = new Book();
 		Long sellerId = JwtService.parse(token);
+		System.out.println("$$$$");
 		Seller seller = repository.getSellerById(sellerId).orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "Seller is not exist"));
+		try {
 		if (seller.getIsVerified() == 1) {
 			book = mapper.map(dto, Book.class);
-			book.setBookApproved(false);
+			System.out.println("$$$$$$");
+			book.setBookImage(service.uploadFileToS3Bucket(multipartFile));
 			book.setBookCreatedAt(LocalDateTime.now());
 			bookRepository.save(book);
 			String mailResponse = "Books added for approval"+book;
-					
+			return true;		
 		}
-
-		return true;
+		}
+catch(Exception e) {
+	e.printStackTrace();
+}
+		return false;
 	}
 
 	@Override
@@ -125,9 +135,12 @@ public class SellerServiceImplementation implements SellerService {
 		if (repository.addBookBySeller(id, bookId) == true) {
 			return true;
 		} else {
-
+			boolean delete=false;
+      delete= service.deleteFileFromS3Bucket();
+       
 			throw new SellerException(HttpStatus.BAD_REQUEST, "book not verified ");
 		}
+		
 	}
 
 	@Override

@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.SellerLoginDto;
@@ -75,15 +77,17 @@ public ResponseEntity<Response> updatePassword(@RequestBody SellerPasswordUpdate
 	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "updation failed", token));
 }
 
-@PostMapping("/addBookBySeller/book")
-public ResponseEntity<Response> addBookBySeller(@RequestBody BookDto dto, @PathVariable("token") String token) {
-	boolean addBook = service.addBookBySeller(token, dto);
+@PostMapping("/book/addBookBySeller/")
+public ResponseEntity<Response> addBookBySeller(@RequestBody BookDto dto, @RequestPart MultipartFile file,@PathVariable("token") String token) {
+	System.out.println("@#@@@");
+	boolean addBook = service.addBookBySeller(token, dto,file);
 	if (addBook) {
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, "verification mail has send successfully", token));
 	}
 	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "verification failed", token));
 }
+
 
 @PutMapping("/verifyBooks/admin")
 public ResponseEntity<Response> verifyBookByAdmin(@PathVariable Long id, @RequestHeader("token") String token) {

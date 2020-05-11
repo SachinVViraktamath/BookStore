@@ -2,11 +2,14 @@ package com.bridgelabz.bookstore.entity;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -42,7 +45,9 @@ public class Seller {
 	private int isVerified;
 	@Column
 	private LocalDateTime dateTime;
-
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "sellerId")
+	private List<Book> sellerBooks;
 	public Long getSellerId() {
 		return sellerId;
 	}
@@ -98,5 +103,6 @@ public class Seller {
 	public void setDateTime(LocalDateTime dateTime) {
 		this.dateTime = dateTime;
 	}
+	
 
 }
