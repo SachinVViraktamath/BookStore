@@ -21,8 +21,8 @@ import lombok.Setter;
 
 @Entity
 @Table(name = "seller")
-//@Getter
-//@Setter
+@Getter
+@Setter
 public class Seller {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,61 +49,6 @@ public class Seller {
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "sellerId")
 	private List<Book> sellerBooks;
-	public Long getSellerId() {
-		return sellerId;
-	}
-
-	public void setSellerId(Long sellerId) {
-		this.sellerId = sellerId;
-	}
-
-	public String getSellerName() {
-		return sellerName;
-	}
-
-	public void setSellerName(String sellerName) {
-		this.sellerName = sellerName;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
-	public String getMobileNumber() {
-		return mobileNumber;
-	}
-
-	public void setMobileNumber(String mobileNumber) {
-		this.mobileNumber = mobileNumber;
-	}
-
-	public int getIsVerified() {
-		return isVerified;
-	}
-
-	public void setIsVerified(int isVerified) {
-		this.isVerified = isVerified;
-	}
-
-	public LocalDateTime getDateTime() {
-		return dateTime;
-	}
-
-	public void setDateTime(LocalDateTime dateTime) {
-		this.dateTime = dateTime;
-	}
 	
 
 }
