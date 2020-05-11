@@ -9,7 +9,7 @@ import lombok.Setter;
 @Data
 //@Getter
 //@Setter
-public class PasswordUpdate {
+public class SellerPasswordUpdateDto {
 	@NotNull
 	String NewPassword;
 	@NotNull

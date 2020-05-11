@@ -9,7 +9,7 @@ import lombok.Setter;
 @Data
 //@Getter
 //@Setter
-public class LoginDto {
+public class SellerLoginDto {
 	@NotNull
 	private String email;
 	@NotNull
