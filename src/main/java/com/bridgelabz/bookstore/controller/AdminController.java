@@ -12,10 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import com.bridgelabz.bookstore.dto.AdminDto;
-import com.bridgelabz.bookstore.dto.AdminLogin;
-import com.bridgelabz.bookstore.dto.UpdateAdminPassword;
-import com.bridgelabz.bookstore.entity.AdminEntity;
-import com.bridgelabz.bookstore.exception.AdminNotFoundException;
+import com.bridgelabz.bookstore.dto.AdminLoginDto;
+import com.bridgelabz.bookstore.dto.AdminPasswordDto;
+import com.bridgelabz.bookstore.entity.Admin;
+import com.bridgelabz.bookstore.entity.Book;
+import com.bridgelabz.bookstore.exception.AdminException;
+import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.serviceimplemantation.AdminServiceImplementation;
 
@@ -37,34 +39,28 @@ public class AdminController {
 	 * @apiNote API for Registration
 	 */ 
 	@PostMapping("/admin/registration")
-	public ResponseEntity<Response> registration(@RequestBody AdminDto admiInformation) throws AdminNotFoundException {
-
-		AdminEntity result = service.adminRegistartion(admiInformation);
-
+	public ResponseEntity<Response> registration(@RequestBody AdminDto admiInformation) throws AdminException {
+		Admin result = service.adminRegistartion(admiInformation);
 		return ResponseEntity.badRequest()
 				.body(new Response(HttpStatus.ACCEPTED, "Registration Successfull", result));
-		
-
 	}
 	
 	
-	
 	@GetMapping("/admin/verify/{token}")
-	public ResponseEntity<Response> verficationAdmin(@PathVariable("token") String token) throws AdminNotFoundException {
+	public ResponseEntity<Response> verficationAdmin(@PathVariable("token") String token) throws AdminException {
 		boolean update = service.verifyAdmin(token);
 		if (update) {
 			return ResponseEntity.badRequest()
-					.body(new Response(HttpStatus.ACCEPTED, "Registration Successfull", update));		
-
+					.body(new Response(HttpStatus.ACCEPTED, "veified Successfull", update));	
 		}return ResponseEntity.badRequest()
-				.body(new Response(HttpStatus.NOT_ACCEPTABLE, "Registration Successfull", update));
+				.body(new Response(HttpStatus.NOT_ACCEPTABLE, "verified not Successfull", update));
 		
 	}
 	
 	
 	@PostMapping("/admin/login")
-	public ResponseEntity<Response> loginAdmin(@RequestBody AdminLogin adminLogin) throws AdminNotFoundException {
-		AdminEntity userInformation = service.loginToAdmin(adminLogin);
+	public ResponseEntity<Response> loginAdmin(@RequestBody AdminLoginDto adminLogin) throws AdminException {
+		Admin userInformation = service.loginToAdmin(adminLogin);
 		return ResponseEntity.badRequest()
 				.body(new Response(HttpStatus.ACCEPTED, "Login Successfull", userInformation));		
 	}
@@ -72,8 +68,8 @@ public class AdminController {
 	
 	
 	@PostMapping("/admin/forgotpassword")
-	public ResponseEntity<Response> forgotPassword(@RequestParam("email") String email) throws AdminNotFoundException {
-		AdminEntity result = service.isAdminExist(email);
+	public ResponseEntity<Response> forgotPassword(@RequestParam("email") String email) throws AdminException {
+		Admin result = service.isAdminExist(email);
 		if (result!=null) {
 			return ResponseEntity.badRequest()
 					.body(new Response(HttpStatus.ACCEPTED, "Admin existed", result));
@@ -85,18 +81,30 @@ public class AdminController {
 
 	/**
 	 * API used for the update
-	 * @throws UsersException 
+	 *
 	 * 
 	 */
 	@PutMapping("/admin/update/{token}")
 	public ResponseEntity<Response> updatePassword(@PathVariable("token") String token,
-			@RequestBody UpdateAdminPassword update) throws AdminNotFoundException {
+			@RequestBody AdminPasswordDto update) throws AdminException {
 		boolean result = service.updatepassword(update, token);	
 		return ResponseEntity.badRequest()
 				.body(new Response(HttpStatus.ACCEPTED, "password  updated successfully", result));
 		
 	}
 	
+	
+	@PostMapping("/admin/approveTheBook")
+	public ResponseEntity<Response> approveTheBook(@RequestParam("bookid") Long bookId) throws BookException {
+		boolean result = service.approveBook(bookId);
+		if (result==true) {
+			return ResponseEntity.badRequest()
+					.body(new Response(HttpStatus.ACCEPTED, "Book existed", result));
+		}
+		return ResponseEntity.badRequest()
+				.body(new Response(HttpStatus.NOT_FOUND, "This book is not exist", result));
+
+	}
 	
 	
 	

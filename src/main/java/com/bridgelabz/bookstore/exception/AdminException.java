@@ -11,12 +11,12 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @ToString
-public class AdminNotFoundException extends Exception {
+public class AdminException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 	HttpStatus code;
 
-	public AdminNotFoundException(HttpStatus code, String message) {
+	public AdminException(HttpStatus code, String message) {
 
 		super(message);
 		this.code = code;

@@ -10,8 +10,9 @@ import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 
-import com.bridgelabz.bookstore.dto.UpdateAdminPassword;
-import com.bridgelabz.bookstore.entity.AdminEntity;
+import com.bridgelabz.bookstore.dto.AdminPasswordDto;
+import com.bridgelabz.bookstore.entity.Admin;
+import com.bridgelabz.bookstore.entity.Book;
 
 
 @Repository
@@ -21,7 +22,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 	private EntityManager entityManager;
 	
 	@Override
-	public AdminEntity save(AdminEntity userInfromation) {
+	public Admin save(Admin userInfromation) {
 
 		Session session = entityManager.unwrap(Session.class);
 		session.saveOrUpdate(userInfromation);
@@ -31,7 +32,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public Optional<AdminEntity> getAdmin(String email) {
+	public Optional<Admin> getAdmin(String email) {
 		Session session = entityManager.unwrap(Session.class);
 		return session.createQuery("FROM AdminEntity where adminEmailId =:email").setParameter("email", email).uniqueResultOptional();
 
@@ -44,7 +45,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 		Session session = entityManager.unwrap(Session.class);
 
 		@SuppressWarnings("unchecked")
-		TypedQuery<AdminEntity> q = session
+		TypedQuery<Admin> q = session
 				.createQuery("update AdminEntity set adminIsVerified =:p where adminId=:i").setParameter("p", true)
 				.setParameter("i", id);
 		int status = q.executeUpdate();
@@ -59,7 +60,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public Optional<AdminEntity> getAdminById(Long id) {
+	public Optional<Admin> getAdminById(Long id) {
 		Session session = entityManager.unwrap(Session.class);
 		return session.createQuery("FROM AdminEntity where adminId=:id").setParameter("id", id).uniqueResultOptional();
 
@@ -67,11 +68,27 @@ public class AdminRepositoryImplementation implements AdminRepository {
 
 
 	@Override
-	public boolean upDateAdminPassword(UpdateAdminPassword information, Long id) {
+	public boolean upDateAdminPassword(AdminPasswordDto information, Long id) {
 		Session session = entityManager.unwrap(Session.class);
 		Query q = session.createQuery("update AdminEntity set adminPassword =:p" + " " + " " + "where adminId=:i")
 				.setParameter("p", information.getConfirmPassword()).setParameter("i", id);
 		int status = q.executeUpdate();
+		if (status > 0) {
+			return true;
+		} else {
+			return false;
+		}
+	
+	}
+
+
+	@Override
+	public boolean approvedTheBook(Long BookId) {
+		boolean value=true;
+		Session session = entityManager.unwrap(Session.class);
+		Query q = session.createQuery("update Book set isBookApproved =:p" + " " + " " + "where bookId=:i");
+		q.setParameter("p", value);
+        int status = q.executeUpdate();
 		if (status > 0) {
 			return true;
 		} else {
