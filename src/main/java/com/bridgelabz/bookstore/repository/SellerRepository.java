@@ -10,32 +10,34 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
-import com.bridgelabz.bookstore.dto.PasswordUpdate;
+import com.bridgelabz.bookstore.dto.SellerPasswordUpdateDto;
 import com.bridgelabz.bookstore.entity.AdminEntity;
 import com.bridgelabz.bookstore.entity.Seller;
 
 @Repository
 public class SellerRepository {
-	
+
 	@PersistenceContext
-    private EntityManager entityManger;
+	private EntityManager entityManger;
 
-    /* Query for save the data into sellerTable */
+	/* Query for save the data into sellerTable */
 
-    public Seller save(Seller seller) {
-        Session session = entityManger.unwrap(Session.class);
-        session.saveOrUpdate(seller);
-        return seller;
-    }
-    //* Query to get the seller information bby email */
-
-	public Seller getseller(String email) {
+	public Seller save(Seller seller) {
 		Session session = entityManger.unwrap(Session.class);
-		Query q = session.createQuery("FROM Seller where email=:email");
-		q.setParameter("email", email);
-		return  (Seller) q.uniqueResult();
+		session.saveOrUpdate(seller);
+		return seller;
+	}
+	// * Query to get the seller information bby email */
+
+	@SuppressWarnings("unchecked")
+	public Optional<Seller> getSeller(String email) {
+		Session session = entityManger.unwrap(Session.class);
+		return session.createQuery("FROM Seller where email=:email").setParameter("email", email)
+				.uniqueResultOptional();
+
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean verify(Long id) {
 		Session session = entityManger.unwrap(Session.class);
 		Query<Seller> q = session.createQuery("update Seller set isVerified =:p" + " " + " " + " where sellerId=:i");
@@ -49,50 +51,54 @@ public class SellerRepository {
 			return false;
 		}
 	}
-		public boolean update(PasswordUpdate update, Long id) {
-			Session session = entityManger.unwrap(Session.class);
-			Query<Seller> q = session.createQuery("update Seller set password=:p" + " " + " where id=:id");
-			q.setParameter(" p", update.getConfirmPassword());
-			q.setParameter("id", id);
-			int status = q.executeUpdate();
-			if (status > 0) {
-				return true;
-			} else {
-				return false;
-			}
+
+	@SuppressWarnings("unchecked")
+	public boolean update(SellerPasswordUpdateDto update, Long id) {
+		Session session = entityManger.unwrap(Session.class);
+		Query<Seller> q = session.createQuery("update Seller set password=:p" + " " + " where id=:id");
+		q.setParameter(" p", update.getConfirmPassword());
+		q.setParameter("id", id);
+		int status = q.executeUpdate();
+		if (status > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
+
 	public void delete(Seller seller) {
-		 Session session = entityManger.unwrap(Session.class);
-		 session.delete(seller);
+		Session session = entityManger.unwrap(Session.class);
+		session.delete(seller);
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	public List<Seller> getSellers() {
 		Session session = entityManger.unwrap(Session.class);
-		List<Seller> userList = session.createQuery("FROM Seller").getResultList();
-		return userList;
+		List<Seller> sellerList = session.createQuery("FROM Seller").getResultList();
+		return sellerList;
 	}
-	public Seller getSellerById(Long id) {
+
+	@SuppressWarnings("unchecked")
+	public Optional<Seller> getSellerById(Long id) {
 		Session session = entityManger.unwrap(Session.class);
-		Query q = session.createQuery("FROM SellerEntity where sellerId=:id");
-		q.setParameter("id", id);
-		return  (Seller) q.uniqueResult();
-	}
-	public boolean addBookBySeller(Long id,Long bookId) {
-		 Session session = entityManger.unwrap(Session.class);
-		 Query q=session.createQuery("update Book set sellerId:id,isBookApproved:true" +" " +"where bookId:bookId");
-	q.setParameter("id", id);
-	q.setParameter("bookId", bookId);
-		 int addBook=q.executeUpdate();
-	if(addBook>0) {
-		return true;
-	}else {
-		return false;
-	}
-		 
-	}
-	public Optional<AdminEntity> getAdminById(Long id) {
-		Session session = entityManger.unwrap(Session.class);
-		return session.createQuery("FROM Seller where sellerId=:id").setParameter("id", id).uniqueResultOptional();
+		return session.createQuery("FROM Seller where sellerId=:id").setParameter("id", id)
+				.uniqueResultOptional();
 
 	}
+
+	@SuppressWarnings("rawtypes")
+	public boolean addBookBySeller(Long id, Long bookId) {
+		Session session = entityManger.unwrap(Session.class);
+		Query q = session.createQuery("update Book set sellerId:id,isBookApproved:true" + " " + "where bookId:bookId");
+		q.setParameter("id", id);
+		q.setParameter("bookId", bookId);
+		int addBook = q.executeUpdate();
+		if (addBook > 0) {
+			return true;
+		} else {
+			return false;
+		}
+
+	}
+
 }

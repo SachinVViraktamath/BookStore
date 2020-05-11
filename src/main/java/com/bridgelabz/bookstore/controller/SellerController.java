@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.bookstore.dto.BookDto;
-import com.bridgelabz.bookstore.dto.LoginDto;
-import com.bridgelabz.bookstore.dto.PasswordUpdate;
+import com.bridgelabz.bookstore.dto.SellerLoginDto;
+import com.bridgelabz.bookstore.dto.SellerPasswordUpdateDto;
 import com.bridgelabz.bookstore.dto.SellerDto;
 import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.response.Response;
@@ -32,8 +32,8 @@ public class SellerController {
 @PostMapping("seller/Registration")
 public ResponseEntity<Response> sellerRegistration(@RequestBody SellerDto dto){
 	
-	boolean reg = service.register(dto);
-	if (reg) {
+	Seller reg = service.register(dto);
+	if (reg!=null) {
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Seller Registered Successfully", dto));
 		
 	}
@@ -42,7 +42,7 @@ public ResponseEntity<Response> sellerRegistration(@RequestBody SellerDto dto){
 }
 /* API for seller login */
 @PostMapping("seller/Login")
-public ResponseEntity<Response> Login(@RequestBody LoginDto login) {
+public ResponseEntity<Response> Login(@RequestBody SellerLoginDto login) {
 	Seller seller = service.login(login);
 	if (seller != null) {
 		String token = JwtService.generateToken(seller.getSellerId(), null);
@@ -67,7 +67,7 @@ public ResponseEntity<Response> getAllUsers() {
 	return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "listed all the sellers", sellers));
 }
 @PutMapping("seller/updateSellerPassword")
-public ResponseEntity<Response> updatePassword(@RequestBody PasswordUpdate update,@PathVariable("token") String token) throws Exception {
+public ResponseEntity<Response> updatePassword(@RequestBody SellerPasswordUpdateDto update,@PathVariable("token") String token) throws Exception {
 	Boolean passwordUpdate=service.updatePassword(update, token);
 	if(passwordUpdate) {
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Password update", update));

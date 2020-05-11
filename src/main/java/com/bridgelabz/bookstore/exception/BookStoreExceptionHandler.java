@@ -22,8 +22,8 @@ public class BookStoreExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.status(exp.getCode()).body(exp);
 	}
 
-	@ExceptionHandler(SellerNotFoundException.class)
-	public final ResponseEntity<ExceptionResponse> sellerNotFoundException(SellerNotFoundException ex) {
+	@ExceptionHandler(SellerException.class)
+	public final ResponseEntity<ExceptionResponse> sellerNotFoundException(SellerException ex) {
 		ExceptionResponse exp = new ExceptionResponse(ex.getCode(), ex.getMessage());
 		return ResponseEntity.status(exp.getCode()).body(exp);
 	}

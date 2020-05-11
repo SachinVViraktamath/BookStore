@@ -11,11 +11,11 @@ import lombok.ToString;
 @Data
 @NoArgsConstructor
 @ToString
-public class SellerNotFoundException extends RuntimeException {
+public class SellerException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 	HttpStatus code;
 
-	public SellerNotFoundException(HttpStatus code, String message) {
+	public SellerException(HttpStatus code, String message) {
 
           super(message);
         this.code = code;

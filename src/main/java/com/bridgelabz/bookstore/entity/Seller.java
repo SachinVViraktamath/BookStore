@@ -42,6 +42,7 @@ public class Seller {
 	private int isVerified;
 	@Column
 	private LocalDateTime dateTime;
+	
 	public Long getSellerId() {
 		return sellerId;
 	}

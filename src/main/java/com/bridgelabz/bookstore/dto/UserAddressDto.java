@@ -1,5 +1,12 @@
 package com.bridgelabz.bookstore.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class UserAddressDto {
 
 		private String street;
@@ -8,43 +15,5 @@ public class UserAddressDto {
 	    private String state;
 	    private String country;
 	    private int pinCode;
-		public String getStreet() {
-			return street;
-		}
-		public void setStreet(String street) {
-			this.street = street;
-		}
-		public String getTown() {
-			return town;
-		}
-		public void setTown(String town) {
-			this.town = town;
-		}
-		public String getDistrict() {
-			return district;
-		}
-		public void setDistrict(String district) {
-			this.district = district;
-		}
-		public String getState() {
-			return state;
-		}
-		public void setState(String state) {
-			this.state = state;
-		}
-		public String getCountry() {
-			return country;
-		}
-		public void setCountry(String country) {
-			this.country = country;
-		}
-		public int getPinCode() {
-			return pinCode;
-		}
-		public void setPinCode(int pinCode) {
-			this.pinCode = pinCode;
-		}
-	    
-	    
-	    
+	
 }

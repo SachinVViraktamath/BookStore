@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import com.bridgelabz.bookstore.dto.UserAddressDto;
 import com.bridgelabz.bookstore.entity.UserAddress;
-import com.bridgelabz.bookstore.entity.UserData;
+import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.repository.UserAddressRepository;
 import com.bridgelabz.bookstore.repository.UserRepository;
 import com.bridgelabz.bookstore.service.UserAddressService;
@@ -24,7 +24,7 @@ public class UserAddressServiceImplementation implements UserAddressService{
 	public UserAddress addAddress(UserAddressDto addressDto, String token) {
 		try {
 			long id=JwtService.parse(token);
-			UserData user=repository.findbyId(id);
+			Users user=repository.findbyId(id);
 			System.out.println(user);
 			
 			if(user != null) {
@@ -55,7 +55,7 @@ public class UserAddressServiceImplementation implements UserAddressService{
 		try {
 			
 			long id =  JwtService.parse(token);
-			UserData user=repository.findbyId(id);
+			Users user=repository.findbyId(id);
 			UserAddress add =reposit.findbyId(addressId);
 			
 			if(user!=null) {
