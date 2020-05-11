@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.entity.Book;
+
 import com.bridgelabz.bookstore.entity.Seller;
+import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.BookService;
 import com.bridgelabz.bookstore.service.ElasticSearchService;
@@ -46,14 +48,13 @@ public class BookController {
 	}
 
 	@GetMapping("/displayOne")
-	public ResponseEntity<Response> displayParticularBook(@RequestParam("id") Long id) {
+	public ResponseEntity<Response> displayParticularBook(@RequestParam("id") Long id) throws BookException {
 		Book book = bookService.displaySingleBook(id);
 		if (book != null)
 			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Particular book not displayed", book));
 		else
 			return ResponseEntity.badRequest()
 					.body(new Response(HttpStatus.NOT_FOUND, "Particular book not displayed", book));
-
 	}
 
 	@GetMapping("/search")

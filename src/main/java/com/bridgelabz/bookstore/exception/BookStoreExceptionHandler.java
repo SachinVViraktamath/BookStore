@@ -10,8 +10,8 @@ import com.bridgelabz.bookstore.response.ExceptionResponse;
 @ControllerAdvice
 public class BookStoreExceptionHandler extends ResponseEntityExceptionHandler {
 
-	@ExceptionHandler(BookNotFoundException.class)
-	public final ResponseEntity<ExceptionResponse> bookNotFoundException(BookNotFoundException ex) {
+	@ExceptionHandler(BookException.class)
+	public final ResponseEntity<ExceptionResponse> bookException(BookException ex) {
 		ExceptionResponse exp = new ExceptionResponse(ex.getCode(), ex.getMessage());
 		return ResponseEntity.status(exp.getCode()).body(exp);
 	}
