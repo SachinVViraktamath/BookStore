@@ -42,4 +42,5 @@ public interface UserRepository extends JpaRepository<UserData,Long>{
 		void updateIsVarified(Long id);
 
 		
+		
 }

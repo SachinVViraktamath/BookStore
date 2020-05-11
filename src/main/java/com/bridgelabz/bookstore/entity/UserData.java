@@ -71,11 +71,11 @@ public class UserData {
 	@Column(name = "is_Verified",columnDefinition = "boolean default values",nullable=false)
 	private boolean isVerified;
 	
+
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = UserAddress.class)
 	@JoinColumn(name = "userId")
 	private List<UserAddress> address;
 	
-
 	public long getUserId() {
 		return userId;
 	}
