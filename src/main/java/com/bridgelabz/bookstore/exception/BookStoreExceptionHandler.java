@@ -16,20 +16,24 @@ public class BookStoreExceptionHandler extends ResponseEntityExceptionHandler {
 		return ResponseEntity.status(exp.getCode()).body(exp);
 	}
 
-	@ExceptionHandler(AdminNotFoundException.class)
-	public final ResponseEntity<ExceptionResponse> adminNotFoundException(AdminNotFoundException ex) {
+	@ExceptionHandler(AdminException.class)
+	public final ResponseEntity<ExceptionResponse> adminException(AdminException ex) {
 		ExceptionResponse exp = new ExceptionResponse(ex.getCode(), ex.getMessage());
 		return ResponseEntity.status(exp.getCode()).body(exp);
 	}
 
 	@ExceptionHandler(SellerException.class)
+
 	public final ResponseEntity<ExceptionResponse> sellerNotFoundException(SellerException ex) {
+
+	public final ResponseEntity<ExceptionResponse> sellerException(SellerException ex) {
+
 		ExceptionResponse exp = new ExceptionResponse(ex.getCode(), ex.getMessage());
 		return ResponseEntity.status(exp.getCode()).body(exp);
 	}
 
-	@ExceptionHandler(UserNotFoundException.class)
-	public final ResponseEntity<ExceptionResponse> userNotFoundException(UserNotFoundException ex) {
+	@ExceptionHandler(UserException.class)
+	public final ResponseEntity<ExceptionResponse> userException(UserException ex) {
 		ExceptionResponse exp = new ExceptionResponse(ex.getCode(), ex.getMessage());
 		return ResponseEntity.status(exp.getCode()).body(exp);
 	}

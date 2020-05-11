@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-<<<<<<< HEAD
+
 
 import com.auth0.jwt.exceptions.JWTVerificationException;
 
@@ -17,8 +17,7 @@ import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.exception.AdminNotFoundException;
 
 
-=======
->>>>>>> 12059e74e893b5afe514b1ec617d65c6d8355978
+
 import com.bridgelabz.bookstore.dto.UserPasswordDto;
 import com.bridgelabz.bookstore.dto.UserRegisterDto;
 import com.bridgelabz.bookstore.dto.UserLoginDto;

@@ -36,8 +36,7 @@ public class BookController {
 	private BookService bookService;
 
 	@GetMapping("/displayAll")
-	public ResponseEntity<Response> displayAllBooks() {
-
+	public ResponseEntity<Response> displayAllBooks() throws BookException {
 		List<Book> books = bookService.displayBooks();
 		if (books != null)
 			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "books for user displayed", books));
@@ -74,8 +73,7 @@ public class BookController {
 	}
 
 	@GetMapping("/sortbyprice/Asc")
-	public ResponseEntity<Response> sortByPriceLowtoHigh() {
-
+	public ResponseEntity<Response> sortByPriceLowtoHigh() throws BookException {
 		List<Book> books = bookService.sortByPriceAsc();
 		if (books != null)
 			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book by Price low to high Found", books));
@@ -86,8 +84,7 @@ public class BookController {
 	}
 
 	@GetMapping("/sortbyprice/Desc")
-	public ResponseEntity<Response> sortByPriceHightoLow() {
-
+	public ResponseEntity<Response> sortByPriceHightoLow() throws BookException {
 		List<Book> books = bookService.sortByPriceDesc();
 		if (books != null)
 			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book by Price high to low Found", books));
@@ -98,8 +95,7 @@ public class BookController {
 	}
 
 	@GetMapping("/sortbynewest")
-	public ResponseEntity<Response> sortByNewestArrivals() {
-
+	public ResponseEntity<Response> sortByNewestArrivals() throws BookException {
 		List<Book> books = bookService.sortByNewest();
 		if (books != null)
 			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book by Newest Arrivals Found", books));
