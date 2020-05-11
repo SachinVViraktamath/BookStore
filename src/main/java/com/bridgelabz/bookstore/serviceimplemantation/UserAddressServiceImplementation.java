@@ -1,20 +1,28 @@
 package com.bridgelabz.bookstore.serviceimplemantation;
 
+import java.util.List;
+
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.bookstore.dto.UserAddressDto;
+import com.bridgelabz.bookstore.dto.UserLoginDto;
+import com.bridgelabz.bookstore.dto.UserPasswordDto;
+import com.bridgelabz.bookstore.dto.UserRegisterDto;
+import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.UserAddressRepository;
 import com.bridgelabz.bookstore.repository.UserRepository;
-import com.bridgelabz.bookstore.service.UserAddressService;
+import com.bridgelabz.bookstore.service.UserService;
 import com.bridgelabz.bookstore.utility.JwtService;
 
 @Service
-public class UserAddressServiceImplementation implements UserAddressService{
+public class UserAddressServiceImplementation implements UserService{
 
 	@Autowired
 	private UserRepository repository;
@@ -52,6 +60,54 @@ public class UserAddressServiceImplementation implements UserAddressService{
 				
 		
 	
+	}
+
+	@Override
+	public Users userRegistration(@Valid UserRegisterDto userInfoDto) throws UserException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Users userVerification(String token) throws UserException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Users userLogin(UserLoginDto login) throws UserException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Users forgetPassword(String email) throws UserException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean updatePassword(UserPasswordDto forgetpass, String token) throws UserException {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Book addWishList(Long bookId, String token, String email) throws UserException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Book> getWish(String token) throws UserException {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Book removeWishList(Long bookId, String token, String email) throws UserException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	

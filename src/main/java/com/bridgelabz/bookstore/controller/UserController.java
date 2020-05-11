@@ -1,5 +1,7 @@
 package com.bridgelabz.bookstore.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,17 +14,17 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.bridgelabz.bookstore.dto.UserPasswordDto;
 import com.bridgelabz.bookstore.dto.UserRegisterDto;
 import com.bridgelabz.bookstore.dto.UserAddressDto;
 import com.bridgelabz.bookstore.dto.UserLoginDto;
+import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
-import com.bridgelabz.bookstore.service.UserAddressService;
 import com.bridgelabz.bookstore.service.UserService;
 
 import io.swagger.annotations.ApiOperation;
@@ -34,8 +36,6 @@ public class UserController {
 	@Autowired
 	private UserService service;
 
-	@Autowired
-	private UserAddressService serviceAdd;
 
 	@ApiOperation(value = "Api to Register User for BookStore", response = Response.class)
 	@PostMapping("/register")
@@ -99,7 +99,7 @@ public class UserController {
 	@PostMapping("/addAddress/create")
 	public ResponseEntity<Response> addAddress(@RequestBody UserAddressDto addDto, @RequestHeader String token)
 			throws UserException {
-		UserAddress add = serviceAdd.addAddress(addDto, token);
+		UserAddress add = service.addAddress(addDto, token);
 		if (add != null) {
 			return ResponseEntity.badRequest()
 					.body(new Response(HttpStatus.ACCEPTED, " User Address added Successfully  ", 200));
@@ -113,7 +113,7 @@ public class UserController {
 	@PutMapping("/updateAddress/{addressId}")
 	public ResponseEntity<Response> updateAddress(String token, @PathVariable long addressId,
 			@RequestBody UserAddressDto addDto) throws UserException {
-		UserAddress add = serviceAdd.updateAddress(token, addDto, addressId);
+		UserAddress add = service.updateAddress(token, addDto, addressId);
 		if (add != null) {
 			return ResponseEntity.badRequest()
 					.body(new Response(HttpStatus.ACCEPTED, " User Address Updated Successfully  ", 200));
@@ -122,4 +122,38 @@ public class UserController {
 		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "failed to update the user address", 400));
 
 	}
+	
+	@PostMapping("/addToWishList")
+	public ResponseEntity<Response> addWishList(@RequestParam Long bookId, @RequestHeader String token,@RequestParam String email) throws UserException
+	{
+		Book book = service.addWishList(bookId, token, email);
+		
+		if(book!=null) {
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," Added To WishList",200));
+		}
+		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE," Not added", 400));
+	}
+	
+	@PostMapping("/removeWishList")
+	public ResponseEntity<Response> removeWishList(@RequestParam Long bookId, @RequestHeader String token,@RequestParam String email) throws UserException
+	{
+		Book book = service.removeWishList(bookId, token, email);
+		
+		if(book!=null) {
+			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," removed from WishList",200));
+		}
+		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE," Not removed", 400));
+	}
+	
+	
+	
+	@GetMapping("/getAllWishList")
+	public ResponseEntity<Response> getWish(@RequestHeader String token) throws UserException {
+		
+		List<Book> user = service.getWish(token);
+		
+		return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," WishList List is here.. ",200));
+
+	}
 }
+

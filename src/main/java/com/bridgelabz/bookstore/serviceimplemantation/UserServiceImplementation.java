@@ -1,6 +1,9 @@
 package com.bridgelabz.bookstore.serviceimplemantation;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import org.springframework.beans.BeanUtils;
@@ -10,9 +13,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.bridgelabz.bookstore.dto.UserPasswordDto;
 import com.bridgelabz.bookstore.dto.UserRegisterDto;
+import com.bridgelabz.bookstore.dto.UserAddressDto;
 import com.bridgelabz.bookstore.dto.UserLoginDto;
+import com.bridgelabz.bookstore.entity.Book;
+import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.UserException;
+import com.bridgelabz.bookstore.repository.BookRepository;
+import com.bridgelabz.bookstore.repository.UserAddressRepository;
 import com.bridgelabz.bookstore.repository.UserRepository;
 import com.bridgelabz.bookstore.response.MailingOperation;
 import com.bridgelabz.bookstore.response.MailingandResponseOperation;
@@ -36,6 +44,12 @@ public class UserServiceImplementation implements UserService {
 
 	@Autowired
 	private BCryptPasswordEncoder bcrypt;
+	
+	@Autowired
+	private UserAddressRepository reposit;
+	
+	@Autowired
+	private BookRepository bookRep;
 
 	@Transactional
 	@Override
@@ -113,5 +127,73 @@ public class UserServiceImplementation implements UserService {
 		}
 
 	}
+	
+	
+	@Override
+	public UserAddress addAddress(UserAddressDto addressDto, String token) throws UserException {
+		
+			long id=JwtService.parse(token);
+			Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
+			UserAddress	add=new UserAddress();
+			BeanUtils.copyProperties(addressDto, user);
+			reposit.save(add);
+			return add;	
+		
+	}
 
+	@Override
+	public UserAddress updateAddress(String token,UserAddressDto addDto,long addressId) throws UserException{
+		    long id =  JwtService.parse(token);
+			Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
+			UserAddress add =reposit.findbyId(addressId).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
+			reposit.updateAdd(add.getStreet(),add.getTown(),add.getDistrict(),add.getState(),add.getCountry(),add.getPinCode());
+						
+			return add;	
+	
+	}
+	
+	@Transactional
+	@Override
+	public Book addWishList(Long bookId, String token, String email) throws UserException {
+		Users wish=repository.FindByEmail(email).
+				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " Not Added to WishList"));
+		
+		Long id = (Long) JwtService.parse(token);
+		
+			if(wish!=null) {
+				Optional<Book> book=bookRep.getBookById(id);
+				wish.getUserBook().add(book);	
+				return book;
+		}
+			return null;
+	}
+	
+	
+	
+	@Transactional
+	@Override
+	public List<Book> getWish(String token) throws UserException {
+		Users user=new Users();
+		Long id = (Long) JwtService.parse(token);
+		user = repository.findById(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " Not selected any book to wishlist"));
+		List<Book> note = user.getUserBook();
+		return note;
+	}
+	
+	@Transactional
+	@Override
+	public Book removeWishList(Long bookId, String token, String email) throws UserException {
+		Users user=new Users();
+		Users wish=repository.getUser(email).
+				orElseThrow(() -> new UserNotFoundException(HttpStatus.NOT_FOUND, " WishList is empty"));
+		
+		Long id = (Long) JwtService.parse(token);
+		
+			if(wish!=null) {
+				Book book=bookRep.findbyId(id);
+				wish.getUserBook().remove(book);	
+				return book;
+		}
+			return null;
+	}
 }

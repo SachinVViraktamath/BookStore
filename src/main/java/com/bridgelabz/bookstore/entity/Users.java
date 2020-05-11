@@ -10,6 +10,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -18,6 +20,7 @@ import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
 @Entity
@@ -65,6 +68,10 @@ public class Users {
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = UserAddress.class)
 	@JoinColumn(name = "userId")
 	private List<UserAddress> address;
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "user_book", joinColumns = { @JoinColumn(name = "userId") }, inverseJoinColumns = {
+			@JoinColumn(name = "bookId") })
 	
 	
 	@OneToOne(cascade = CascadeType.ALL, targetEntity = UserBookCart.class)
