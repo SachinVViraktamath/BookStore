@@ -14,14 +14,13 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.bridgelabz.bookstore.dto.UserPasswordDto;
+import com.bridgelabz.bookstore.dto.UserRegisterDto;
 import com.bridgelabz.bookstore.dto.UserAddressDto;
-import com.bridgelabz.bookstore.dto.UserInfoDto;
-import com.bridgelabz.bookstore.dto.UserLogin;
-import com.bridgelabz.bookstore.entity.User;
+import com.bridgelabz.bookstore.dto.UserLoginDto;
 import com.bridgelabz.bookstore.entity.UserAddress;
-import com.bridgelabz.bookstore.exception.UserNotFoundException;
+import com.bridgelabz.bookstore.entity.Users;
+import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.UserAddressService;
 import com.bridgelabz.bookstore.service.UserService;
@@ -39,8 +38,8 @@ public class UserController {
 	private UserAddressService serviceAdd;
 	
 	@PostMapping("/register")
-	public ResponseEntity<Response> registeration(@RequestBody UserInfoDto userInfoDto) throws UserNotFoundException{
-		User user =service.userRegistration(userInfoDto);
+	public ResponseEntity<Response> registeration(@RequestBody UserRegisterDto userInfoDto) throws UserException{
+		Users user =service.userRegistration(userInfoDto);
 		
 		if(user!=null) {
 	
@@ -55,8 +54,8 @@ public class UserController {
 	
 	
 	@GetMapping("/verify/{token}")
-	public ResponseEntity<Response> verification(@PathVariable("token") String token) throws UserNotFoundException{
-			User user=service.userVerification(token);
+	public ResponseEntity<Response> verification(@PathVariable("token") String token) throws UserException{
+			Users user=service.userVerification(token);
 		
 			if (user!=null) {
 				return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED,"Successfully verified", 200));
@@ -66,8 +65,8 @@ public class UserController {
 	
 
 	@PostMapping("/login/")
-	public ResponseEntity<Response> login(@RequestBody UserLogin login) throws UserNotFoundException {
-		User user = service.userLogin(login);
+	public ResponseEntity<Response> login(@RequestBody UserLoginDto login) throws UserException {
+		Users user = service.userLogin(login);
 		
 		if(user!=null) {
 			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED,"Login Successfull",200));
@@ -77,8 +76,8 @@ public class UserController {
 	}
 	
 	@PostMapping("/forgetPassword")
-	public ResponseEntity<Response> forgetPassword(@RequestBody String email ) throws UserNotFoundException {
-		User user = service.forgetPassword(email);
+	public ResponseEntity<Response> forgetPassword(@RequestBody String email ) throws UserException {
+		Users user = service.forgetPassword(email);
 		
 		if(user!=null) {
 			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," Success Login",200));
@@ -89,8 +88,8 @@ public class UserController {
 	
 	@ApiOperation(value = "Api to Update User Password for BookStore", response = Response.class)
 	@PutMapping("/updatePassword/{token}")
-	public ResponseEntity<Response> updatePassword(@RequestBody UserPasswordDto password,@Valid @PathVariable("token") String token) throws UserNotFoundException {
-		User user = service.userVerification(token);
+	public ResponseEntity<Response> updatePassword(@RequestBody UserPasswordDto password,@Valid @PathVariable("token") String token) throws UserException {
+		Users user = service.userVerification(token);
 
 		if (user!=null) {
 			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," Successfully Updated ",200));
