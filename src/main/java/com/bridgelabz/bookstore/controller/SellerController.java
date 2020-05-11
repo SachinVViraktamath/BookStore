@@ -17,7 +17,7 @@ import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.PasswordUpdate;
 import com.bridgelabz.bookstore.dto.SellerDto;
-import com.bridgelabz.bookstore.entity.SellerEntity;
+import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.SellerService;
 import com.bridgelabz.bookstore.utility.JwtService;
@@ -43,7 +43,7 @@ public ResponseEntity<Response> sellerRegistration(@RequestBody SellerDto dto){
 /* API for seller login */
 @PostMapping("seller/Login")
 public ResponseEntity<Response> Login(@RequestBody LoginDto login) {
-	SellerEntity seller = service.login(login);
+	Seller seller = service.login(login);
 	if (seller != null) {
 		String token = JwtService.generateToken(seller.getSellerId(), null);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Login Successfully", login));
@@ -63,7 +63,7 @@ public ResponseEntity<Response> verify(@PathVariable("token") String token) thro
 }
 @GetMapping("seller/allSellers")
 public ResponseEntity<Response> getAllUsers() {
-	List<SellerEntity> sellers = service.getSellers();
+	List<Seller> sellers = service.getSellers();
 	return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "listed all the sellers", sellers));
 }
 @PutMapping("seller/updateSellerPassword")

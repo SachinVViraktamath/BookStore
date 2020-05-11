@@ -1,6 +1,7 @@
 package com.bridgelabz.bookstore.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -10,7 +11,8 @@ import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.bridgelabz.bookstore.dto.PasswordUpdate;
-import com.bridgelabz.bookstore.entity.SellerEntity;
+import com.bridgelabz.bookstore.entity.AdminEntity;
+import com.bridgelabz.bookstore.entity.Seller;
 
 @Repository
 public class SellerRepository {
@@ -20,23 +22,23 @@ public class SellerRepository {
 
     /* Query for save the data into sellerTable */
 
-    public SellerEntity save(SellerEntity seller) {
+    public Seller save(Seller seller) {
         Session session = entityManger.unwrap(Session.class);
         session.saveOrUpdate(seller);
         return seller;
     }
     //* Query to get the seller information bby email */
 
-	public SellerEntity getseller(String email) {
+	public Seller getseller(String email) {
 		Session session = entityManger.unwrap(Session.class);
-		Query q = session.createQuery("FROM SellerEntity where email=:email");
+		Query q = session.createQuery("FROM Seller where email=:email");
 		q.setParameter("email", email);
-		return  (SellerEntity) q.uniqueResult();
+		return  (Seller) q.uniqueResult();
 	}
 
 	public boolean verify(Long id) {
 		Session session = entityManger.unwrap(Session.class);
-		Query<SellerEntity> q = session.createQuery("update SellerEntity set isVerified =:p" + " " + " " + " where sellerId=:i");
+		Query<Seller> q = session.createQuery("update Seller set isVerified =:p" + " " + " " + " where sellerId=:i");
 		q.setParameter("p", 1);
 		q.setParameter("i", id);
 		int status = q.executeUpdate();
@@ -49,7 +51,7 @@ public class SellerRepository {
 	}
 		public boolean update(PasswordUpdate update, Long id) {
 			Session session = entityManger.unwrap(Session.class);
-			Query<SellerEntity> q = session.createQuery("update SellerEntity set password=:p" + " " + " where id=:id");
+			Query<Seller> q = session.createQuery("update Seller set password=:p" + " " + " where id=:id");
 			q.setParameter(" p", update.getConfirmPassword());
 			q.setParameter("id", id);
 			int status = q.executeUpdate();
@@ -59,21 +61,21 @@ public class SellerRepository {
 				return false;
 			}
 	}
-	public void delete(SellerEntity seller) {
+	public void delete(Seller seller) {
 		 Session session = entityManger.unwrap(Session.class);
 		 session.delete(seller);
 	}
 	
-	public List<SellerEntity> getSellers() {
+	public List<Seller> getSellers() {
 		Session session = entityManger.unwrap(Session.class);
-		List<SellerEntity> userList = session.createQuery("FROM SellerEntity").getResultList();
+		List<Seller> userList = session.createQuery("FROM Seller").getResultList();
 		return userList;
 	}
-	public SellerEntity getSellerById(Long id) {
+	public Seller getSellerById(Long id) {
 		Session session = entityManger.unwrap(Session.class);
 		Query q = session.createQuery("FROM SellerEntity where sellerId=:id");
 		q.setParameter("id", id);
-		return  (SellerEntity) q.uniqueResult();
+		return  (Seller) q.uniqueResult();
 	}
 	public boolean addBookBySeller(Long id,Long bookId) {
 		 Session session = entityManger.unwrap(Session.class);
@@ -87,5 +89,10 @@ public class SellerRepository {
 		return false;
 	}
 		 
+	}
+	public Optional<AdminEntity> getAdminById(Long id) {
+		Session session = entityManger.unwrap(Session.class);
+		return session.createQuery("FROM Seller where sellerId=:id").setParameter("id", id).uniqueResultOptional();
+
 	}
 }

@@ -17,7 +17,7 @@ import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.PasswordUpdate;
 import com.bridgelabz.bookstore.dto.SellerDto;
 import com.bridgelabz.bookstore.entity.Book;
-import com.bridgelabz.bookstore.entity.SellerEntity;
+import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.exception.SellerNotFoundException;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.SellerRepository;
@@ -46,9 +46,9 @@ private ModelMapper mapper;
 	@Override
 	@Transactional
 	public Boolean register(SellerDto dto) {
-		SellerEntity seller = repository.getseller(dto.getEmail());
+		Seller seller = repository.getseller(dto.getEmail());
 		if (seller == null) {
-			seller=mapper.map(dto, SellerEntity.class);
+			seller=mapper.map(dto, Seller.class);
 			String epassword = encoder.encode(dto.getPassword());
 			seller.setPassword(epassword);
 			seller.setIsVerified(0);
@@ -69,8 +69,8 @@ private ModelMapper mapper;
 
 	@Override
 	@Transactional
-	public SellerEntity login(LoginDto login) {
-		SellerEntity seller = repository.getseller(login.getEmail());
+	public Seller login(LoginDto login) {
+		Seller seller = repository.getseller(login.getEmail());
 		if (seller != null) {
 			if ((seller.getIsVerified() == 1) && (encoder.matches(login.getPassword(), seller.getPassword()))) {
 				JwtService.generateToken(seller.getSellerId(), Token.WITHOUT_EXPIRE_TIME);
@@ -94,18 +94,18 @@ private ModelMapper mapper;
 
 	@Transactional
 	@Override
-	public List<SellerEntity> getSellers() {
-		List<SellerEntity> sellers = repository.getSellers();
-		SellerEntity seller = sellers.get(0);
+	public List<Seller> getSellers() {
+		List<Seller> sellers = repository.getSellers();
+		Seller seller = sellers.get(0);
 		return sellers;
 
 	}
 
 	@Override
 	@Transactional
-	 public SellerEntity getSellerFromToken(String token) {
+	 public Seller getSellerFromToken(String token) {
 		Long id = JwtService.parse(token);
-		SellerEntity seller=repository.getSellerById(id);
+		Seller seller=repository.getSellerById(id);
 		if(seller!=null) {
 		
 	}else {
@@ -120,7 +120,7 @@ private ModelMapper mapper;
 	public boolean addBookBySeller(String token, BookDto dto) {
 		Book book = new Book();
 Long sellerId = JwtService.parse(token);
-		SellerEntity seller = repository.getSellerById(sellerId);
+		Seller seller = repository.getSellerById(sellerId);
 		if (seller.getIsVerified() == 1) {
 			book=mapper.map(dto, Book.class);
 				book.setBookApproved(false);

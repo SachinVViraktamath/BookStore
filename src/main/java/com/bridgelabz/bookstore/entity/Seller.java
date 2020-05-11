@@ -16,10 +16,10 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "sellerEntity")
+@Table(name = "seller")
 //@Getter
 //@Setter
-public class SellerEntity {
+public class Seller {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column
@@ -36,8 +36,9 @@ public class SellerEntity {
 	@Column
 	@NotNull
 	private String mobileNumber;
-	@Column
+	
 	@NotNull
+	@Column(columnDefinition = "int Default 0", nullable = false)
 	private int isVerified;
 	@Column
 	private LocalDateTime dateTime;

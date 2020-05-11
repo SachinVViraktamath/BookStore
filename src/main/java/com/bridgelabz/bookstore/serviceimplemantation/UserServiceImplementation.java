@@ -16,7 +16,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.bridgelabz.bookstore.dto.UpdateUserPassword;
 import com.bridgelabz.bookstore.dto.UserInfoDto;
 import com.bridgelabz.bookstore.dto.UserLogin;
-import com.bridgelabz.bookstore.entity.SellerEntity;
+import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.entity.UserData;
 import com.bridgelabz.bookstore.exception.AdminNotFoundException;
 import com.bridgelabz.bookstore.exception.UserNotFoundException;
