@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-<<<<<<< HEAD
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.bridgelabz.bookstore.dto.UpdateUserPassword;
 import com.bridgelabz.bookstore.dto.UserInfoDto;
@@ -20,13 +19,13 @@ import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.entity.UserData;
 import com.bridgelabz.bookstore.exception.AdminNotFoundException;
 import com.bridgelabz.bookstore.exception.UserNotFoundException;
-=======
+
 import com.bridgelabz.bookstore.dto.UserPasswordDto;
 import com.bridgelabz.bookstore.dto.UserRegisterDto;
 import com.bridgelabz.bookstore.dto.UserLoginDto;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.UserException;
->>>>>>> 9065aede7662627b3e22ed74675e30d17d3b9b66
+
 import com.bridgelabz.bookstore.repository.UserRepository;
 import com.bridgelabz.bookstore.response.MailingOperation;
 import com.bridgelabz.bookstore.response.MailingandResponseOperation;
