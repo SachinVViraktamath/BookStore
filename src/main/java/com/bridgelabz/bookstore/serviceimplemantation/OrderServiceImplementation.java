@@ -41,10 +41,10 @@ public class OrderServiceImplementation implements OrderService {
 		Book books = user.getUserBook().stream().filter((book) -> book.getBookId()==bookId).findFirst()
 				.orElseThrow(() ->  new UserException(HttpStatus.NOT_FOUND, "User is not exist"));
 		
-		UserAddress address = user.getAddress().stream().filter((adress) -> adress.getAddressType==adressType).findFirst()
+		UserAddress address = user.getAddress().stream().filter((adress) -> adress.getAddressType()==adressType).findFirst()
 				.orElseThrow(() ->  new UserException(HttpStatus.NOT_FOUND, "Invalid Adreess"));
 		
-		orderDetails.setBooks(books);
+		orderDetails.setBooks(books.getBookId());
 		orderDetails.setOrderPlaceTime(LocalDateTime.now());
 		orderDetails.setUser(user);		
 		orderDetails.setUserAddress(address);
