@@ -31,7 +31,7 @@ public interface UserAddressRepository extends JpaRepository<UserAddress, Long> 
 
 	@Modifying
 	@Transactional
-	@Query(value = "update user_address set street = ?,town =? ,district = ?,state = ?, country = ? pincode = ? where userId = ? and addressId = ?", nativeQuery = true)
-	void updateAdd(String street , String town,String district,String state,String country,int pinCode);
+	@Query(value = "update user_address set street = ?,town =? ,district = ?,state = ?, country = ?, addressType = ?, pincode = ? where userId = ? and addressId = ?", nativeQuery = true)
+	void updateAdd(String street , String town,String district,String state,String country,String addressType,int pinCode);
 
 }
