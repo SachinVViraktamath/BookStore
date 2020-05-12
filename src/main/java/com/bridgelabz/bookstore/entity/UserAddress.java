@@ -33,8 +33,12 @@ public class UserAddress {
 	 @NotBlank(message = "Country name is mandatory")
 	 private String country;
 	 
+	 @NotBlank(message = "addressType is mandatory")
+	 private String addressType;
+	 
 	 @NotBlank(message = "Pin code is mandatory")
 	 private int pinCode;
 
+	 
 	
 }
