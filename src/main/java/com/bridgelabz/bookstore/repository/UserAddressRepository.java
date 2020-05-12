@@ -20,8 +20,8 @@ public interface UserAddressRepository extends JpaRepository<UserAddress, Long> 
 	public Optional<UserAddress> findbyId(long addressId);
 	
 	@Modifying
-	@Query(value = "insert into user_address (street,town,district,state,country,pinCode)", nativeQuery = true)
-	void addAddress( String street , String town,String district,String state,String country,int pinCode );
+	@Query(value = "insert into user_address (street,town,district,state,country,,addressType,pinCode)", nativeQuery = true)
+	void addAddress( String street , String town,String district,String state,String country,String addressType,int pinCode );
 
  	@Modifying
     @Transactional

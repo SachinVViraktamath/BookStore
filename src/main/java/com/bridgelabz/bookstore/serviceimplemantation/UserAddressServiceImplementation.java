@@ -42,7 +42,8 @@ public class UserAddressServiceImplementation implements UserService{
 			add.setState(addressDto.getState());
 			add.setCountry(addressDto.getCountry());
 			add.setPinCode(addressDto.getPinCode());
-			reposit.addAddress(add.getStreet(), add.getTown(), add.getDistrict(), add.getState(), add.getCountry(), add.getPinCode());
+			add.setAddressType(addressDto.getAddressType());
+			reposit.addAddress(add.getStreet(), add.getTown(), add.getDistrict(), add.getState(), add.getCountry(), add.getAddressType(),add.getPinCode());
 			
 			return add;	
 		
