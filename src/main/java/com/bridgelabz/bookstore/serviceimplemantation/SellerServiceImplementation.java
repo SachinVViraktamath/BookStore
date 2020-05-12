@@ -44,6 +44,7 @@ public class SellerServiceImplementation implements SellerService {
 	private ModelMapper mapper;
 	@Autowired
 	AmazonS3AccessService service;
+
 	@Override
 	@Transactional
 	public Seller register(SellerDto dto) throws SellerException {
@@ -96,30 +97,27 @@ public class SellerServiceImplementation implements SellerService {
 
 	}
 
-
-
-
 	@Override
 	@Transactional
-	public boolean addBookBySeller(String token, BookDto dto,MultipartFile multipartFile) throws SellerException {
+	public boolean addBookBySeller(String token, BookDto dto, MultipartFile multipartFile) throws SellerException {
 		Book book = new Book();
 		Long sellerId = JwtService.parse(token);
 		System.out.println("$$$$");
-		Seller seller = repository.getSellerById(sellerId).orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "Seller is not exist"));
+		Seller seller = repository.getSellerById(sellerId)
+				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "Seller is not exist"));
 		try {
-		if (seller.getIsVerified() == 1) {
-			book = mapper.map(dto, Book.class);
-			System.out.println("$$$$$$");
-			book.setBookImage(service.uploadFileToS3Bucket(multipartFile));
-			book.setBookCreatedAt(LocalDateTime.now());
-			bookRepository.save(book);
-			String mailResponse = "Books added for approval"+book;
-			return true;		
+			if (seller.getIsVerified() == 1) {
+				book = mapper.map(dto, Book.class);
+				System.out.println("$$$$$$");
+				book.setBookImage(service.uploadFileToS3Bucket(multipartFile));
+				book.setBookCreatedAt(LocalDateTime.now());
+				bookRepository.save(book);
+				String mailResponse = "Books added for approval" + book;
+				return true;
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		}
-catch(Exception e) {
-	e.printStackTrace();
-}
 		return false;
 	}
 
@@ -130,12 +128,11 @@ catch(Exception e) {
 		if (repository.addBookBySeller(id, bookId) == true) {
 			return true;
 		} else {
-			boolean delete=false;
-      delete= service.deleteFileFromS3Bucket();
-       
+			boolean delete = false;
+			delete = service.deleteFileFromS3Bucket();
 			throw new SellerException(HttpStatus.BAD_REQUEST, "book not verified ");
 		}
-		
+
 	}
 
 	@Override
