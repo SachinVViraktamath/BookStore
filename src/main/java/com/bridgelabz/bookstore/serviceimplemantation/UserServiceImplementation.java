@@ -2,6 +2,8 @@ package com.bridgelabz.bookstore.serviceimplemantation;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 import org.springframework.beans.BeanUtils;
@@ -16,6 +18,7 @@ import com.bridgelabz.bookstore.dto.UserLoginDto;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
+import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.UserAddressRepository;
@@ -49,17 +52,17 @@ public class UserServiceImplementation implements UserService {
 	@Override
 	public Users userRegistration(@Valid UserRegisterDto userInfoDto) throws UserException {
 		Users user = new Users();		
-		Users isEmail =repository.FindByEmail(userInfoDto.getEmail()).
-				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));		
-			BeanUtils.copyProperties(userInfoDto, isEmail);
+		if (repository.FindByEmail(userInfoDto.getEmail()).isPresent()==false){
+
+			BeanUtils.copyProperties(userInfoDto, user);
 			user.setPassword(bcrypt.encode(userInfoDto.getPassword()));			
 			user.setCreationTime(LocalDateTime.now());
 			user.setUpdateTime(LocalDateTime.now());
 			user=repository.save(user);
 			String mailResponse = "http://localhost:8080/user/verify/" +JwtService.generateToken(user.getUserId(),Token.WITH_EXPIRE_TIME);
 			MailService.sendEmail(user.getEmail(),"verification", mailResponse);
-			return user;
-	
+		}
+		return user;
 	}
 
 	@Transactional
