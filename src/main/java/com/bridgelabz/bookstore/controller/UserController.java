@@ -62,7 +62,7 @@ public class UserController {
 	}
 
 	@ApiOperation(value = "Api to Login User for BookStore", response = Response.class)
-	@PostMapping("/login/")
+	@PostMapping("/login")
 	public ResponseEntity<Response> login(@RequestBody UserLoginDto login) throws UserException {
 		Users user = service.userLogin(login);
 		if (user != null) {
@@ -123,8 +123,9 @@ public class UserController {
 
 	}
 	
+	@ApiOperation(value = "Api to add book in WishList for BookStore", response = Response.class)
 	@PostMapping("/addToWishList")
-	public ResponseEntity<Response> addWishList(@RequestParam Long bookId, @RequestHeader String token,@RequestParam String email) throws UserException
+	public ResponseEntity<Response> addToWishList(@RequestParam Long bookId, @RequestHeader String token,@RequestParam String email) throws UserException
 	{
 		Book book = service.addWishList(bookId, token, email);
 		
@@ -134,8 +135,9 @@ public class UserController {
 		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE," Not added", 400));
 	}
 	
-	@PostMapping("/removeWishList")
-	public ResponseEntity<Response> removeWishList(@RequestParam Long bookId, @RequestHeader String token,@RequestParam String email) throws UserException
+	@ApiOperation(value = "Api to remove book from WishList for BookStore", response = Response.class)
+	@PostMapping("/removeFromWishList")
+	public ResponseEntity<Response> removeFromWishList(@RequestParam Long bookId, @RequestHeader String token,@RequestParam String email) throws UserException
 	{
 		Book book = service.removeWishList(bookId, token, email);
 		
@@ -146,14 +148,17 @@ public class UserController {
 	}
 	
 	
-	
+	@ApiOperation(value = "Api to get Books from wiishList for BookStore", response = Response.class)
 	@GetMapping("/getAllWishList")
-	public ResponseEntity<Response> getWish(@RequestHeader String token) throws UserException {
+	public ResponseEntity<Response> getAllWishList(@RequestHeader String token) throws UserException {
 		
-		List<Book> user = service.getWish(token);
+		List<Book> user = service.getWishList(token);
+		if(user!=null) {
 		
 		return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," WishList List is here.. ",200));
 
+		}
+		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"  No books in WishList List", 400));
 	}
 }
 

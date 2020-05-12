@@ -20,7 +20,6 @@ import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.UserAddressRepository;
 import com.bridgelabz.bookstore.repository.UserRepository;
-import com.bridgelabz.bookstore.response.MailingOperation;
 import com.bridgelabz.bookstore.response.MailingandResponseOperation;
 import com.bridgelabz.bookstore.service.UserService;
 import com.bridgelabz.bookstore.utility.JwtService;
@@ -33,9 +32,6 @@ public class UserServiceImplementation implements UserService {
 
 	@Autowired
 	private MailingandResponseOperation response;
-
-	@Autowired
-	private MailingOperation mailObject;
 
 	@Autowired
 	private UserRepository repository;
@@ -54,7 +50,7 @@ public class UserServiceImplementation implements UserService {
 	public Users userRegistration(@Valid UserRegisterDto userInfoDto) throws UserException {
 		Users user = new Users();		
 		Users isEmail =repository.FindByEmail(userInfoDto.getEmail()).
-				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));		
+				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));		
 			BeanUtils.copyProperties(userInfoDto, isEmail);
 			user.setPassword(bcrypt.encode(userInfoDto.getPassword()));			
 			user.setCreationTime(LocalDateTime.now());
@@ -70,7 +66,7 @@ public class UserServiceImplementation implements UserService {
 	@Override
 	public Users userVerification(String token) throws UserException {
 		long id = JwtService.parse(token);
-		Users userInfo = repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
+		Users userInfo = repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
 	      if (!userInfo.isVerified()) {
 				userInfo.setVerified(true);
 				repository.findbyId(userInfo.getUserId());
@@ -80,7 +76,9 @@ public class UserServiceImplementation implements UserService {
 			}
 		
 	}
-
+	
+	@Transactional
+	@Override
 	public Users userLogin( UserLoginDto login) throws UserException {
 		Users user = repository.FindByEmail(login.getEmail()).
 				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
@@ -94,26 +92,31 @@ public class UserServiceImplementation implements UserService {
 		}
 	}
 
+	@Transactional
+	@Override
 	public Users forgetPassword(String email) throws UserException {
 		Users userMail = repository.FindByEmail(email).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
 		// log.info("userdetails for forgetpassword" + userMail);		
-			if (userMail.isVerified()) {
-				mailObject.setEmail(userMail.getEmail());
-				mailObject.setSubject("sending by admin");
-				mailObject.setMessage("http://localhost:8080/updatePassword/" + JwtService.parse(email));
+			if (userMail.isVerified()==true) {
+				String responsemail = response.fromMessage("http://localhost:8080/verify",
+						JwtService.generateToken(userMail.getUserId(),Token.WITH_EXPIRE_TIME));
+				MailService.sendEmail(userMail.getEmail(), "Verification", responsemail);
 				return userMail;
 			}
-			return userMail;
+			else {
+				return null;
+			}
+			
 		
 	}
 
+	@Transactional
+	@Override
 	public boolean updatePassword(UserPasswordDto forgetpass, String token) throws UserException {
 		Long id = null;	
-		boolean passwordupdateflag=false;
-			
+		boolean passwordupdateflag=false;		
 		id = (Long) JwtService.parse(token);
-		Users userinfo=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
-		
+		Users userinfo=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));	
 		if(bcrypt.matches(forgetpass.getOldPassword(),userinfo.getPassword())) {
 		String epassword = bcrypt.encode(forgetpass.getCnfPassword());
 		forgetpass.setCnfPassword(epassword);
@@ -127,6 +130,7 @@ public class UserServiceImplementation implements UserService {
 	}
 	
 	
+	@Transactional
 	@Override
 	public UserAddress addAddress(UserAddressDto addressDto, String token) throws UserException {
 		
@@ -139,13 +143,13 @@ public class UserServiceImplementation implements UserService {
 		
 	}
 
+	@Transactional
 	@Override
 	public UserAddress updateAddress(String token,UserAddressDto addDto,long addressId) throws UserException{
 		    long id =  JwtService.parse(token);
-			Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
+		    Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
 			UserAddress add =reposit.findbyId(addressId).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
 			reposit.updateAdd(add.getStreet(),add.getTown(),add.getDistrict(),add.getState(),add.getCountry(),add.getAddressType(),add.getPinCode());
-						
 			return add;	
 	
 	}
@@ -155,10 +159,8 @@ public class UserServiceImplementation implements UserService {
 	public Book addWishList(Long bookId, String token, String email) throws UserException {
 		Users wish=repository.FindByEmail(email).
 				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " Not Added to WishList"));
-		
 		Long id = (Long) JwtService.parse(token);
-		
-			if(wish!=null) {
+		if(wish!=null) {
 				Book book=bookRep.getBookById(id).
 						orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " Not book Added to WishList"));
 				wish.getUserBook().add(book);	
@@ -167,9 +169,10 @@ public class UserServiceImplementation implements UserService {
 			return null;
 	}
 	
+	
 	@Transactional
 	@Override
-	public List<Book> getWish(String token) throws UserException {
+	public List<Book> getWishList(String token) throws UserException {
 		Users user=new Users();
 		Long id = (Long) JwtService.parse(token);
 		user = repository.findById(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " Not selected any book to wishlist"));

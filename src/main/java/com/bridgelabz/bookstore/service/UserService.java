@@ -21,7 +21,7 @@ public interface UserService {
 	Users forgetPassword(String email)throws UserException;
 	boolean updatePassword(UserPasswordDto forgetpass, String token) throws UserException;
 	Book addWishList(Long bookId,String token,String email) throws UserException;
-	List<Book> getWish(String token) throws UserException;
+	List<Book> getWishList(String token) throws UserException;
 	Book removeWishList(Long bookId,String token,String email) throws UserException;
 	UserAddress addAddress( UserAddressDto addressDto, String token )throws UserException;
 	UserAddress updateAddress(String token,UserAddressDto addDto,long addressId)throws UserException;
