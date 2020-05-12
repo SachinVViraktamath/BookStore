@@ -100,7 +100,7 @@ public class UserServiceImplementation implements UserService {
 			if (userMail.isVerified()) {
 				mailObject.setEmail(userMail.getEmail());
 				mailObject.setSubject("sending by admin");
-				mailObject.setMessage("http://localhost:8082/updatePassword/" + JwtService.parse(email));
+				mailObject.setMessage("http://localhost:8080/updatePassword/" + JwtService.parse(email));
 				return userMail;
 			}
 			return userMail;
@@ -144,7 +144,7 @@ public class UserServiceImplementation implements UserService {
 		    long id =  JwtService.parse(token);
 			Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
 			UserAddress add =reposit.findbyId(addressId).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
-			reposit.updateAdd(add.getStreet(),add.getTown(),add.getDistrict(),add.getState(),add.getCountry(),add.getPinCode());
+			reposit.updateAdd(add.getStreet(),add.getTown(),add.getDistrict(),add.getState(),add.getCountry(),add.getAddressType(),add.getPinCode());
 						
 			return add;	
 	
