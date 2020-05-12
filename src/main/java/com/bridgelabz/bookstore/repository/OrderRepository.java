@@ -14,7 +14,7 @@ public class OrderRepository {
 	@PersistenceContext
 	private EntityManager entityManager;	
 	
-	Order save(Order orderInfo) {
+	public Order save(Order orderInfo) {
 		Session session = entityManager.unwrap(Session.class);
 		session.saveOrUpdate(orderInfo);
 		return orderInfo;
