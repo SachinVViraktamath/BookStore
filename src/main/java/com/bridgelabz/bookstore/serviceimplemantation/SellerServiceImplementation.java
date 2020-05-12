@@ -19,7 +19,9 @@ import com.bridgelabz.bookstore.dto.SellerPasswordUpdateDto;
 import com.bridgelabz.bookstore.dto.SellerDto;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Seller;
+import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.SellerException;
+import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.SellerRepository;
 import com.bridgelabz.bookstore.service.AmazonS3AccessService;
@@ -92,7 +94,7 @@ public class SellerServiceImplementation implements SellerService {
 	@Override
 	public List<Seller> getSellers() {
 		List<Seller> sellers = repository.getSellers();
-		Seller seller = sellers.get(0);
+		sellers.get(0);
 		return sellers;
 
 	}
@@ -102,23 +104,33 @@ public class SellerServiceImplementation implements SellerService {
 	public boolean addBookBySeller(String token, BookDto dto, MultipartFile multipartFile) throws SellerException {
 		Book book = new Book();
 		Long sellerId = JwtService.parse(token);
-		System.out.println("$$$$");
 		Seller seller = repository.getSellerById(sellerId)
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "Seller is not exist"));
 		try {
 			if (seller.getIsVerified() == 1) {
 				book = mapper.map(dto, Book.class);
-				System.out.println("$$$$$$");
 				book.setBookImage(service.uploadFileToS3Bucket(multipartFile));
 				book.setBookCreatedAt(LocalDateTime.now());
 				bookRepository.save(book);
-				String mailResponse = "Books added for approval" + book;
+				MailService.sendEmailToAdmin(seller.getEmail(), "verification mail to book approval", book);
 				return true;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public Seller forgetPassword(String email) throws SellerException {
+		Seller seller = repository.getSeller(email)
+				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "seller is not exist"));
+		if (seller.getIsVerified() == 1) {
+			String mailResponse = "http://localhost:8080//updatePassword/"
+					+ JwtService.generateToken(seller.getSellerId(), Token.WITH_EXPIRE_TIME);
+			MailService.sendEmail(seller.getEmail(), "Verification", mailResponse);
+
+		}
+		return seller;
 	}
 
 	@Override

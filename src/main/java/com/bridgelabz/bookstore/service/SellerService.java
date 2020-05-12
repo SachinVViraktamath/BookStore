@@ -21,5 +21,5 @@ public List<Seller> getSellers();
  public Boolean updatePassword(SellerPasswordUpdateDto update, String token);
  //public SellerEntity forgetPassword(String Email);
 boolean addBookBySeller(String token, BookDto dto, MultipartFile multipartFile) throws SellerException;
-
+public Seller forgetPassword(String email);
 }

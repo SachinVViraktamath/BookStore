@@ -20,6 +20,8 @@ import com.bridgelabz.bookstore.dto.SellerLoginDto;
 import com.bridgelabz.bookstore.dto.SellerPasswordUpdateDto;
 import com.bridgelabz.bookstore.dto.SellerDto;
 import com.bridgelabz.bookstore.entity.Seller;
+import com.bridgelabz.bookstore.entity.Users;
+import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.SellerService;
 import com.bridgelabz.bookstore.utility.JwtService;
@@ -30,7 +32,7 @@ public class SellerController {
 @Autowired
  private SellerService service;
 
-
+/* API for seller registration */
 @PostMapping("seller/Registration")
 public ResponseEntity<Response> sellerRegistration(@RequestBody SellerDto dto){
 	
@@ -63,11 +65,23 @@ public ResponseEntity<Response> verify(@PathVariable("token") String token) thro
 	}
 	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "verification failed",token));
 }
+/* API for  get all the verified sellers  */
 @GetMapping("seller/allSellers")
 public ResponseEntity<Response> getAllUsers() {
 	List<Seller> sellers = service.getSellers();
 	return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "listed all the sellers", sellers));
 }
+/* API for seller forgetPassword */
+@PostMapping("seller/forgetPassword")
+public ResponseEntity<Response> forgetPassword(@RequestBody String email) throws UserException {
+	Seller seller = service.forgetPassword(email);
+	if (seller != null) {
+		return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED, " password changed Successfully ", 200));
+	}
+	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "user does not exists .", 400));
+
+}
+/* API for seller updating password */
 @PutMapping("seller/updateSellerPassword")
 public ResponseEntity<Response> updatePassword(@RequestBody SellerPasswordUpdateDto update,@PathVariable("token") String token) throws Exception {
 	Boolean passwordUpdate=service.updatePassword(update, token);
@@ -76,10 +90,10 @@ public ResponseEntity<Response> updatePassword(@RequestBody SellerPasswordUpdate
 	}
 	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "updation failed", token));
 }
-
+/* API for seller adding books for approval */
 @PostMapping("/book/addBookBySeller/")
 public ResponseEntity<Response> addBookBySeller(@RequestBody BookDto dto, @RequestPart MultipartFile file,@PathVariable("token") String token) {
-	System.out.println("@#@@@");
+	
 	boolean addBook = service.addBookBySeller(token, dto,file);
 	if (addBook) {
 		return ResponseEntity.ok()
@@ -88,7 +102,7 @@ public ResponseEntity<Response> addBookBySeller(@RequestBody BookDto dto, @Reque
 	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "verification failed", token));
 }
 
-
+/* API for books verification */
 @PutMapping("/verifyBooks/admin")
 public ResponseEntity<Response> verifyBookByAdmin(@PathVariable Long id, @RequestHeader("token") String token) {
 	boolean verify = service.bookVerify(token, id);
