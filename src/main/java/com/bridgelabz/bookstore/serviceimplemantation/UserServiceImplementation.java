@@ -19,6 +19,7 @@ import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.AdminException;
+import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.UserAddressRepository;
@@ -53,7 +54,6 @@ public class UserServiceImplementation implements UserService {
 	public Users userRegistration(@Valid UserRegisterDto userInfoDto) throws UserException {
 		Users user = new Users();		
 		if (repository.FindByEmail(userInfoDto.getEmail()).isPresent()==false){
-
 			BeanUtils.copyProperties(userInfoDto, user);
 			user.setPassword(bcrypt.encode(userInfoDto.getPassword()));			
 			user.setCreationTime(LocalDateTime.now());
@@ -63,21 +63,22 @@ public class UserServiceImplementation implements UserService {
 			MailService.sendEmail(user.getEmail(),"verification", mailResponse);
 		}
 		return user;
+	
 	}
 
 	@Transactional
 	@Override
 	public Users userVerification(String token) throws UserException {
-		long id = JwtService.parse(token);
-		Users userInfo = repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
-	      if (!userInfo.isVerified()) {
-				userInfo.setVerified(true);
-				repository.findbyId(userInfo.getUserId());
-				return userInfo;
-			} else {
-				throw new UserException(HttpStatus.NOT_ACCEPTABLE," User already exist");
-			}
+		boolean value=true;
+		Long id =(Long) JwtService.parse(token);
 		
+		Users userInfo = repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
+	     
+		userInfo.setVerified(value);
+		repository.save(userInfo);
+		
+			
+				return userInfo;
 	}
 	
 	@Transactional
@@ -136,66 +137,68 @@ public class UserServiceImplementation implements UserService {
 	@Transactional
 	@Override
 	public UserAddress addAddress(UserAddressDto addressDto, String token) throws UserException {
-		
-			long id=JwtService.parse(token);
+		UserAddress users=new UserAddress();
+			Long id=JwtService.parse(token);
 			Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
-			UserAddress	add=new UserAddress();
-			BeanUtils.copyProperties(addressDto, user);
-			reposit.save(add);
-			return add;	
+			BeanUtils.copyProperties(addressDto, users);			
+			user.getAddress().add(users);
+			reposit.save(users);
+			
+			return users;	
 		
 	}
 
 	@Transactional
 	@Override
-	public UserAddress updateAddress(String token,UserAddressDto addDto,long addressId) throws UserException{
-		    long id =  JwtService.parse(token);
-		    Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
-			UserAddress add =reposit.findbyId(addressId).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
-			reposit.updateAdd(add.getStreet(),add.getTown(),add.getDistrict(),add.getState(),add.getCountry(),add.getAddressType(),add.getPinCode());
-			return add;	
+	public UserAddress updateAddress(String token,UserAddressDto addDto,Long addressId) throws UserException{
+		UserAddress users=new UserAddress();
+		Long id=JwtService.parse(token);
+		Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
+		UserAddress usersaddress=user.getAddress().stream().filter((address)->address.getAddressId()==addressId).findFirst().orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Address is not exist"));
+		usersaddress.setAddressType(addDto.getAddressType());	
+		usersaddress.setCountry(addDto.getCountry());
+		usersaddress.setDistrict(addDto.getDistrict());
+		usersaddress.setPinCode(addDto.getPinCode());
+		usersaddress.setState(addDto.getState());
+		usersaddress.setStreet(addDto.getStreet());
+		usersaddress.setTown(addDto.getTown());				
+		repository.save(user);		
+		return users;	
 	
 	}
 	
 	@Transactional
 	@Override
-	public Book addWishList(Long bookId, String token, String email) throws UserException {
-		Users wish=repository.FindByEmail(email).
-				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " Not Added to WishList"));
-		Long id = (Long) JwtService.parse(token);
-		if(wish!=null) {
-				Book book=bookRep.getBookById(id).
-						orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " Not book Added to WishList"));
-				wish.getUserBook().add(book);	
-				return book;
-		}
-			return null;
+	public Book addWishList(Long bookId, String token) throws UserException, BookException {
+		Long id=JwtService.parse(token);
+		Users user=repository.findbyId(id).			
+				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " user not found"));
+		Book books=bookRep.findById(bookId).orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, " Book not found"));
+		user.getWhishlist().add(books);	
+		repository.save(user);
+			return books;
 	}
 	
 	
 	@Transactional
 	@Override
 	public List<Book> getWishList(String token) throws UserException {
-		Users user=new Users();
-		Long id = (Long) JwtService.parse(token);
-		user = repository.findById(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " Not selected any book to wishlist"));
-		List<Book> note = user.getUserBook();
-		return note;
+		Long id=JwtService.parse(token);
+		Users user=repository.findbyId(id).			
+				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " user not found"));		
+       List<Book> books	=user.getWhishlist();
+		return books;
+		
 	}
 	
 	@Transactional
 	@Override
-	public Book removeWishList(Long bookId, String token, String email) throws UserException {
-		Users wish=repository.FindByEmail(email).
-				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " Book Removed from WishList"));
-		
-		Long id = (Long) JwtService.parse(token);
-			if(wish!=null) {
-				Book book=bookRep.getBookById(id). 
-						orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " Book Removed from WishList"));
-				wish.getUserBook().remove(book);	
-				return book;
+	public Book removeWishList(Long bookId, String token) throws UserException, BookException {Long id=JwtService.parse(token);
+	Users user=repository.findbyId(id).			
+			orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " user not found"));
+	Book books=bookRep.findById(bookId).orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, " Book not found"));
+	user.getWhishlist().remove(books);	
+	
+		return null;
 		}
-			return null;
-	}
 }

@@ -21,7 +21,7 @@ public interface AdminService {
 
 	boolean updatepassword(AdminPasswordDto information, String token) throws AdminException;
 
-	boolean approveBook(Long email) throws BookException;
+	boolean approveBook(Long id) throws BookException;
 	
 
 	

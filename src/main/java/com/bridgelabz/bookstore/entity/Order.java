@@ -25,15 +25,6 @@ public class Order {
 	private LocalDateTime orderPlaceTime;
 	
 	private String OrderStatus;
-	
-	@ManyToOne(cascade = CascadeType.ALL)
-	private Book books;
-	
-	@ManyToOne(cascade = CascadeType.ALL)
-	private Users user;
-	
-      
-	@OneToOne(cascade = CascadeType.ALL)
-	private UserAddress UserAddress;
+
 
 }

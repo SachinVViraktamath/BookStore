@@ -13,9 +13,9 @@ import lombok.NoArgsConstructor;
 public class UserRegisterDto {
 	
 	@NotNull
-	private String userName;
+	private String firstName;
 	@NotNull
-	private String userLastName;
+	private String lastName;
 	@NotNull
 	private String password;
 	@NotNull
@@ -23,7 +23,7 @@ public class UserRegisterDto {
 	@NotNull
 	private String gender;
 	@NotNull
-	private long phoneNumber;
+	private long phNo;
 
 
 	

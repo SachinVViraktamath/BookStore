@@ -34,7 +34,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 	@Override
 	public Optional<Admin> getAdmin(String email) {
 		Session session = entityManager.unwrap(Session.class);
-		return session.createQuery("FROM AdminEntity where adminEmailId =:email").setParameter("email", email).uniqueResultOptional();
+		return session.createQuery("FROM Admin where adminEmailId =:email").setParameter("email", email).uniqueResultOptional();
 
 	}
 	
@@ -46,7 +46,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 
 		@SuppressWarnings("unchecked")
 		TypedQuery<Admin> q = session
-				.createQuery("update AdminEntity set adminIsVerified =:p where adminId=:i").setParameter("p", true)
+				.createQuery("update Admin set adminIsVerified =:p where adminId=:i").setParameter("p", true)
 				.setParameter("i", id);
 		int status = q.executeUpdate();
 		if (status > 0) {
@@ -62,7 +62,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 	@Override
 	public Optional<Admin> getAdminById(Long id) {
 		Session session = entityManager.unwrap(Session.class);
-		return session.createQuery("FROM AdminEntity where adminId=:id").setParameter("id", id).uniqueResultOptional();
+		return session.createQuery("FROM Admin where adminId=:id").setParameter("id", id).uniqueResultOptional();
 
 	}
 
@@ -70,7 +70,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 	@Override
 	public boolean upDateAdminPassword(AdminPasswordDto information, Long id) {
 		Session session = entityManager.unwrap(Session.class);
-		Query q = session.createQuery("update AdminEntity set adminPassword =:p" + " " + " " + "where adminId=:i")
+		Query q = session.createQuery("update Admin set adminPassword =:p" + " " + " " + "where adminId=:i")
 				.setParameter("p", information.getConfirmPassword()).setParameter("i", id);
 		int status = q.executeUpdate();
 		if (status > 0) {
@@ -88,6 +88,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 		Session session = entityManager.unwrap(Session.class);
 		Query q = session.createQuery("update Book set isBookApproved =:p" + " " + " " + "where bookId=:i");
 		q.setParameter("p", value);
+		q.setParameter("i", BookId);
         int status = q.executeUpdate();
 		if (status > 0) {
 			return true;

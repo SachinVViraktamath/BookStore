@@ -10,33 +10,32 @@ import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-@Table(name = "user_address")
+@Table(name = "userAddress")
 @Entity
 public class UserAddress {
 	
 	 @Id
 	 @GeneratedValue(strategy = GenerationType.IDENTITY)
-	 private long addressId;
+	 private Long addressId;
 	 
-	 @NotBlank(message = "Street name is mandatory")
+	 
 	 private String street;
 	 
-	 @NotBlank(message = "Town name is mandatory")
+	
 	 private String town;
-	 
-	 @NotBlank(message = "District name is mandatory")
+	
 	 private String district;
 	 
-	 @NotBlank(message = "State name is mandatory")
+	 
 	 private String state;
 	 
-	 @NotBlank(message = "Country name is mandatory")
+	
 	 private String country;
 	 
-	 @NotBlank(message = "addressType is mandatory")
+	 
 	 private String addressType;
 	 
-	 @NotBlank(message = "Pin code is mandatory")
+	 
 	 private int pinCode;
 
 	 

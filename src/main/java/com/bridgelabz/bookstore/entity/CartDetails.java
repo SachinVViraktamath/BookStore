@@ -9,23 +9,26 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.Data;
+
 @Data
 @Entity
-@Table(name = "BookQuantity")
-public class BookQuantity {
+@Table(name="cart")
+public class CartDetails {
 
+	
+	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long quantityId;
+	private  Long cartId;
 	
-	private int bookQty;
+	private int booksQuantity;
 	
-	
-	
-		
+	private double totalPrice;
+	@ManyToOne(cascade=CascadeType.ALL,targetEntity=CartDetails.class)
+	@JoinColumn(name="bookId")
+	private List<Book> cartBooks;
 }

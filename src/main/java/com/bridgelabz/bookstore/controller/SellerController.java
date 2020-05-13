@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,8 +20,12 @@ import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.SellerLoginDto;
 import com.bridgelabz.bookstore.dto.SellerPasswordUpdateDto;
 import com.bridgelabz.bookstore.dto.SellerDto;
+import com.bridgelabz.bookstore.entity.Admin;
+import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.entity.Users;
+import com.bridgelabz.bookstore.exception.AdminException;
+import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.SellerService;
@@ -72,18 +77,21 @@ public ResponseEntity<Response> getAllUsers() {
 	return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "listed all the sellers", sellers));
 }
 /* API for seller forgetPassword */
-@PostMapping("seller/forgetPassword")
-public ResponseEntity<Response> forgetPassword(@RequestBody String email) throws UserException {
+
+@PostMapping("/seller/forgotpassword")
+public ResponseEntity<Response> forgotPassword(@RequestParam("email") String email) throws SellerException {
 	Seller seller = service.forgetPassword(email);
-	if (seller != null) {
-		return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED, " password changed Successfully ", 200));
+	if (seller!=null) {
+		return ResponseEntity.badRequest()
+				.body(new Response(HttpStatus.ACCEPTED, "seller existed", seller));
 	}
-	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "user does not exists .", 400));
+	return ResponseEntity.badRequest()
+			.body(new Response(HttpStatus.NOT_FOUND, "admin does not exit in the given email id", seller));
 
 }
 /* API for seller updating password */
 @PutMapping("seller/updateSellerPassword")
-public ResponseEntity<Response> updatePassword(@RequestBody SellerPasswordUpdateDto update,@PathVariable("token") String token) throws Exception {
+public ResponseEntity<Response> updatePassword(@RequestBody SellerPasswordUpdateDto update,@RequestParam("token") String token) throws SellerException {
 	Boolean passwordUpdate=service.updatePassword(update, token);
 	if(passwordUpdate) {
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Password update", update));
@@ -91,26 +99,17 @@ public ResponseEntity<Response> updatePassword(@RequestBody SellerPasswordUpdate
 	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "updation failed", token));
 }
 /* API for seller adding books for approval */
-@PostMapping("/book/addBookBySeller/")
-public ResponseEntity<Response> addBookBySeller(@RequestBody BookDto dto, @RequestPart MultipartFile file,@PathVariable("token") String token) {
+@PostMapping("/seller/addBookBySeller/")
+public ResponseEntity<Response> addBookBySeller(@RequestBody BookDto dto,@RequestHeader("token") String token) {
 	
-	boolean addBook = service.addBookBySeller(token, dto,file);
-	if (addBook) {
+	Book addBook = service.addBookBySeller(token, dto);
+	if (addBook!=null) {
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, "verification mail has send successfully", token));
 	}
 	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "verification failed", token));
 }
 
-/* API for books verification */
-@PutMapping("/verifyBooks/admin")
-public ResponseEntity<Response> verifyBookByAdmin(@PathVariable Long id, @RequestHeader("token") String token) {
-	boolean verify = service.bookVerify(token, id);
-	if (verify) {
 
-		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "book approved", token));
-	}
-	return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, " book rejected", token));
-}
 }
 

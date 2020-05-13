@@ -8,6 +8,7 @@ import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.SellerLoginDto;
 import com.bridgelabz.bookstore.dto.SellerPasswordUpdateDto;
 import com.bridgelabz.bookstore.dto.SellerDto;
+import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.exception.SellerException;
 
@@ -17,9 +18,7 @@ public Seller register(SellerDto dto);
 public Seller login(SellerLoginDto login);
 public Boolean verify(String token);
 public List<Seller> getSellers();
- public Boolean bookVerify(String token,Long bookId);
  public Boolean updatePassword(SellerPasswordUpdateDto update, String token);
- //public SellerEntity forgetPassword(String Email);
-boolean addBookBySeller(String token, BookDto dto, MultipartFile multipartFile) throws SellerException;
+public Book addBookBySeller(String token, BookDto dto ) throws SellerException;
 public Seller forgetPassword(String email);
 }

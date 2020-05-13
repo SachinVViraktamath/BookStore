@@ -99,7 +99,7 @@ public class AdminController {
 		boolean result = service.approveBook(bookId);
 		if (result==true) {
 			return ResponseEntity.badRequest()
-					.body(new Response(HttpStatus.ACCEPTED, "Book existed", result));
+					.body(new Response(HttpStatus.ACCEPTED, "Book is approved", result));
 		}
 		return ResponseEntity.badRequest()
 				.body(new Response(HttpStatus.NOT_FOUND, "This book is not exist", result));

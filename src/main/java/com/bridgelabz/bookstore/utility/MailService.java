@@ -52,12 +52,14 @@ public class MailService {
 	 * book to admin
 	 */
 
-	public static void sendEmailToAdmin(String toEmail, String subject, Book book) {
+	public static void sendEmailToAdmin( String subject, Book book) {
 
-		String fromEmail = System.getenv("emailAdmin");
+		String fromEmail = System.getenv("email");
 		System.out.println(fromEmail);
-		String password = System.getenv("passwordAdmin");
-		System.out.println(password);
+		String password = System.getenv("password");
+	System.out.println(password);
+	String toEmail=System.getenv("emailAdmin");
+	String toPassword=System.getenv("passwordAdmin");
 		Properties prop = new Properties();
 		prop.put("mail.smtp.auth", "true");
 		prop.put("mail.smtp.starttls.enable", "true");
@@ -80,13 +82,14 @@ public class MailService {
 			message.setFrom(new InternetAddress(fromEmail, "bookstore"));
 			message.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
 			message.setSubject(subject);
-			message.setText(book.getBookName());
-			message.setText(book.getBookAuthor());
-			message.setText(book.getBookDescription());
-			Date date = Date.from(book.getBookCreatedAt().atZone(ZoneId.systemDefault()).toInstant());
-			message.setSentDate(date);
-			message.setText(book.getBookImage());
-			message.setText(Double.toString(book.getBookPrice()));
+			book.getBookName();
+			book.getBookAuthor();
+			book.getBookDescription();
+			book.getBookPrice();
+			message.setContent(book,"book");
+			//message.setSentDate(date);
+			
+		//	message.setText(Double.toString(book.getBookPrice()));
 
 			Transport.send(message);
 		} catch (Exception e) {

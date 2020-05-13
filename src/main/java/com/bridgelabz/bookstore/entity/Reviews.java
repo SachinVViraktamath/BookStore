@@ -9,7 +9,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -29,9 +32,12 @@ public class Reviews {
 	private String review;
 	private int rating;
 	private LocalDateTime createdAt;
-
-	@ManyToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "reviewId")
-	private List<Users> user;
+	
+	
+	
+	 @ManyToOne(cascade = CascadeType.ALL, targetEntity = Book.class)
+	 @JoinColumn(name="user_id")
+	   private List<Users> users;
+	 
 
 }

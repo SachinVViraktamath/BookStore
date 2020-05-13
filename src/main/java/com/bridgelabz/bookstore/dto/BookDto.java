@@ -13,14 +13,14 @@ public class BookDto {
 	@NotNull(message = "Book Price cannot be empty")
 	private double bookPrice;
 
-	@NotNull(message = "Book Image cannot be empty")
-	private String bookImage;
+//	@NotNull(message = "Book Image cannot be empty")
+//	private String bookImage;
 
 	@NotNull(message = "Book Description cannot be empty")
 	private String bookDescription;
 
 	@NotNull(message = "Book Quantity cannot be empty")
-	private String bookQuantity;
+	private int bookQuantity;
 
 	public String getBookName() {
 		return bookName;
@@ -46,13 +46,13 @@ public class BookDto {
 		this.bookPrice = bookPrice;
 	}
 
-	public String getBookImage() {
-		return bookImage;
-	}
-
-	public void setBookImage(String bookImage) {
-		this.bookImage = bookImage;
-	}
+//	public String getBookImage() {
+//		return bookImage;
+//	}
+//
+//	public void setBookImage(String bookImage) {
+//		this.bookImage = bookImage;
+//	}
 
 	public String getBookDescription() {
 		return bookDescription;
@@ -62,11 +62,11 @@ public class BookDto {
 		this.bookDescription = bookDescription;
 	}
 
-	public String getBookQuantity() {
+	public int getBookQuantity() {
 		return bookQuantity;
 	}
 
-	public void setBookQuantity(String bookQuantity) {
+	public void setBookQuantity(int bookQuantity) {
 		this.bookQuantity = bookQuantity;
 	}
 

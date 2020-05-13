@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,6 +24,7 @@ import com.bridgelabz.bookstore.dto.UserLoginDto;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
+import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.UserService;
@@ -42,7 +44,7 @@ public class UserController {
 	public ResponseEntity<Response> registeration(@RequestBody UserRegisterDto userInfoDto) throws UserException {
 		Users user = service.userRegistration(userInfoDto);
 		if (user != null) {
-			return ResponseEntity.badRequest()
+			return ResponseEntity.ok()
 					.body(new Response(HttpStatus.ACCEPTED, "Registered Successfully", userInfoDto));
 		}
 		return ResponseEntity.badRequest()
@@ -55,7 +57,7 @@ public class UserController {
 	public ResponseEntity<Response> verification(@PathVariable("token") String token) throws UserException {
 		Users user = service.userVerification(token);
 		if (user != null) {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED, "Successfully verified", 200));
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Successfully verified", 200));
 		}
 		return ResponseEntity.badRequest()
 				.body(new Response(HttpStatus.NOT_ACCEPTABLE, "verification failed", 400));
@@ -66,7 +68,7 @@ public class UserController {
 	public ResponseEntity<Response> login(@RequestBody UserLoginDto login) throws UserException {
 		Users user = service.userLogin(login);
 		if (user != null) {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED, "Login Successfull", 200));
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Login Successfull", 200));
 		}
 		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "Login failed Please login again", 400));
 
@@ -74,10 +76,10 @@ public class UserController {
 
 	@ApiOperation(value = "Api to check if UserExists in BookStore", response = Response.class)
 	@PostMapping("/forgetPassword")
-	public ResponseEntity<Response> forgetPassword(@RequestBody String email) throws UserException {
+	public ResponseEntity<Response> forgetPassword(@RequestParam String email) throws UserException {
 		Users user = service.forgetPassword(email);
 		if (user != null) {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED, " password changed Successfully ", 200));
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " password changed Successfully ", 200));
 		}
 		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "user does not exists .", 400));
 
@@ -89,7 +91,7 @@ public class UserController {
 			@Valid @PathVariable("token") String token) throws UserException {
 		Users user = service.userVerification(token);
 		if (user != null) {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED, " Successfully Updated ", 200));
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " Successfully Updated ", 200));
 		}
 		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "failed to update password", 400));
 
@@ -101,7 +103,7 @@ public class UserController {
 			throws UserException {
 		UserAddress add = service.addAddress(addDto, token);
 		if (add != null) {
-			return ResponseEntity.badRequest()
+			return ResponseEntity.ok()
 					.body(new Response(HttpStatus.ACCEPTED, " User Address added Successfully  ", 200));
 		}
 
@@ -111,11 +113,11 @@ public class UserController {
 
 	@ApiOperation(value = "Api to Update User Address for BookStore", response = Response.class)
 	@PutMapping("/updateAddress/{addressId}")
-	public ResponseEntity<Response> updateAddress(String token, @PathVariable long addressId,
+	public ResponseEntity<Response> updateAddress(@RequestParam String token, @PathVariable long addressId,
 			@RequestBody UserAddressDto addDto) throws UserException {
 		UserAddress add = service.updateAddress(token, addDto, addressId);
 		if (add != null) {
-			return ResponseEntity.badRequest()
+			return ResponseEntity.ok()
 					.body(new Response(HttpStatus.ACCEPTED, " User Address Updated Successfully  ", 200));
 		}
 
@@ -125,27 +127,26 @@ public class UserController {
 	
 	@ApiOperation(value = "Api to add book in WishList for BookStore", response = Response.class)
 	@PostMapping("/addToWishList")
-	public ResponseEntity<Response> addToWishList(@RequestParam Long bookId, @RequestHeader String token,@RequestParam String email) throws UserException
+	public ResponseEntity<Response> addToWishList(@RequestParam Long bookId, @RequestHeader String token) throws UserException, BookException
 	{
-		Book book = service.addWishList(bookId, token, email);
+		Book book = service.addWishList(bookId, token);
 		
 		if(book!=null) {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," Added To WishList",200));
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED," Added To WishList",200));
 		}
 		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE," Not added", 400));
 	}
 	
 	
 	@ApiOperation(value = "Api to remove book from WishList for BookStore", response = Response.class)
-	@PostMapping("/removeFromWishList")
-	public ResponseEntity<Response> removeFromWishList(@RequestParam Long bookId, @RequestHeader String token,@RequestParam String email) throws UserException
+	@DeleteMapping("/removeFromWishList")
+	public ResponseEntity<Response> removeFromWishList(@RequestParam Long bookId, @RequestHeader String token) throws UserException, BookException
 	{
-		Book book = service.removeWishList(bookId, token, email);
+		Book book = service.removeWishList(bookId, token);	
 		
-		if(book!=null) {
-			return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," removed from WishList",200));
-		}
-		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE," Not removed", 400));
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED," removed from WishList",200));
+		
+		
 	}
 	
 	
@@ -156,7 +157,7 @@ public class UserController {
 		List<Book> user = service.getWishList(token);
 		if(user!=null) {
 		
-		return ResponseEntity.badRequest().body(new Response(HttpStatus.ACCEPTED," WishList List is here.. ",200));
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED," WishList List is here.. ",user));
 
 		}
 		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"  No books in WishList List", 400));

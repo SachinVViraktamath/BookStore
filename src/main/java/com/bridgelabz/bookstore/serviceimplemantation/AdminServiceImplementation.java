@@ -4,6 +4,7 @@ package com.bridgelabz.bookstore.serviceimplemantation;
 
 import javax.transaction.Transactional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,10 +13,12 @@ import org.springframework.stereotype.Service;
 import com.bridgelabz.bookstore.dto.AdminDto;
 import com.bridgelabz.bookstore.dto.AdminLoginDto;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
-import com.bridgelabz.bookstore.entity.Admin; 
+import com.bridgelabz.bookstore.entity.Admin;
+import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.repository.AdminRepository;
+import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.response.MailingOperation;
 import com.bridgelabz.bookstore.response.MailingandResponseOperation;
 import com.bridgelabz.bookstore.service.AdminService;
@@ -37,10 +40,14 @@ public class AdminServiceImplementation implements AdminService{
 	private AdminRepository repository;
 	
 	@Autowired
+	private BookRepository bookRepository;
+	
+	@Autowired
 	private BCryptPasswordEncoder passwordEncryption;
 	
 	
-
+@Autowired
+private ModelMapper mapper;
 	
 	@Transactional
 	@Override
@@ -48,7 +55,9 @@ public class AdminServiceImplementation implements AdminService{
 		
 		Admin adminInfo = new Admin();
 		if (repository.getAdmin(adminInformation.getAdminEmailId()).isPresent()==false){
-			BeanUtils.copyProperties(adminInformation, adminInfo);		
+		BeanUtils.copyProperties(adminInformation, adminInfo);
+		
+					
 			String epassword = passwordEncryption.encode(adminInformation.getAdminPassword());
 			adminInfo.setAdminPassword(epassword);					
 			adminInfo = repository.save(adminInfo);
@@ -69,8 +78,7 @@ public class AdminServiceImplementation implements AdminService{
 	@Transactional
 	@Override
 	public boolean verifyAdmin(String token) throws AdminException {
-		//System.out.println("id in verification" + (long) generate.parseJWT(token));
-		Long id = (long) JwtService.parse(token);
+				Long id = (long) JwtService.parse(token);
 		repository.verify(id);
 		return true;
 	}
@@ -125,12 +133,16 @@ public class AdminServiceImplementation implements AdminService{
 			}
 			return passwordupdateflag;	}
 
-
+    @Transactional
 	@Override
-	public boolean approveBook(Long BookId) throws BookException {		
-		boolean isbookApproved=repository.approvedTheBook(BookId);                   
+	public boolean approveBook(Long BookId) throws BookException {	
+		
+		bookRepository.getBookById(BookId).orElseThrow(() -> new BookException( HttpStatus.NOT_FOUND,"admin is not exist"));             
+		
+		boolean isbookApproved=repository.approvedTheBook(BookId);
+		
 		if(isbookApproved==false) {
-			throw new BookException(HttpStatus.NOT_FOUND,"book is not exist");
+			throw new BookException(HttpStatus.NOT_FOUND,"failed to approve");
 		}else
 		{
 			return true;

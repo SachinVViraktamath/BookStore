@@ -1,4 +1,5 @@
-package com.bridgelabz.bookstore.serviceimplemantation;
+package com.bridgelabz.bookstore.utility;
+
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,10 +21,10 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.bridgelabz.bookstore.entity.Book;
-import com.bridgelabz.bookstore.service.AmazonS3AccessService;
-@Component
 
-public class AmazonS3AccessImplementation  implements AmazonS3AccessService{
+
+@Component
+public class AmazonS3Access {
 
 	private String awsS3AudioBucket;
 	private AmazonS3 amazonS3;
@@ -31,7 +32,7 @@ public class AmazonS3AccessImplementation  implements AmazonS3AccessService{
 	private String awsKeyId;
 	private Region region;
 	@Autowired
-	public AmazonS3AccessImplementation(Region awsRegion, AWSCredentialsProvider awsCredentialsProvider,
+	public AmazonS3Access(Region awsRegion, AWSCredentialsProvider awsCredentialsProvider,
 			String awsS3AudioBucket, String awsKeyId) {
 		this.amazonS3 = AmazonS3ClientBuilder.standard().withCredentials(awsCredentialsProvider)
 				.withRegion(awsRegion.getName()).build();
@@ -40,7 +41,7 @@ public class AmazonS3AccessImplementation  implements AmazonS3AccessService{
 		this.region = awsRegion;
 
 	}
-	@Override
+	
 	@Async
 	public String uploadFileToS3Bucket(MultipartFile multipartFile) throws FileNotFoundException,IOException {
 		String image=multipartFile.getOriginalFilename();
@@ -55,7 +56,7 @@ public class AmazonS3AccessImplementation  implements AmazonS3AccessService{
 		file.delete();
 		return url;
 		}
-@Override
+
 @Async
 	public boolean deleteFileFromS3Bucket() {
 		Book book=new Book();

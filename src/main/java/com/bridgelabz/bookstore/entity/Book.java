@@ -9,20 +9,21 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
+
+
 @Table(name = "book")
 public class Book {
 
@@ -35,20 +36,19 @@ public class Book {
 	private String bookAuthor;
 
 	private double bookPrice;
-
-	private String bookImage;
-
+     private String bookImage;
 	private String bookDescription;
 
 	private boolean isBookApproved;
 
 	private LocalDateTime bookCreatedAt;
+	
 
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "bookId")
-	private List<Reviews> reviews;
+@OneToMany(cascade=CascadeType.ALL,targetEntity=BookQuantity.class)
+@JoinColumn(name="bookId")
+private List<BookQuantity> book;
 
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "bookId")
-	private List<BookQuantity> bookquantity;
+
+
+
 }

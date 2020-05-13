@@ -11,6 +11,7 @@ import com.bridgelabz.bookstore.dto.UserLoginDto;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
+import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.UserException;
 
 public interface UserService {
@@ -20,10 +21,10 @@ public interface UserService {
 	Users userLogin(UserLoginDto login) throws UserException;
 	Users forgetPassword(String email)throws UserException;
 	boolean updatePassword(UserPasswordDto forgetpass, String token) throws UserException;
-	Book addWishList(Long bookId,String token,String email) throws UserException;
+	Book addWishList(Long bookId,String token) throws UserException,BookException;
 	List<Book> getWishList(String token) throws UserException;
-	Book removeWishList(Long bookId,String token,String email) throws UserException;
+	Book removeWishList(Long bookId,String token) throws UserException,BookException;
 	UserAddress addAddress( UserAddressDto addressDto, String token )throws UserException;
-	UserAddress updateAddress(String token,UserAddressDto addDto,long addressId)throws UserException;
+	UserAddress updateAddress(String token,UserAddressDto addDto,Long addressId)throws UserException;
 
 }

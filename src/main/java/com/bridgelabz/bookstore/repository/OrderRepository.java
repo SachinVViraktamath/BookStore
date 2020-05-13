@@ -6,9 +6,6 @@ import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import com.bridgelabz.bookstore.entity.Order;
 
-
-
-
 @Repository
 public class OrderRepository {	
 	@PersistenceContext

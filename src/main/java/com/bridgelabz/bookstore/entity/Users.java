@@ -11,10 +11,12 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -22,67 +24,61 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Entity
-@Table(name="Users")
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "Users")
+@Data
 public class Users {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long userId;
-	
-	@Column(name = "First_Name")
-	@NotBlank(message = "First Name is mandatory")
+	private Long userId;
+
+	@Column
+	@NotNull
 	private String firstName;
-	
-	@Column(name = "Last_Name")
+
+	@Column
+	@NotNull
 	private String lastName;
-	
-	@Column(name = "Password")
-	@NotBlank(message = "Password is mandatory")
+
+	@Column
+	@NotNull
 	private String password;
-	
-	@Column(name = "Email", unique = true)
+
+	@NotNull
+	@Column
 	private String email;
 
-	@Column(name = "Gender")
-	@NotBlank(message = "Gender is mandatory")
+	@Column
+	@NotNull
 	private String gender;
 
-	@Column(name = "Phone_No")
-	@NotBlank(message = "contact is mandatory")
-	private long phNo;
+	@Column
+	@NotNull
+	private Long phNo;
 
-	@Column(name = "Register_Date")
+	@Column
+	@NotNull
 	private LocalDateTime creationTime;
 
-	@Column(name = "Last_Updated")
+	@Column
+	@NotNull
 	private LocalDateTime updateTime;
 
-	@Column(name = "is_Verified",columnDefinition = "boolean default values",nullable=false)
+	@Column(columnDefinition = "boolean default false", nullable = false)
 	private boolean isVerified;
-	
 
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = UserAddress.class)
 	@JoinColumn(name = "userId")
 	private List<UserAddress> address;
-	
-	@ManyToMany(cascade = CascadeType.ALL)
-	@JoinTable(name = "user_book", joinColumns = { @JoinColumn(name = "userId") }, inverseJoinColumns = {
-			@JoinColumn(name = "bookId") })
-	
-	@JsonIgnore
-	private List<Book> userBook;
-	
-	
-	@OneToOne(cascade = CascadeType.ALL, targetEntity = UserBookCart.class)
+
+	@OneToMany(cascade = CascadeType.ALL, targetEntity = Book.class)
+	@JoinTable(name = "wish_list", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
+			@JoinColumn(name = "book_id") })
+	private List<Book> whishlist;
+
+	@OneToMany(cascade = CascadeType.ALL, targetEntity = Book.class)
 	@JoinColumn(name = "userId")
-	private List<UserBookCart> cartBooks;
-	
-	
-	
-	
-	
+	private List<CartDetails> booksCart;
+
 }

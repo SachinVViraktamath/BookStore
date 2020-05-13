@@ -16,7 +16,7 @@ import com.bridgelabz.bookstore.entity.UserAddress;
 public interface UserAddressRepository extends JpaRepository<UserAddress, Long> {
 
 	
-	@Query(value = "select * from user_address where addressId=?", nativeQuery = true)
+	@Query(value = "select * from userAddress where address_id=?", nativeQuery = true)
 	public Optional<UserAddress> findbyId(long addressId);
 	
 	@Modifying

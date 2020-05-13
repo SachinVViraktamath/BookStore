@@ -27,7 +27,6 @@ public class SellerRepository {
 		return seller;
 	}
 	// * Query to get the seller information bby email */
-
 	@SuppressWarnings("unchecked")
 	public Optional<Seller> getSeller(String email) {
 		Session session = entityManger.unwrap(Session.class);
@@ -35,7 +34,12 @@ public class SellerRepository {
 				.uniqueResultOptional();
 
 	}
-
+public boolean isSellerExist(String email) {
+	Session session = entityManger.unwrap(Session.class);
+	Query<Seller> q=session.createQuery("FROM Seller where email=:email");
+	q.setParameter("email", email);
+	return true;
+}
 	@SuppressWarnings("unchecked")
 	public boolean verify(Long id) {
 		Session session = entityManger.unwrap(Session.class);
