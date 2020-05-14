@@ -16,9 +16,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.bookstore.dto.BookDto;
+import com.bridgelabz.bookstore.dto.ReviewDto;
 import com.bridgelabz.bookstore.entity.Book;
+import com.bridgelabz.bookstore.entity.Reviews;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.SellerException;
+import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.BookService;
 import com.bridgelabz.bookstore.service.ElasticSearchService;
@@ -116,4 +119,25 @@ public class BookController {
 
 
 }
+	
+
+	@ApiOperation(value = "Api for rating and review the book")
+	@PutMapping("/ratingreview")
+	public ResponseEntity<Response> writeReview(@RequestBody ReviewDto review,@RequestHeader(name="token") String token, @RequestParam Long bookId) throws UserException, BookException{
+		bookService.writeReviewAndRating(token, review, bookId);
+
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", review));
+
+	}
+	@ApiOperation(value = "Api for view all rating and review")
+	@GetMapping("/viewratings")
+	public ResponseEntity<Response> getBookRatingAndReview(@RequestParam Long bookId){
+		List<Reviews> review= bookService.getRatingsOfBook(bookId);
+			return	ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", review));
+}
+	
+	
+	
 }

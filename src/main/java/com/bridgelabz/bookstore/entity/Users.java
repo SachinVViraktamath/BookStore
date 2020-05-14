@@ -73,7 +73,10 @@ public class Users {
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private boolean isVerified;
 	
-	
+
+	@OneToMany(cascade = CascadeType.ALL, targetEntity = Order.class)
+	@JoinColumn(name = "userId")
+	private List<Order> orderBookDetails;
 	
 	@ManyToMany(cascade = CascadeType.ALL)
 	private List<Book> whilistBooks;

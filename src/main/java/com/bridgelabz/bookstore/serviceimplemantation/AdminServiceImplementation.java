@@ -49,27 +49,25 @@ public class AdminServiceImplementation implements AdminService{
 	
 	@Transactional
 	@Override
-	public Admin adminRegistartion(AdminDto adminInformation) throws AdminException {		
+	public Admin adminRegistartion(AdminDto adminInformation) throws AdminException  {		
 	    	Admin adminInfo = new Admin();
 	    	if (adminRepository.getAdmin(adminInformation.getAdminEmailId()).isPresent()) {
 			 throw new AdminException(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.EMAIL_ID_ALREADY_PRASENT);
-	    	}
-	    	else {
+	    	}	    	
 	    	String adminemial=adminInformation.getAdminEmailId();
 		    BeanUtils.copyProperties(adminInformation, adminInfo);
 			adminInfo.setPassword(( passwordEncryption.encode(adminInformation.getAdminPassword())));					
 			adminInfo = adminRepository.save(adminInfo);
 			String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,
 					JwtService.generateToken(adminInfo.getAdminId(),Token.WITH_EXPIRE_TIME));		
-			MailService.sendEmail(adminemial, Constants.VERIFICATION_MSG, mailResponse);	
-	    	}		
-		return adminInfo;
+			MailService.sendEmail(adminemial, Constants.VERIFICATION_MSG, mailResponse);	    			
+			return adminInfo;
 	}
 	
 	
 	@Transactional
 	@Override
-	public boolean verifyAdmin(String token) throws AdminException {
+	public boolean verifyAdmin(String token) throws AdminException  {
 		Long id = null;					
 			id = JwtService.parse(token);
 			Admin admininfomation=adminRepository.getAdminById(id)
@@ -77,11 +75,8 @@ public class AdminServiceImplementation implements AdminService{
 			if(admininfomation.isAdminIsVerified())
 			{
 				throw new AdminException(HttpStatus.ALREADY_REPORTED, ExceptionMessages.ALREADY_VERIFIED_EMAIL);
-			}
-			else {
-			adminRepository.verify(id);
-			}
-		return true;
+			}	
+			return 	adminRepository.verify(id);
 	}
 
 	@Transactional
@@ -91,12 +86,11 @@ public class AdminServiceImplementation implements AdminService{
 				.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
 		if ((user.isAdminIsVerified() == true) && (passwordEncryption.matches(information.getPassword(), user.getPassword()))) {
 			return user;
-		} else {
-			String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,
-					JwtService.generateToken(user.getAdminId(),Token.WITH_EXPIRE_TIME));
+		}	String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,
+			JwtService.generateToken(user.getAdminId(),Token.WITH_EXPIRE_TIME));
 			MailService.sendEmail(information.getEmail(), Constants.VERIFICATION_MSG, mailResponse);
 			throw new AdminException(HttpStatus.ACCEPTED, ExceptionMessages.LOGIN_UNSUCCESSFUL);
-		}
+		
 	}
 	
 	
@@ -111,9 +105,8 @@ public class AdminServiceImplementation implements AdminService{
 					JwtService.generateToken(adminUser.getAdminId(),Token.WITH_EXPIRE_TIME));
 			MailService.sendEmail(adminUser.getEmail(), Constants.VERIFICATION_MSG, mailResponse);
 			return adminUser;
-		} else {
-			return null;
-		}
+		} return adminUser;
+		
 	}
 
 	
@@ -124,12 +117,11 @@ public class AdminServiceImplementation implements AdminService{
 		boolean passwordupdateflag=false;		
 			id =JwtService.parse(token);
 			Admin userinfo=adminRepository.getAdminById(id).orElseThrow(() -> new AdminException( HttpStatus.NOT_FOUND,ExceptionMessages.ADMIN_NOT_FOUND_MSG));                   
-			if(passwordEncryption.matches(information.getOldpassword(),userinfo.getPassword())) {
-			information.setConfirmPassword(passwordEncryption.encode(information.getConfirmPassword()));
-			adminRepository.upDateAdminPassword(information, id);
-			}else {
-			throw new AdminException(HttpStatus.NOT_FOUND,ExceptionMessages.ADMIN_NOT_FOUND_MSG);		
+			if(passwordEncryption.matches(information.getOldpassword(),userinfo.getPassword())!=true) {
+			throw new AdminException(HttpStatus.NOT_FOUND,ExceptionMessages.ADMIN_NOT_FOUND_MSG);
 			}
+			information.setConfirmPassword(passwordEncryption.encode(information.getConfirmPassword()));
+			adminRepository.upDateAdminPassword(information, id);		
 			return passwordupdateflag;
 			}
 

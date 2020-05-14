@@ -81,8 +81,7 @@ public class UserServiceImplementation implements UserService {
 	public Users verifyUser(String token) throws UserException {
 		
 		Long id =JwtService.parse(token);
-		//System.out.println(id);
-		Users userInfo = repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
+				Users userInfo = repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
 	if(userInfo.isVerified()) {
 		userInfo.setVerified(true);
 		repository.save(userInfo);

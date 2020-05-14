@@ -14,9 +14,9 @@ import com.bridgelabz.bookstore.exception.BookException;
 
 public interface AdminService {
 
-	Admin adminRegistartion(AdminDto adminInformation)throws AdminException ;
+	Admin adminRegistartion(AdminDto adminInformation)throws AdminException  ;
 
-	boolean verifyAdmin(String token) throws AdminException;
+	boolean verifyAdmin(String token) throws AdminException ;
 
 	Admin loginToAdmin(LoginDto adminLogin) throws AdminException;
 	

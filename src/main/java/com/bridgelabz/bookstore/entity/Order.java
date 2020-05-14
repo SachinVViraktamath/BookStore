@@ -31,7 +31,7 @@ public class Order {
 	
 	private String OrderStatus;
 
-
+	private Long quantityOfBooks;
 	
 
 	@ManyToMany(cascade = CascadeType.ALL,targetEntity = Book.class)

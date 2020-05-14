@@ -1,51 +1,76 @@
 package com.bridgelabz.bookstore.serviceimplemantation;
-//
-//import java.time.LocalDateTime;
-//import java.util.List;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.HttpStatus;
-//import org.springframework.stereotype.Service;
-//import com.bridgelabz.bookstore.entity.Book;
-//import com.bridgelabz.bookstore.entity.Order;
-//import com.bridgelabz.bookstore.entity.UserAddress;
-//import com.bridgelabz.bookstore.entity.Users;
-//import com.bridgelabz.bookstore.exception.BookException;
-//import com.bridgelabz.bookstore.exception.UserException;
-//import com.bridgelabz.bookstore.repository.OrderRepository;
-//import com.bridgelabz.bookstore.repository.UserRepository;
-//import com.bridgelabz.bookstore.service.OrderService;
-//import com.bridgelabz.bookstore.utility.JwtService;
-//
-//@Service
-//public class OrderServiceImplementation implements OrderService {
-//
-//	
-//	@Autowired
-//	private UserRepository userRepository;	
-//	
-//	@Autowired
-//	private OrderRepository orderRepository;
-//
-//	@Override
-//	public Order orderTheBook(String token, Long bookId,String adressType) throws UserException, BookException {
-//		Order orderDetails=new Order();
-//		Long id = (long) JwtService.parse(token);		
-//		Users user = userRepository.findbyId(id)
-//		.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));		
-//		Book books = user.getUserBook().stream().filter((book) -> book.getBookId()==bookId).findFirst()
-//				.orElseThrow(() ->  new BookException(HttpStatus.NOT_FOUND, "User is not exist"));
-//		
-//		UserAddress address = user.getAddress().stream().filter((adress) -> adress.getAddressType()==adressType).findFirst()
-//				.orElseThrow(() ->  new UserException(HttpStatus.NOT_FOUND, "Invalid Adreess"));
-//		
-//		orderDetails.setBooks(books);
-//		orderDetails.setOrderPlaceTime(LocalDateTime.now());
-//		orderDetails.setUser(user);	
-//		orderDetails.setOrderStatus("pending");	
-//		orderDetails.setUserAddress(address);		
-//		return orderRepository.save(orderDetails);
-//
-//	}
-//
-//
-//}
+
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import com.bridgelabz.bookstore.entity.Book;
+import com.bridgelabz.bookstore.entity.Order;
+import com.bridgelabz.bookstore.entity.Users;
+import com.bridgelabz.bookstore.exception.BookException;
+import com.bridgelabz.bookstore.exception.UserException;
+import com.bridgelabz.bookstore.repository.BookRepository;
+import com.bridgelabz.bookstore.repository.UserRepository;
+import com.bridgelabz.bookstore.service.OrderService;
+import com.bridgelabz.bookstore.utility.JwtService;
+
+@Service
+public class OrderServiceImplementation implements OrderService {
+
+	@Autowired
+	private UserRepository userRepository;
+
+	@Autowired
+	private BookRepository bookRepository;
+
+	@Override
+	public List<Order> orderTheBook(String token, Long bookId,String adressType) throws BookException, UserException {
+		Long id =JwtService.parse(token);
+		Random random = new Random();
+		ArrayList<Book> list = new ArrayList<>();
+		Users userInfo = userRepository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
+		Order orderDetails = new Order();
+		userInfo.getBooksCart().forEach((cart) -> {
+			cart.getBooksList().forEach(book -> {
+				long orderId;
+				
+					list.add(book);
+					orderId = random.nextInt(1000);
+					if (orderId < 0) {
+						orderId = orderId * -1;
+					}
+					orderDetails.setOrderId(orderId);
+					orderDetails.setOrderPlaceTime(LocalDateTime.now());
+					orderDetails.setBooksList(list);
+					userInfo.getOrderBookDetails().add(orderDetails);
+
+				if (cart.getBooksList() != null) {
+					long quantity = cart.getBooksQuantity();
+					for (Order orderedBooks : userInfo.getOrderBookDetails())
+					 {
+						if (orderedBooks.getOrderId().equals(orderId))
+							orderedBooks.setQuantityOfBooks(quantity);
+							
+					}
+					Long noOfBooks = book.getNoOfBooks() - quantity;
+					book.setNoOfBooks(noOfBooks);
+					bookRepository.save(book);
+				}
+			});
+
+		});
+
+		userInfo.getBooksCart().clear();
+		try {
+			userRepository.save(userInfo);
+		} catch (Exception e) {
+			throw new UserException(HttpStatus.NOT_FOUND, "user does not exist");
+			
+		}
+		return userInfo.getOrderBookDetails();}
+
+
+}

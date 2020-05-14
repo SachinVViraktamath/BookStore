@@ -14,12 +14,18 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.bridgelabz.bookstore.dto.BookDto;
+import com.bridgelabz.bookstore.dto.ReviewDto;
 import com.bridgelabz.bookstore.entity.Book;
+import com.bridgelabz.bookstore.entity.Reviews;
 import com.bridgelabz.bookstore.entity.Seller;
+import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.SellerException;
+import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.BookRepository;
+import com.bridgelabz.bookstore.repository.ReviewRepository;
 import com.bridgelabz.bookstore.repository.SellerRepository;
+import com.bridgelabz.bookstore.repository.UserRepository;
 import com.bridgelabz.bookstore.service.BookService;
 import com.bridgelabz.bookstore.utility.JwtService;
 import com.bridgelabz.bookstore.utility.MailService;
@@ -32,8 +38,12 @@ public class BookServiceImplementation implements BookService {
 
 	@Autowired
 	private SellerRepository sellerRepository;
-@Autowired 
-ModelMapper mapper;
+	@Autowired
+	private UserRepository userRepository;
+	@Autowired
+	private ReviewRepository reviwRepository;
+	@Autowired 
+	ModelMapper mapper;
 	@Override
 	@Transactional
 	public List<Book> displayBooks() throws BookException {
@@ -120,6 +130,42 @@ ModelMapper mapper;
 		book = mapper.map(dto, Book.class);
 		bookRepository.save(book);
 		return book;
+	}
+
+	@Override
+	public void writeReviewAndRating(String token, ReviewDto review, Long bookId) throws UserException, BookException {
+		Long id = JwtService.parse(token);
+		
+		Users user = userRepository.findById(id).				
+				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Please Verify Email Before Login"));
+				Book books = bookRepository.findById(bookId)
+						.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not exist exist to update"));
+	
+				boolean notExist = books.getReviewRating().stream().noneMatch(reviews -> reviews.getUser().getUserId()==id);
+		if(notExist) {
+			Reviews reviewdetails = new Reviews(review);
+			reviewdetails.setUser(user);		
+			books.getReviewRating().add(reviewdetails);				
+			reviwRepository.save(reviewdetails);
+			 bookRepository.save(books);
+		
+		}
+		
+	}
+
+
+	@Override
+	public List<Reviews> getRatingsOfBook(Long bookId)  {
+		Book book=null;
+		try {
+			book = bookRepository.findById(bookId)
+					.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not exist exist to update"));
+		} catch (BookException e) {
+			e.printStackTrace();
+		}
+		List<Reviews> review=book.getReviewRating();
+	return review;
+		
 	}
 
 }

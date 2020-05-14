@@ -34,7 +34,8 @@ public class Book {
 	private String bookName;
 
 	private String bookAuthor;
-
+	
+	private Long noOfBooks;
 	private double bookPrice;
      private String bookImage;
 	private String bookDescription;

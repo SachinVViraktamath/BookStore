@@ -34,7 +34,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 	@Override
 	public Optional<Admin> getAdmin(String email) {
 		Session session = entityManager.unwrap(Session.class);
-		return session.createQuery("FROM Admin where adminEmailId =:email").setParameter("email", email).uniqueResultOptional();
+		return session.createQuery("FROM Admin where email =:email").setParameter("email", email).uniqueResultOptional();
 
 	}
 	
@@ -70,7 +70,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 	@Override
 	public boolean upDateAdminPassword(AdminPasswordDto information, Long id) {
 		Session session = entityManager.unwrap(Session.class);
-		Query q = session.createQuery("update Admin set adminPassword =:p" + " " + " " + "where adminId=:i")
+		Query q = session.createQuery("update Admin set password =:p" + " " + " " + "where adminId=:i")
 				.setParameter("p", information.getConfirmPassword()).setParameter("i", id);
 		int status = q.executeUpdate();
 		if (status > 0) {

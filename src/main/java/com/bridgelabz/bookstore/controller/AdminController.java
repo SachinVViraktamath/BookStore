@@ -46,6 +46,7 @@ public class AdminController {
 				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.REGISTER_SUCCESSFULL, result));
 	}
 	
+	
 	@ApiOperation(value = "Api for Admin email verification",response = Iterable.class)
 	@GetMapping("/verifyemail/{token}")
 	public ResponseEntity<Response> verficationAdmin(@PathVariable("token") String token) throws AdminException {
