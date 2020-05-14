@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.bridgelabz.bookstore.dto.UserPasswordDto;
-import com.bridgelabz.bookstore.dto.UserRegisterDto;
+import com.bridgelabz.bookstore.dto.UserDto;
 import com.bridgelabz.bookstore.dto.UserAddressDto;
-import com.bridgelabz.bookstore.dto.UserLoginDto;
+import com.bridgelabz.bookstore.dto.LoginDto;
+import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
@@ -39,128 +39,60 @@ public class UserController {
 	private UserService service;
 
 
-	@ApiOperation(value = "Api to Register User for BookStore", response = Response.class)
+	@ApiOperation(value = "Api to Register User  ", response = Response.class)
 	@PostMapping("/register")
-	public ResponseEntity<Response> registeration(@RequestBody UserRegisterDto userInfoDto) throws UserException {
-		Users user = service.userRegistration(userInfoDto);
-		if (user != null) {
-			return ResponseEntity.ok()
-					.body(new Response(HttpStatus.ACCEPTED, "Registered Successfully", userInfoDto));
-		}
-		return ResponseEntity.badRequest()
-				.body(new Response(HttpStatus.NOT_ACCEPTABLE, "User Already Exist in email id", userInfoDto));
+	public ResponseEntity<Response> registration(@Valid @RequestBody UserDto userInfoDto) throws UserException {
+		service.register(userInfoDto);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "User registration Successfull", userInfoDto));
+	}	
 
-	}
-
-	@ApiOperation(value = "Api to verify User for BookStore", response = Response.class)
+	@ApiOperation(value = "Api to verify the User ", response = Response.class)
 	@GetMapping("/verify/{token}")
 	public ResponseEntity<Response> verification(@PathVariable("token") String token) throws UserException {
-		Users user = service.userVerification(token);
-		if (user != null) {
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Successfully verified", 200));
-		}
-		return ResponseEntity.badRequest()
-				.body(new Response(HttpStatus.NOT_ACCEPTABLE, "verification failed", 400));
+		service.verifyUser(token);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "User verification Successfull ", 200));
 	}
 
-	@ApiOperation(value = "Api to Login User for BookStore", response = Response.class)
+	@ApiOperation(value = "Api to Login User", response = Response.class)
 	@PostMapping("/login")
-	public ResponseEntity<Response> login(@RequestBody UserLoginDto login) throws UserException {
-		Users user = service.userLogin(login);
-		if (user != null) {
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Login Successfull", 200));
-		}
-		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "Login failed Please login again", 400));
-
+	public ResponseEntity<Response> login(@RequestBody LoginDto loginDto) throws UserException {
+		service.login(loginDto);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "User login Successfull", 200));
 	}
 
-	@ApiOperation(value = "Api to check if UserExists in BookStore", response = Response.class)
-	@PostMapping("/forgetPassword")
+	@ApiOperation(value = "Api to check if UserExists or not", response = Response.class)
+	@PostMapping("/forget-password")
 	public ResponseEntity<Response> forgetPassword(@RequestParam String email) throws UserException {
-		Users user = service.forgetPassword(email);
-		if (user != null) {
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " password changed Successfully ", 200));
-		}
-		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "user does not exists .", 400));
+			service.forgetPassword(email);
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "User password changed Successfully ", 200));
 
 	}
 
-	@ApiOperation(value = "Api to Update User Password for BookStore", response = Response.class)
-	@PutMapping("/updatePassword/{token}")
-	public ResponseEntity<Response> updatePassword(@RequestBody UserPasswordDto password,
-			@Valid @PathVariable("token") String token) throws UserException {
-		Users user = service.userVerification(token);
-		if (user != null) {
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " Successfully Updated ", 200));
-		}
-		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "failed to update password", 400));
-
+	@ApiOperation(value = "Api to Reset User Password ", response = Response.class)
+	@PutMapping("/reset-password/{token}")
+	public ResponseEntity<Response> resetPassword(@RequestBody ResetPassword password,@Valid @PathVariable("token") String token) throws UserException {
+			service.verifyUser(token);
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " User reset password is Successfull  ", 200));
 	}
 
-	@ApiOperation(value = "Api to Add User Address for BookStore", response = Response.class)
-	@PostMapping("/addAddress/create")
-	public ResponseEntity<Response> addAddress(@RequestBody UserAddressDto addDto, @RequestHeader String token)
+	@ApiOperation(value = "Api to Add User Address", response = Response.class)
+	@PostMapping("/address")
+	public ResponseEntity<Response> address(@RequestBody UserAddressDto addDto, @RequestHeader String token)
 			throws UserException {
-		UserAddress add = service.addAddress(addDto, token);
-		if (add != null) {
+		service.address(addDto, token);
+		
 			return ResponseEntity.ok()
-					.body(new Response(HttpStatus.ACCEPTED, " User Address added Successfully  ", 200));
-		}
-
-		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "something went wrong..", 400));
-
+					.body(new Response(HttpStatus.ACCEPTED, " User address added Successfully  ", 200));
 	}
 
-	@ApiOperation(value = "Api to Update User Address for BookStore", response = Response.class)
-	@PutMapping("/updateAddress/{addressId}")
+	@ApiOperation(value = "Api to Update User Address", response = Response.class)
+	@PutMapping("/update-address/{addressId}")
 	public ResponseEntity<Response> updateAddress(@RequestParam String token, @PathVariable long addressId,
 			@RequestBody UserAddressDto addDto) throws UserException {
-		UserAddress add = service.updateAddress(token, addDto, addressId);
-		if (add != null) {
-			return ResponseEntity.ok()
-					.body(new Response(HttpStatus.ACCEPTED, " User Address Updated Successfully  ", 200));
-		}
-
-		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE, "failed to update the user address", 400));
-
-	}
-	
-	@ApiOperation(value = "Api to add book in WishList for BookStore", response = Response.class)
-	@PostMapping("/addToWishList")
-	public ResponseEntity<Response> addToWishList(@RequestParam Long bookId, @RequestHeader String token) throws UserException, BookException
-	{
-		Book book = service.addWishList(bookId, token);
-		
-		if(book!=null) {
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED," Added To WishList",200));
-		}
-		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE," Not added", 400));
-	}
-	
-	
-	@ApiOperation(value = "Api to remove book from WishList for BookStore", response = Response.class)
-	@DeleteMapping("/removeFromWishList")
-	public ResponseEntity<Response> removeFromWishList(@RequestParam Long bookId, @RequestHeader String token) throws UserException, BookException
-	{
-		Book book = service.removeWishList(bookId, token);	
-		
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED," removed from WishList",200));
-		
+			service.updateAddress(token, addDto, addressId);
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " User updated address Successfully  ", 200));
 		
 	}
 	
-	
-	@ApiOperation(value = "Api to get Books from wiishList for BookStore", response = Response.class)
-	@GetMapping("/getAllWishList")
-	public ResponseEntity<Response> getAllWishList(@RequestHeader String token) throws UserException {
-		
-		List<Book> user = service.getWishList(token);
-		if(user!=null) {
-		
-		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED," WishList List is here.. ",user));
-
-		}
-		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,"  No books in WishList List", 400));
-	}
 }
 

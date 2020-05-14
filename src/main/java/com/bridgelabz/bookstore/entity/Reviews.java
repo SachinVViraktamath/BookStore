@@ -12,7 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -33,11 +33,12 @@ public class Reviews {
 	private int rating;
 	private LocalDateTime createdAt;
 	
+
+	@OneToOne
+	@JoinTable(name="rating_review_user", joinColumns = @JoinColumn(name="ratingReviewId"),
+	inverseJoinColumns = @JoinColumn(name="user_id"))
+	private Users user;
 	
-	
-	 @ManyToOne(cascade = CascadeType.ALL, targetEntity = Book.class)
-	 @JoinColumn(name="user_id")
-	   private List<Users> users;
 	 
 
 }

@@ -20,5 +20,8 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 
 	@Query(value = "select * from book where book_id=?1", nativeQuery = true)
 	public Optional<Book> getBookById(Long id);
-
+	
+	@Query(value = "select * from book where is_book_approved=false", nativeQuery = true)
+	public List<Book> getAllNotAprroveBooks();
+	
 }

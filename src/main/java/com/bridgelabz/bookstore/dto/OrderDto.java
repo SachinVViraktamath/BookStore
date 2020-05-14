@@ -14,8 +14,6 @@ import lombok.Data;
 
 
 @Data
-@Entity
-@Table(name="order")
 public class OrderDto {
 
 

@@ -27,10 +27,11 @@ public class Admin {
 	private String adminLastname;
 	
 	
-	private String adminEmailId;
+	private String email;
 	
 	
-	private String adminPassword;
+	
+	private String password;
 	
 		
 	private long adminPhoneNumber;

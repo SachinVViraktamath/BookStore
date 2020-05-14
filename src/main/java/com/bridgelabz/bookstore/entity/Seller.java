@@ -45,9 +45,12 @@ public class Seller {
 	
 	@NotNull
 	@Column(columnDefinition = "int Default 0", nullable = false)
-	private int isVerified;
+	private boolean isVerified;
 	@Column
 	private LocalDateTime dateTime;
+	
+
+	
 	@OneToMany(cascade = CascadeType.ALL)
 	@JoinColumn(name = "sellerId")
 	private List<Book> sellerBooks;

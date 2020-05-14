@@ -1,18 +1,18 @@
 package com.bridgelabz.bookstore.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
-
 import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
-
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
+
 
 
 @Repository
@@ -97,6 +97,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 		}
 	
 	}
+
 	
 }
 

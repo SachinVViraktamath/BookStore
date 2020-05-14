@@ -18,6 +18,9 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -59,25 +62,30 @@ public class Users {
 
 	@Column
 	@NotNull
+	@CreationTimestamp
 	private LocalDateTime creationTime;
 
 	@Column
 	@NotNull
+	@UpdateTimestamp
 	private LocalDateTime updateTime;
 
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private boolean isVerified;
+	
+	
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+	private List<Book> whilistBooks;
+
+	
 
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = UserAddress.class)
 	@JoinColumn(name = "userId")
 	private List<UserAddress> address;
 
-	@OneToMany(cascade = CascadeType.ALL, targetEntity = Book.class)
-	@JoinTable(name = "wish_list", joinColumns = { @JoinColumn(name = "user_id") }, inverseJoinColumns = {
-			@JoinColumn(name = "book_id") })
-	private List<Book> whishlist;
 
-	@OneToMany(cascade = CascadeType.ALL, targetEntity = Book.class)
+	@OneToMany(cascade = CascadeType.ALL, targetEntity = CartDetails.class)
 	@JoinColumn(name = "userId")
 	private List<CartDetails> booksCart;
 

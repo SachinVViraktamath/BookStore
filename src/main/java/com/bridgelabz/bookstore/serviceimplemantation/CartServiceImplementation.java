@@ -3,6 +3,7 @@ package com.bridgelabz.bookstore.serviceimplemantation;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -34,54 +35,72 @@ public class CartServiceImplementation implements CartService {
 
 	@Autowired
 	private UserRepository userRepository;
-	@Autowired
-	private CartRepository cartRepo;
 
-	@Transactional
-	@Override
-	public Book addBooksInTOTheCart(String token, Long bookId, CartDto detail) throws UserException, BookException {
-		CartDetails cart = new CartDetails();
-		Long id = (Long) JwtService.parse(token);
-		Users user = userRepository.findbyId(id)
-				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));
-		Book book = bookRepository.getBookById(bookId)
-				.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "Book is not exist"));	
-		
-		
-		cart.setBooksQuantity(detail.getQuantity());
-		cart.setTotalPrice(detail.getPrice());	
-		cart.getCartBooks().add(book);
-		user.getBooksCart().add(cart);
-		
-		 userRepository.save(user);
-		return book;
-	}
+
+	
+
 
 
 @Transactional
 @Override
-	public List<Book> getBooksfromCart(String token) throws UserException {
-	CartDetails crt=new CartDetails();
-		Long id = (Long) JwtService.parse(token);
-		Users user = userRepository.findbyId(id)
-				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));		
-		Book book=new Book();
-		List<Book> cartBooks =crt.getCartBooks();
-		return cartBooks;		
-	}
-
+public List<CartDetails> getBooksfromCart(String token) throws UserException {
+	long id = JwtService.parse(token);
+	Users user = userRepository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));
+	List<CartDetails> cartBooks = user.getBooksCart();
+	return cartBooks;
+}
 	
 
+
+    @Transactional
 	@Override
-	public Book removeBooksFromCart(String token, Long bookId) throws UserException, BookException {
-		Long id = (Long) JwtService.parse(token);
-		CartDetails cart=new CartDetails();
-		Users user = userRepository.findbyId(id)
-				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));
-		Book book = bookRepository.getBookById(bookId)
-				.orElseThrow(() -> new  BookException(HttpStatus.NOT_FOUND, "Book is not exist"));		
-				cart.getCartBooks().remove(book);
-		return null;
+	public List<CartDetails> addBooksInTOTheCart(String token, Long bookId) throws UserException, BookException {
+		ArrayList<Book> booklist = new ArrayList<>();
+		long id = JwtService.parse(token);
+		int quantity = 1;
+		Users user = userRepository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));
+		Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "User is not exist"));
+		List<Book> books = null;
+		for (CartDetails d : user.getBooksCart()) {
+			books = d.getBooksList();
+		}		
+		CartDetails cart = new CartDetails();		
+		if (books == null) {
+			booklist.add(book);
+			cart.setBooksList(booklist);
+			cart.setBooksQuantity(quantity);
+			user.getBooksCart().add(cart);			
+			return userRepository.save(user).getBooksCart();
+		}
+		Optional<Book> cartbook = books.stream().filter(t -> t.getBookId() == bookId).findFirst();
+		if (cartbook.isPresent()) {
+			throw new BookException(HttpStatus.NOT_FOUND, "User is not exist");			
+		} else {
+			booklist.add(book);	
+			cart.setBooksList(booklist);
+			cart.setBooksQuantity(quantity);
+			user.getBooksCart().add(cart);			
+		}
+		return userRepository.save(user).getBooksCart();
+		
+	}
+
+
+     @Transactional
+	@Override
+	public List<CartDetails> removeBooksFromCart(Long bookId, String token) throws UserException, BookException {
+		long id = JwtService.parse(token);
+
+		Users user = userRepository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));
+		Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "User is not exist"));
+		for(CartDetails cart:user.getBooksCart()) {			
+			boolean notExist = cart.getBooksList().stream().noneMatch(books -> books.getBookId() == bookId);			
+			if (!notExist) {
+				cart.getBooksList().remove(book);
+				return userRepository.save(user).getBooksCart();			
+			} 
+		}
+		return null;	
 	}
 
 }

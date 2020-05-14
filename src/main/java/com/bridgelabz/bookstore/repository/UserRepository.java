@@ -6,12 +6,10 @@ import java.util.Optional;
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.bridgelabz.bookstore.dto.UserLoginDto;
-import com.bridgelabz.bookstore.dto.UserPasswordDto;
+import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.entity.Users;
 
 @Repository
@@ -26,11 +24,11 @@ public interface UserRepository extends JpaRepository<Users,Long>{
 		Optional<Users> FindByEmail(String email);
 
 		@Query(value = "select * from Users where email=?", nativeQuery = true)
-		Users checkByEmail(UserPasswordDto email);
+		Users checkByEmail(ResetPassword email);
 		
 		
 		@Query(value = "update Users set password=? where user_id = ?", nativeQuery = true)
-		void updatePassword(UserPasswordDto password, Long id);
+		void updatePassword(ResetPassword password, Long id);
 
 		@Query(value = "select * from Users where user_id=?", nativeQuery = true)
 		Optional<Users> findbyId(Long userId);

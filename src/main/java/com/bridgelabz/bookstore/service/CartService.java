@@ -4,16 +4,16 @@ import java.util.List;
 
 import com.bridgelabz.bookstore.dto.CartDto;
 import com.bridgelabz.bookstore.entity.Book;
-
+import com.bridgelabz.bookstore.entity.CartDetails;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.UserException;
 
 public interface CartService {
 	
-	Book addBooksInTOTheCart(String token, Long bookId,CartDto  values)throws UserException,BookException;
+	 List<CartDetails> addBooksInTOTheCart(String token, Long bookId)throws UserException,BookException;
 
-	List<Book> getBooksfromCart(String token)throws UserException;
+	 public List<CartDetails> getBooksfromCart(String token)throws UserException;
 	
-    Book removeBooksFromCart(String token, Long bookId)throws UserException, BookException;
+    List<CartDetails> removeBooksFromCart(Long bookId,String token)throws UserException, BookException;
 
 }

@@ -43,11 +43,12 @@ public class Book {
 
 	private LocalDateTime bookCreatedAt;
 	
+	@OneToMany(cascade = CascadeType.ALL)
+	@JoinColumn(name = "bookId")
+	private List<Reviews> reviewRating;
 
-@OneToMany(cascade=CascadeType.ALL,targetEntity=BookQuantity.class)
-@JoinColumn(name="bookId")
-private List<BookQuantity> book;
-
+	@ManyToMany(cascade = CascadeType.ALL)
+	private List<Book> BooksList;
 
 
 

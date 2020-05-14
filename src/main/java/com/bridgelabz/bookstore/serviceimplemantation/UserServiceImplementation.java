@@ -11,20 +11,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.bridgelabz.bookstore.dto.UserPasswordDto;
-import com.bridgelabz.bookstore.dto.UserRegisterDto;
+import com.bridgelabz.bookstore.dto.UserDto;
+import com.bridgelabz.bookstore.dto.LoginDto;
+import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.UserAddressDto;
-import com.bridgelabz.bookstore.dto.UserLoginDto;
-import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
-import com.bridgelabz.bookstore.exception.AdminException;
-import com.bridgelabz.bookstore.exception.BookException;
+import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.UserException;
-import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.UserAddressRepository;
 import com.bridgelabz.bookstore.repository.UserRepository;
-import com.bridgelabz.bookstore.response.MailingandResponseOperation;
 import com.bridgelabz.bookstore.service.UserService;
 import com.bridgelabz.bookstore.utility.JwtService;
 import com.bridgelabz.bookstore.utility.MailService;
@@ -34,8 +30,11 @@ import com.bridgelabz.bookstore.utility.JwtService.Token;
 @Service
 public class UserServiceImplementation implements UserService {
 
-	@Autowired
-	private MailingandResponseOperation response;
+	/*
+	 *User Service Class  is implemented by using the object reference of Repository for database,  BCryptPasswordEncoder for password
+	 */
+	
+
 
 	@Autowired
 	private UserRepository repository;
@@ -44,16 +43,20 @@ public class UserServiceImplementation implements UserService {
 	private BCryptPasswordEncoder bcrypt;
 	
 	@Autowired
-	private UserAddressRepository reposit;
+	private UserAddressRepository userAddressrepository;
 	
-	@Autowired
-	private BookRepository bookRep;
-
+	
+	
+	/*********************************************************************
+     * User to register with the required fields provided  
+     * @param UserDto userInfoDto
+     ********************************************************************/
+	
 	@Transactional
 	@Override
-	public Users userRegistration(@Valid UserRegisterDto userInfoDto) throws UserException {
-		Users user = new Users();		
-		if (repository.FindByEmail(userInfoDto.getEmail()).isPresent()==false){
+	public Users register(@Valid UserDto userInfoDto) throws UserException {
+		if (repository.FindByEmail(userInfoDto.getEmail()).isPresent()){
+			Users user = new Users();		
 			BeanUtils.copyProperties(userInfoDto, user);
 			user.setPassword(bcrypt.encode(userInfoDto.getPassword()));			
 			user.setCreationTime(LocalDateTime.now());
@@ -61,144 +64,135 @@ public class UserServiceImplementation implements UserService {
 			user=repository.save(user);
 			String mailResponse = "http://localhost:8080/user/verify/" +JwtService.generateToken(user.getUserId(),Token.WITH_EXPIRE_TIME);
 			MailService.sendEmail(user.getEmail(),"verification", mailResponse);
+			throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_REGISTER_STATUS); 
 		}
-		return user;
-	
+		else {
+			throw new UserException(HttpStatus.NOT_ACCEPTABLE,"User Already Registered"); 
+		}
 	}
+	
+	/*********************************************************************
+     * To check whether user is verified or not by the token 
+     * @param String token
+     ********************************************************************/
 
 	@Transactional
 	@Override
-	public Users userVerification(String token) throws UserException {
-		boolean value=true;
-		Long id =(Long) JwtService.parse(token);
+	public Users verifyUser(String token) throws UserException {
 		
+		Long id =JwtService.parse(token);
+		//System.out.println(id);
 		Users userInfo = repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
-	     
-		userInfo.setVerified(value);
+	if(userInfo.isVerified()) {
+		userInfo.setVerified(true);
 		repository.save(userInfo);
-		
-			
-				return userInfo;
+		throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_VERIFIED_STATUS );
 	}
+	else {
+		throw new UserException(HttpStatus.BAD_REQUEST,ExceptionMessages.USER_ALREADY_VERIFIED); 
+ 
+	}
+}
+	
+	/*********************************************************************
+     * To login user with the required credentials 
+     * @param UserLoginDto login
+     ********************************************************************/
 	
 	@Transactional
 	@Override
-	public Users userLogin( UserLoginDto login) throws UserException {
+	public Users login(LoginDto login) throws UserException {
 		Users user = repository.FindByEmail(login.getEmail()).
-				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
-		if ((user.isVerified() == true) && (bcrypt.matches(login.getPassword(), user.getPassword()))) {
-			return user;
+				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Please Verify Email Before Login"));
+		if ((user.isVerified()) && (bcrypt.matches(login.getPassword(), user.getPassword()))) {
+			throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_LOGIN_STATUS); 
 		} else {
-			String mailResponse = response.fromMessage("http://localhost:8080/verify",
-					JwtService.generateToken(user.getUserId(),Token.WITH_EXPIRE_TIME));
+			String mailResponse = "http://localhost:8080/verify" +
+					JwtService.generateToken(user.getUserId(),Token.WITH_EXPIRE_TIME);
 			MailService.sendEmail(login.getEmail(), "Verification", mailResponse);
-			throw new UserException(HttpStatus.ACCEPTED, "Login unsuccessfull");
+			throw new UserException(HttpStatus.ACCEPTED, "User credentials are not matched");
 		}
 	}
+	
+	
 
 	@Transactional
 	@Override
 	public Users forgetPassword(String email) throws UserException {
 		Users userMail = repository.FindByEmail(email).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
 		// log.info("userdetails for forgetpassword" + userMail);		
-			if (userMail.isVerified()==true) {
-				String responsemail = response.fromMessage("http://localhost:8080/verify",
-						JwtService.generateToken(userMail.getUserId(),Token.WITH_EXPIRE_TIME));
+			if (userMail.isVerified()) {
+				String responsemail = "http://localhost:8080/verify" +
+						JwtService.generateToken(userMail.getUserId(),Token.WITH_EXPIRE_TIME);
 				MailService.sendEmail(userMail.getEmail(), "Verification", responsemail);
 				return userMail;
 			}
-			else {
-				return null;
-			}
-			
+			throw new UserException(HttpStatus.NOT_FOUND,ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE );
+	}
+	
+	/*********************************************************************
+     * To reset password by the user with token.  
+     * @param String token,UserPasswordDto restpassword
+     ********************************************************************/
+
+	@Transactional
+	@Override
+	public boolean resetPassword(ResetPassword restpassword, String token) throws UserException {
+		boolean passwordupdateflag=false;		
+		if(restpassword.getNewPassword().equals(restpassword.getConfirmPassword()))  {
+		Long id =JwtService.parse(token);
+		Users userinfo=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));	
+		if(userinfo.isVerified()) {
+		String epassword = bcrypt.encode(restpassword.getConfirmPassword());
+		restpassword.setConfirmPassword(epassword);
+		 repository.updatePassword(restpassword, id);
+		throw new UserException(HttpStatus.ACCEPTED,"User reset password sucessfull"); 
+		}
+				
+		throw new UserException(HttpStatus.NOT_ACCEPTABLE, "password updation failed");
+		}
+		return passwordupdateflag;
 		
 	}
-
-	@Transactional
-	@Override
-	public boolean updatePassword(UserPasswordDto forgetpass, String token) throws UserException {
-		Long id = null;	
-		boolean passwordupdateflag=false;		
-		id = (Long) JwtService.parse(token);
-		Users userinfo=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));	
-		if(bcrypt.matches(forgetpass.getOldPassword(),userinfo.getPassword())) {
-		String epassword = bcrypt.encode(forgetpass.getCnfPassword());
-		forgetpass.setCnfPassword(epassword);
-		 repository.updatePassword(forgetpass, id);
-			return passwordupdateflag;
-		}else {
-			
-			throw new UserException(HttpStatus.BAD_REQUEST, "password update failed");
-		}
-
-	}
 	
+	/*********************************************************************
+     * To add addresess by the user with token.  
+     * @param String token,UserAddressDto addressDto
+     ********************************************************************/
 	
 	@Transactional
 	@Override
-	public UserAddress addAddress(UserAddressDto addressDto, String token) throws UserException {
+	public UserAddress address(UserAddressDto addressDto, String token) throws UserException {
 		UserAddress users=new UserAddress();
 			Long id=JwtService.parse(token);
 			Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
 			BeanUtils.copyProperties(addressDto, users);			
 			user.getAddress().add(users);
-			reposit.save(users);
-			
-			return users;	
+			userAddressrepository.save(users);
+			throw new UserException(HttpStatus.ACCEPTED,"User sucessfully added the address"); 
 		
 	}
 
+	/*********************************************************************
+     * To update the addresess by the user with token.  
+     * @param String token,UserAddressDto addressDto,Long addressId
+     ********************************************************************/
+	
 	@Transactional
 	@Override
 	public UserAddress updateAddress(String token,UserAddressDto addDto,Long addressId) throws UserException{
-		UserAddress users=new UserAddress();
+	//  UserAddress users=new UserAddress();
 		Long id=JwtService.parse(token);
 		Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
 		UserAddress usersaddress=user.getAddress().stream().filter((address)->address.getAddressId()==addressId).findFirst().orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Address is not exist"));
-		usersaddress.setAddressType(addDto.getAddressType());	
-		usersaddress.setCountry(addDto.getCountry());
-		usersaddress.setDistrict(addDto.getDistrict());
-		usersaddress.setPinCode(addDto.getPinCode());
-		usersaddress.setState(addDto.getState());
-		usersaddress.setStreet(addDto.getStreet());
-		usersaddress.setTown(addDto.getTown());				
+		BeanUtils.copyProperties(addDto, usersaddress);	
 		repository.save(user);		
-		return users;	
+	//	return users;	
+		throw new UserException(HttpStatus.ACCEPTED,"User sucessfully updated the address"); 
+
 	
 	}
 	
-	@Transactional
-	@Override
-	public Book addWishList(Long bookId, String token) throws UserException, BookException {
-		Long id=JwtService.parse(token);
-		Users user=repository.findbyId(id).			
-				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " user not found"));
-		Book books=bookRep.findById(bookId).orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, " Book not found"));
-		user.getWhishlist().add(books);	
-		repository.save(user);
-			return books;
-	}
 	
 	
-	@Transactional
-	@Override
-	public List<Book> getWishList(String token) throws UserException {
-		Long id=JwtService.parse(token);
-		Users user=repository.findbyId(id).			
-				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " user not found"));		
-       List<Book> books	=user.getWhishlist();
-		return books;
-		
-	}
-	
-	@Transactional
-	@Override
-	public Book removeWishList(Long bookId, String token) throws UserException, BookException {Long id=JwtService.parse(token);
-	Users user=repository.findbyId(id).			
-			orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, " user not found"));
-	Book books=bookRep.findById(bookId).orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, " Book not found"));
-	user.getWhishlist().remove(books);	
-	
-		return null;
-		}
 }

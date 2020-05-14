@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -28,7 +29,9 @@ public class CartDetails {
 	private int booksQuantity;
 	
 	private double totalPrice;
-	@ManyToOne(cascade=CascadeType.ALL,targetEntity=CartDetails.class)
-	@JoinColumn(name="bookId")
-	private List<Book> cartBooks;
+	
+	@ManyToMany(cascade = CascadeType.ALL)
+	private List<Book> BooksList;
+	
+	
 }

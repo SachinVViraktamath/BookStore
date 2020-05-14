@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.stereotype.Repository;
 
+import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.SellerPasswordUpdateDto;
 import com.bridgelabz.bookstore.entity.Seller;
 
@@ -44,7 +45,7 @@ public boolean isSellerExist(String email) {
 	public boolean verify(Long id) {
 		Session session = entityManger.unwrap(Session.class);
 		Query<Seller> q = session.createQuery("update Seller set isVerified =:p" + " " + " " + " where sellerId=:i");
-		q.setParameter("p", 1);
+		q.setParameter("p", true);
 		q.setParameter("i", id);
 		int status = q.executeUpdate();
 		if (status > 0) {
@@ -56,7 +57,7 @@ public boolean isSellerExist(String email) {
 	}
 
 	@SuppressWarnings("unchecked")
-	public boolean update(SellerPasswordUpdateDto update, Long id) {
+	public boolean update(ResetPassword update, Long id) {
 		Session session = entityManger.unwrap(Session.class);
 		Query<Seller> q = session.createQuery("update Seller set password=:p" + " " + " where id=:id");
 		q.setParameter(" p", update.getConfirmPassword());

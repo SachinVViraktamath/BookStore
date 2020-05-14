@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class UserRegisterDto {
+public class UserDto {
 	
 	@NotNull
 	private String firstName;
