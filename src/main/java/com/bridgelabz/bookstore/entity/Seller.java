@@ -41,7 +41,7 @@ public class Seller {
 	private String password;
 	@Column
 	@NotNull
-	private String mobileNumber;
+	private int mobileNumber;
 	
 	@NotNull
 	@Column(columnDefinition = "int Default 0", nullable = false)

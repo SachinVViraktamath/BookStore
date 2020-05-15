@@ -13,11 +13,14 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.bridgelabz.bookstore.dto.UserDto;
 import com.bridgelabz.bookstore.configuration.Constants;
+import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.UserAddressDto;
+import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
+import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.UserAddressRepository;
@@ -82,7 +85,7 @@ public class UserServiceImplementation implements UserService {
 		Long id =JwtService.parse(token);
 		//System.out.println(id);
 		Users userInfo = repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
-	if(userInfo.isVerified()) {
+	if(userInfo.isVerified()!=true) {
 		userInfo.setVerified(true);
 		repository.save(userInfo);
 		throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_VERIFIED_STATUS );
@@ -102,7 +105,7 @@ public class UserServiceImplementation implements UserService {
 	public Users login(LoginDto login) throws UserException {
 		Users user = repository.FindByEmail(login.getEmail()).
 				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
-		if ((user.isVerified()) && (bcrypt.matches(login.getPassword(), user.getPassword()))) {
+		if ((user.isVerified()==true) && (bcrypt.matches(login.getPassword(), user.getPassword()))) {
 			throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_LOGIN_STATUS); 
 		} 
 		String mailResponse =Constants.USER_VERIFICATION_LINK +
@@ -134,24 +137,18 @@ public class UserServiceImplementation implements UserService {
 
 	@Transactional
 	@Override
-	public boolean resetPassword(ResetPassword restpassword, String token) throws UserException {
+	public boolean resetPassword(ResetPassword information, String token) throws UserException {
+		Long id = null;	
 		boolean passwordupdateflag=false;		
-		if(restpassword.getNewPassword().equals(restpassword.getConfirmPassword()))  {
-		Long id =JwtService.parse(token);
-		Users userinfo=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));	
-		if(userinfo.isVerified()) {
-		String epassword = bcrypt.encode(restpassword.getConfirmPassword());
-		restpassword.setConfirmPassword(epassword);
-		 repository.updatePassword(restpassword, id);
-		throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_VERIFIED_STATUS); 
-		}
-				
-		throw new UserException(HttpStatus.NOT_ACCEPTABLE, ExceptionMessages.USER_RESET_PASSWORD_FAILED);
-		}
-		return passwordupdateflag;
-		
-	}
-	
+			id =JwtService.parse(token);
+			Users userinfo=repository.findbyId(id).orElseThrow(() -> new UserException( HttpStatus.NOT_FOUND,ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));                   
+			if(bcrypt.matches(information.getConfirmPassword(),userinfo.getPassword())!=true) {
+			throw new UserException(HttpStatus.NOT_FOUND,ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE);
+			}
+			information.setConfirmPassword(bcrypt.encode(information.getConfirmPassword()));
+			repository.updatePassword(information, id);		
+			return passwordupdateflag;
+			}
 	/*********************************************************************
      * To add addresess by the user with token.  
      * @param String token,UserAddressDto addressDto

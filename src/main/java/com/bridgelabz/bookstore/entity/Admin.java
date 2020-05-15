@@ -34,7 +34,7 @@ public class Admin {
 	private String password;
 	
 		
-	private long adminPhoneNumber;
+	private Long adminPhoneNumber;
 	
 	@Column(columnDefinition = "boolean Default false", nullable = false)	
 	private boolean adminIsVerified;

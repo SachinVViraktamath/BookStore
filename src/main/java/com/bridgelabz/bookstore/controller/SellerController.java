@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,6 +22,7 @@ import com.bridgelabz.bookstore.dto.SellerPasswordUpdateDto;
 import com.bridgelabz.bookstore.dto.SellerDto;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Seller;
+import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.SellerService;
@@ -39,9 +41,11 @@ public class SellerController {
 	/* API for seller registration */
 
 	@PostMapping("/registration")
-	@ApiOperation("seller registration")
-	public ResponseEntity<Response> register(@RequestBody SellerDto dto) {
-
+	@ApiOperation(value="seller registration",response = Response.class)
+	public ResponseEntity<Response> register(@RequestBody SellerDto dto,BindingResult res) {
+		 if(res.hasErrors()) {
+	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_ALREADY_MSG,dto));
+	     }
 		Seller reg = service.register(dto);
 
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Seller Registered Successfully", reg));
@@ -50,8 +54,11 @@ public class SellerController {
 
 	/* API for seller login */
 	@PostMapping("/login")
-	@ApiOperation("login for seller")
-	public ResponseEntity<Response> Login(@RequestBody LoginDto login) {
+	@ApiOperation(value="login for seller",response = Response.class)
+	public ResponseEntity<Response> Login(@RequestBody LoginDto login,BindingResult res) {
+		 if(res.hasErrors()) {
+	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_NOT_FOUND_MSG,login));
+	     }
 		Seller seller = service.login(login);
 		String token = JwtService.generateToken(seller.getSellerId(), Token.WITH_EXPIRE_TIME);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Login Successfully", token));
@@ -60,8 +67,11 @@ public class SellerController {
 
 	/* API for verifying the token generated for the email */
 	@PostMapping("/verify/{token}")
-	@ApiOperation("seller email verification")
-	public ResponseEntity<Response> verify(@PathVariable("token") String token) throws Exception {
+	@ApiOperation(value="seller email verification",response = Response.class)
+	public ResponseEntity<Response> verify(@PathVariable("token") String token,BindingResult res) throws Exception {
+		 if(res.hasErrors()) {
+	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_NOT_FOUND_MSG,token));
+	     }
 		boolean verification = service.verify(token);
 
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "verified", verification));
@@ -71,17 +81,23 @@ public class SellerController {
 	/* API for seller forgetPassword */
 
 	@PostMapping("/forgotpassword")
-	@ApiOperation("forgetpassword for seller")
-	public ResponseEntity<Response> forgotPassword(@RequestParam("email") String email) throws SellerException {
+	@ApiOperation(value="forgetpassword for seller",response = Response.class)
+	public ResponseEntity<Response> forgotPassword(@RequestParam("email") String email,BindingResult res) throws SellerException {
+		 if(res.hasErrors()) {
+	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_NOT_FOUND_MSG,email));
+	     }
 		Seller seller = service.forgetPassword(email);
 			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "seller existed", seller));
 		
 	}
 
 	/* API for seller updating password */
-	@PutMapping("seller/resetpassword")
-	@ApiOperation("reset password for seller")
-	public ResponseEntity<Response> resetPassword(@RequestBody ResetPassword update,@RequestHeader("token") String token) throws SellerException {
+	@PutMapping("/resetpassword")
+	@ApiOperation(value="reset password for seller",response = Response.class)
+	public ResponseEntity<Response> resetPassword(@RequestBody ResetPassword update,@RequestHeader("token") String token,BindingResult res) throws SellerException {
+		 if(res.hasErrors()) {
+	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_NOT_FOUND_MSG,update));
+	     }
 		Boolean passwordUpdate = service.resetPassword(update, token);
 
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Password updated successfully", passwordUpdate));

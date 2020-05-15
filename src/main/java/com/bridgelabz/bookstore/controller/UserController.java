@@ -55,10 +55,10 @@ public class UserController {
 	
 
 	@ApiOperation(value = "Api to verify the User ", response = Response.class)
-	@GetMapping("/verify/{token}")
+	@GetMapping("/verifyemail/{token}")
 	public ResponseEntity<Response> verification(@PathVariable("token") String token,BindingResult res) throws UserException {
 		 if(res.hasErrors()) {
-	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_VERIFICATION_FAILED_MESSAGE,400));
+	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_VERIFICATION_FAILED_MESSAGE,token));
 	     }
 		boolean user=service.verifyUser(token);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_VERIFIED_STATUS, user));
@@ -68,7 +68,7 @@ public class UserController {
 	@PostMapping("/login")
 	public ResponseEntity<Response> login(@RequestBody LoginDto loginDto,BindingResult res) throws UserException {
 		 if(res.hasErrors()) {
-	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_FAILED_LOGIN_STATUS,400));
+	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_FAILED_LOGIN_STATUS,loginDto));
 	     }
 		Users user=service.login(loginDto);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_LOGIN_STATUS, user));
@@ -84,9 +84,9 @@ public class UserController {
 
 	@ApiOperation(value = "Api to Reset User Password ", response = Response.class)
 	@PutMapping("/reset-password/{token}")
-	public ResponseEntity<Response> resetPassword(BindingResult res,@RequestBody ResetPassword password,@Valid @PathVariable("token") String token) throws UserException {
+	public ResponseEntity<Response> resetPassword(@RequestBody ResetPassword password,@Valid @PathVariable("token") String token,BindingResult res) throws UserException {
 		if(res.hasErrors()) {
-	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_RESET_PASSWORD_FAILED,400));
+	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_RESET_PASSWORD_FAILED,password));
 	     }
 			boolean result=service.verifyUser(token);
 			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED,  ExceptionMessages.USER_RESET_PASSWORD_SUCESSFULL, result));

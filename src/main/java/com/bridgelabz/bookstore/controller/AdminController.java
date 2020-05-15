@@ -3,9 +3,12 @@ package com.bridgelabz.bookstore.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -40,8 +43,11 @@ public class AdminController {
 	
 	@ApiOperation(value = "Api Registerartion Admin",response = Iterable.class)
 	@PostMapping("/registration")
-	public ResponseEntity<Response> registration(@RequestBody AdminDto admiInformation) throws AdminException  {
+	public ResponseEntity<Response> registration(@Valid @RequestBody AdminDto admiInformation,BindingResult res) throws AdminException  {
 		Admin result = service.adminRegistartion(admiInformation);
+		   if(res.hasErrors()) {
+	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_REGISTER_STATUS_INFO,admiInformation));
+	     }
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.REGISTER_SUCCESSFULL, result));
 	}
@@ -49,7 +55,8 @@ public class AdminController {
 	
 	@ApiOperation(value = "Api for Admin email verification",response = Iterable.class)
 	@GetMapping("/verifyemail/{token}")
-	public ResponseEntity<Response> verficationAdmin(@PathVariable("token") String token) throws AdminException {
+	public ResponseEntity<Response> verficationAdmin( @PathVariable("token") String token) throws AdminException {
+		
 		boolean update = service.verifyAdmin(token);	
 			return ResponseEntity.ok()
 					.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.AMDIN_VERIFIED_SUCCESSFULL, update));	
@@ -59,7 +66,10 @@ public class AdminController {
 	
 	@ApiOperation(value = "Api for admin login",response = Iterable.class)
 	@PostMapping("/login")
-	public ResponseEntity<Response> loginAdmin(@RequestBody LoginDto adminLogin) throws AdminException {
+	public ResponseEntity<Response> loginAdmin(@Valid @RequestBody LoginDto adminLogin,BindingResult res) throws AdminException {
+		   if(res.hasErrors()) {
+	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_REGISTER_STATUS_INFO,adminLogin));
+	     }
 		Admin userInformation = service.loginToAdmin(adminLogin);
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.LOGIN_SUCCESSFUL, userInformation));		

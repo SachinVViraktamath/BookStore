@@ -14,7 +14,7 @@ public class LoginDto {
 	private String email;
 	
 	@NotNull(message = "password field can't be empty!!!")	
-	@Size(min = 6)
+	//@Size(min = 6)
 	private String password;
 	
 

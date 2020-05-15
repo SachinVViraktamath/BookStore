@@ -14,6 +14,7 @@ import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.SellerDto;
 import com.bridgelabz.bookstore.entity.Seller;
+import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.repository.BookQuantityRepository;
@@ -99,7 +100,7 @@ public class SellerServiceImplementation implements SellerService {
 	public Seller forgetPassword(String email)  {
 		Seller seller = repository.getSeller(email)
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND,ExceptionMessages.SELLER_NOT_FOUND_MSG));
-		if (seller.isVerified() != true) {
+		if (seller.isVerified()!= true) {
 			throw new SellerException(HttpStatus.BAD_REQUEST,ExceptionMessages.SELLER_VRIFICATION_FAIL_MSG);
 		}
 		String mailResponse = Constants.SELLER_VERIFICATION_LINK
@@ -114,15 +115,15 @@ public class SellerServiceImplementation implements SellerService {
 			Long id =  JwtService.parse(token);
 			Seller seller = repository.getSellerById(id)
 					.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
-			String epassword = encoder.encode(update.getConfirmPassword());
-			String epassword1 = encoder.encode(update.getNewPassword());
-			if (epassword == epassword1) {
-				update.setConfirmPassword(epassword);
-				 repository.update(update, id);
-			return true;
-			}	    
-			throw new SellerException(HttpStatus.BAD_REQUEST,  ExceptionMessages.SELLER_UNMATCH_CREDENTAIL);
-	     
+
+			if (encoder.matches(update.getConfirmPassword(), update.getNewPassword())==true){
+				
+				update.setConfirmPassword(encoder.encode(update.getConfirmPassword()));
+				return true;
+			}throw new SellerException(HttpStatus.NOT_FOUND,ExceptionMessages.SELLER_UNMATCH_CREDENTAIL);
+				
+			
+			
 		}
 
 }

@@ -14,20 +14,20 @@ import lombok.NoArgsConstructor;
 public class UserDto {
 	
 	@NotNull
-	@Size(min=3)
+	//@Size(min=3)
 	private String firstName;
 	@NotNull
 	private String lastName;
 	@NotNull
-	@Size(min=6)
+	//@Size(min=6)
 	private String password;
 	@NotNull
 	private String email;
 	@NotNull
 	private String gender;
 	@NotNull
-	@Size(min=10,max=10)
-	private long phNo;
+	//@Size(min=10,max=10)
+	private Long phNo;
 
 
 	
