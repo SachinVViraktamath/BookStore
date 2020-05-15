@@ -9,6 +9,8 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.NotNull;
+
 import com.bridgelabz.bookstore.entity.Book;
 import lombok.Data;
 
@@ -23,6 +25,7 @@ public class OrderDto {
 	@Column(name = "time_of_oder_placed", nullable = false)
 	private LocalDateTime TimeOfOrderPlaced;
 	
+	@NotNull
 	private Long quantityOfBooks;
 	
 	@ManyToMany(cascade = CascadeType.ALL)
