@@ -20,12 +20,12 @@ public class AdminDto {
 	private String adminLastname;
 	
 	@NotNull(message = "Name field can't be empty!!!")	
-	private String adminEmailId;
+	private String email;
 	
 	
 	@NotNull(message = "Name field can't be empty!!!")	
 	@Size(min =6 )
-	private String adminPassword;
+	private String password;
 	
 	@NotNull(message = "Name field can't be empty!!!")
 	@Pattern(regexp = "^[0-9]*", message = "only digit are allowed phone number field field")	

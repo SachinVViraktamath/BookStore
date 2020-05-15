@@ -14,7 +14,7 @@ import com.bridgelabz.bookstore.exception.UserException;
 public interface UserService {
 
 	public Users register(@Valid UserDto userInfoDto) throws UserException;
-	Users verifyUser(String token)throws UserException;
+	boolean verifyUser(String token)throws UserException;
 	Users login(LoginDto login) throws UserException;
 	Users forgetPassword(String email)throws UserException;
 	boolean resetPassword(ResetPassword resetPassword, String token) throws UserException;

@@ -20,7 +20,15 @@ public class BookDto {
 	private String bookDescription;
 
 	@NotNull(message = "Book Quantity cannot be empty")
-	private int bookQuantity;
+	private int noOfBooks;
+
+	public int getNoOfBooks() {
+		return noOfBooks;
+	}
+
+	public void setNoOfBooks(int noOfBooks) {
+		this.noOfBooks = noOfBooks;
+	}
 
 	public String getBookName() {
 		return bookName;
@@ -62,12 +70,6 @@ public class BookDto {
 		this.bookDescription = bookDescription;
 	}
 
-	public int getBookQuantity() {
-		return bookQuantity;
-	}
 
-	public void setBookQuantity(int bookQuantity) {
-		this.bookQuantity = bookQuantity;
-	}
 
 }

@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.bridgelabz.bookstore.dto.UserDto;
+import com.bridgelabz.bookstore.configuration.Constants;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.UserAddressDto;
@@ -55,21 +56,19 @@ public class UserServiceImplementation implements UserService {
 	@Transactional
 	@Override
 	public Users register(@Valid UserDto userInfoDto) throws UserException {
+		Users user = new Users();		
 		if (repository.FindByEmail(userInfoDto.getEmail()).isPresent()){
-			Users user = new Users();		
+			 throw new UserException(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.EMAIL_ID_ALREADY_PRASENT);
+		}
 			BeanUtils.copyProperties(userInfoDto, user);
 			user.setPassword(bcrypt.encode(userInfoDto.getPassword()));			
 			user.setCreationTime(LocalDateTime.now());
 			user.setUpdateTime(LocalDateTime.now());
 			user=repository.save(user);
-			String mailResponse = "http://localhost:8080/user/verify/" +JwtService.generateToken(user.getUserId(),Token.WITH_EXPIRE_TIME);
-			MailService.sendEmail(user.getEmail(),"verification", mailResponse);
-			throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_REGISTER_STATUS); 
-		}
-		else {
-			throw new UserException(HttpStatus.NOT_ACCEPTABLE,"User Already Registered"); 
-		}
-	}
+			String mailResponse = Constants.USER_VERIFICATION_LINK +JwtService.generateToken(user.getUserId(),Token.WITH_EXPIRE_TIME);
+			MailService.sendEmail(user.getEmail(),Constants.USER_VERIFICATION_MSG, mailResponse);
+			return user;
+}
 	
 	/*********************************************************************
      * To check whether user is verified or not by the token 
@@ -78,19 +77,19 @@ public class UserServiceImplementation implements UserService {
 
 	@Transactional
 	@Override
-	public Users verifyUser(String token) throws UserException {
+	public boolean verifyUser(String token) throws UserException {
 		
 		Long id =JwtService.parse(token);
-				Users userInfo = repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
+		//System.out.println(id);
+		Users userInfo = repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 	if(userInfo.isVerified()) {
 		userInfo.setVerified(true);
 		repository.save(userInfo);
 		throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_VERIFIED_STATUS );
 	}
-	else {
+	
 		throw new UserException(HttpStatus.BAD_REQUEST,ExceptionMessages.USER_ALREADY_VERIFIED); 
  
-	}
 }
 	
 	/*********************************************************************
@@ -102,15 +101,14 @@ public class UserServiceImplementation implements UserService {
 	@Override
 	public Users login(LoginDto login) throws UserException {
 		Users user = repository.FindByEmail(login.getEmail()).
-				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Please Verify Email Before Login"));
+				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 		if ((user.isVerified()) && (bcrypt.matches(login.getPassword(), user.getPassword()))) {
 			throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_LOGIN_STATUS); 
-		} else {
-			String mailResponse = "http://localhost:8080/verify" +
+		} 
+		String mailResponse =Constants.USER_VERIFICATION_LINK +
 					JwtService.generateToken(user.getUserId(),Token.WITH_EXPIRE_TIME);
-			MailService.sendEmail(login.getEmail(), "Verification", mailResponse);
-			throw new UserException(HttpStatus.ACCEPTED, "User credentials are not matched");
-		}
+			MailService.sendEmail(login.getEmail(), Constants.USER_VERIFICATION_MSG, mailResponse);
+			throw new UserException(HttpStatus.ACCEPTED, ExceptionMessages.USER_FAILED_LOGIN_STATUS);
 	}
 	
 	
@@ -118,12 +116,12 @@ public class UserServiceImplementation implements UserService {
 	@Transactional
 	@Override
 	public Users forgetPassword(String email) throws UserException {
-		Users userMail = repository.FindByEmail(email).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
+		Users userMail = repository.FindByEmail(email).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 		// log.info("userdetails for forgetpassword" + userMail);		
 			if (userMail.isVerified()) {
-				String responsemail = "http://localhost:8080/verify" +
+				String responsemail = Constants.USER_VERIFICATION_LINK+
 						JwtService.generateToken(userMail.getUserId(),Token.WITH_EXPIRE_TIME);
-				MailService.sendEmail(userMail.getEmail(), "Verification", responsemail);
+				MailService.sendEmail(userMail.getEmail(), Constants.USER_VERIFICATION_MSG, responsemail);
 				return userMail;
 			}
 			throw new UserException(HttpStatus.NOT_FOUND,ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE );
@@ -140,15 +138,15 @@ public class UserServiceImplementation implements UserService {
 		boolean passwordupdateflag=false;		
 		if(restpassword.getNewPassword().equals(restpassword.getConfirmPassword()))  {
 		Long id =JwtService.parse(token);
-		Users userinfo=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));	
+		Users userinfo=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));	
 		if(userinfo.isVerified()) {
 		String epassword = bcrypt.encode(restpassword.getConfirmPassword());
 		restpassword.setConfirmPassword(epassword);
 		 repository.updatePassword(restpassword, id);
-		throw new UserException(HttpStatus.ACCEPTED,"User reset password sucessfull"); 
+		throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_VERIFIED_STATUS); 
 		}
 				
-		throw new UserException(HttpStatus.NOT_ACCEPTABLE, "password updation failed");
+		throw new UserException(HttpStatus.NOT_ACCEPTABLE, ExceptionMessages.USER_RESET_PASSWORD_FAILED);
 		}
 		return passwordupdateflag;
 		
@@ -164,11 +162,11 @@ public class UserServiceImplementation implements UserService {
 	public UserAddress address(UserAddressDto addressDto, String token) throws UserException {
 		UserAddress users=new UserAddress();
 			Long id=JwtService.parse(token);
-			Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
+			Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 			BeanUtils.copyProperties(addressDto, users);			
 			user.getAddress().add(users);
 			userAddressrepository.save(users);
-			throw new UserException(HttpStatus.ACCEPTED,"User sucessfully added the address"); 
+			throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_ADDRESS_STATUS); 
 		
 	}
 
@@ -182,16 +180,12 @@ public class UserServiceImplementation implements UserService {
 	public UserAddress updateAddress(String token,UserAddressDto addDto,Long addressId) throws UserException{
 	//  UserAddress users=new UserAddress();
 		Long id=JwtService.parse(token);
-		Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user is not exist"));
+		Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 		UserAddress usersaddress=user.getAddress().stream().filter((address)->address.getAddressId()==addressId).findFirst().orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Address is not exist"));
 		BeanUtils.copyProperties(addDto, usersaddress);	
 		repository.save(user);		
-	//	return users;	
-		throw new UserException(HttpStatus.ACCEPTED,"User sucessfully updated the address"); 
+		throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE); 
 
 	
 	}
-	
-	
-	
 }

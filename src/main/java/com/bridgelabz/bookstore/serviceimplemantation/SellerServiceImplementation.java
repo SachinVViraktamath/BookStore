@@ -1,6 +1,8 @@
 package com.bridgelabz.bookstore.serviceimplemantation;
 
 
+import java.time.LocalDateTime;
+
 import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +20,7 @@ import com.bridgelabz.bookstore.repository.BookQuantityRepository;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.SellerRepository;
 import com.bridgelabz.bookstore.service.SellerService;
-import com.bridgelabz.bookstore.utility.AmazonS3Access;
+
 import com.bridgelabz.bookstore.utility.JwtService;
 import com.bridgelabz.bookstore.utility.JwtService.Token;
 import com.bridgelabz.bookstore.utility.MailService;
@@ -42,8 +44,7 @@ public class SellerServiceImplementation implements SellerService {
 	private ModelMapper mapper;
 	
 
-    AmazonS3Access amazonS3;
-
+   
 	@Override
 	@Transactional
 	public Seller register(SellerDto dto)  {
@@ -52,7 +53,7 @@ public class SellerServiceImplementation implements SellerService {
 			throw new SellerException(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_ALREADY_MSG);
 			} seller = mapper.map(dto, Seller.class);
 		seller.setPassword(encoder.encode(dto.getPassword()));
-	//	seller.setDateTime(LocalDateTime.now());
+		seller.setDateTime(LocalDateTime.now());
 		repository.save(seller);
 		String mailResponse = Constants.SELLER_VERIFICATION_LINK
 				+ JwtService.generateToken(seller.getSellerId(), Token.WITH_EXPIRE_TIME);

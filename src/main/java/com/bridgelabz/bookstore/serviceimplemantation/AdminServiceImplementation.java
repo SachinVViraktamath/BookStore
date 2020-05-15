@@ -3,8 +3,6 @@ package com.bridgelabz.bookstore.serviceimplemantation;
 
 
 import java.util.List;
-import java.util.Optional;
-
 import javax.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +15,6 @@ import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
-import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
@@ -51,16 +48,16 @@ public class AdminServiceImplementation implements AdminService{
 	@Override
 	public Admin adminRegistartion(AdminDto adminInformation) throws AdminException  {		
 	    	Admin adminInfo = new Admin();
-	    	if (adminRepository.getAdmin(adminInformation.getAdminEmailId()).isPresent()) {
+	    	if (adminRepository.getAdmin(adminInformation.getEmail()).isPresent()) {
 			 throw new AdminException(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.EMAIL_ID_ALREADY_PRASENT);
-	    	}	    	
-	    	String adminemial=adminInformation.getAdminEmailId();
+	    	}	
+	    	
 		    BeanUtils.copyProperties(adminInformation, adminInfo);
-			adminInfo.setPassword(( passwordEncryption.encode(adminInformation.getAdminPassword())));					
+			adminInfo.setPassword(( passwordEncryption.encode(adminInformation.getPassword())));					
 			adminInfo = adminRepository.save(adminInfo);
 			String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,
 					JwtService.generateToken(adminInfo.getAdminId(),Token.WITH_EXPIRE_TIME));		
-			MailService.sendEmail(adminemial, Constants.VERIFICATION_MSG, mailResponse);	    			
+			MailService.sendEmail(adminInformation.getEmail(), Constants.VERIFICATION_MSG, mailResponse);	    			
 			return adminInfo;
 	}
 	
@@ -84,6 +81,7 @@ public class AdminServiceImplementation implements AdminService{
 	public Admin loginToAdmin(LoginDto information) throws AdminException {
 		Admin user = adminRepository.getAdmin(information.getEmail())
 				.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
+		
 		if ((user.isAdminIsVerified() == true) && (passwordEncryption.matches(information.getPassword(), user.getPassword()))) {
 			return user;
 		}	String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,

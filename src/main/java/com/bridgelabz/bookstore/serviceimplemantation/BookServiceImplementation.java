@@ -4,15 +4,11 @@ import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import javax.transaction.Transactional;
-
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-
 import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.ReviewDto;
 import com.bridgelabz.bookstore.entity.Book;
@@ -108,6 +104,7 @@ public class BookServiceImplementation implements BookService {
 		if (seller.isVerified() == true) {
 			book = mapper.map(dto, Book.class);
 			book.setBookCreatedAt(LocalDateTime.now());
+			
 			// book.setBookImage(amazonS3.uploadFileToS3Bucket(file));
 			seller.getSellerBooks().add(book);
 			bookRepository.save(book);

@@ -7,6 +7,7 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,6 +26,7 @@ import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.BookException;
+import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.UserService;
@@ -38,59 +40,74 @@ public class UserController {
 	@Autowired
 	private UserService service;
 
-
 	@ApiOperation(value = "Api to Register User  ", response = Response.class)
 	@PostMapping("/register")
-	public ResponseEntity<Response> registration(@Valid @RequestBody UserDto userInfoDto) throws UserException {
-		service.register(userInfoDto);
-		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "User registration Successfull", userInfoDto));
-	}	
+	public ResponseEntity<Response> registration(@Valid @RequestBody UserDto userInfoDto,BindingResult res) throws UserException {
+		
+       if(res.hasErrors()) {
+    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_REGISTER_STATUS_INFO,userInfoDto));
+     }
+        Users user=service.register(userInfoDto);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_REGISTER_SUCESSFULL, user));
+	
+}
+
+	
 
 	@ApiOperation(value = "Api to verify the User ", response = Response.class)
 	@GetMapping("/verify/{token}")
-	public ResponseEntity<Response> verification(@PathVariable("token") String token) throws UserException {
-		service.verifyUser(token);
-		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "User verification Successfull ", 200));
+	public ResponseEntity<Response> verification(@PathVariable("token") String token,BindingResult res) throws UserException {
+		 if(res.hasErrors()) {
+	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_VERIFICATION_FAILED_MESSAGE,400));
+	     }
+		boolean user=service.verifyUser(token);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_VERIFIED_STATUS, user));
 	}
 
 	@ApiOperation(value = "Api to Login User", response = Response.class)
 	@PostMapping("/login")
-	public ResponseEntity<Response> login(@RequestBody LoginDto loginDto) throws UserException {
-		service.login(loginDto);
-		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "User login Successfull", 200));
+	public ResponseEntity<Response> login(@RequestBody LoginDto loginDto,BindingResult res) throws UserException {
+		 if(res.hasErrors()) {
+	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_FAILED_LOGIN_STATUS,400));
+	     }
+		Users user=service.login(loginDto);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_LOGIN_STATUS, user));
 	}
 
 	@ApiOperation(value = "Api to check if UserExists or not", response = Response.class)
 	@PostMapping("/forget-password")
 	public ResponseEntity<Response> forgetPassword(@RequestParam String email) throws UserException {
-			service.forgetPassword(email);
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "User password changed Successfully ", 200));
+			Users user=service.forgetPassword(email);
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "User password changed Successfully ", user));
 
 	}
 
 	@ApiOperation(value = "Api to Reset User Password ", response = Response.class)
 	@PutMapping("/reset-password/{token}")
-	public ResponseEntity<Response> resetPassword(@RequestBody ResetPassword password,@Valid @PathVariable("token") String token) throws UserException {
-			service.verifyUser(token);
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " User reset password is Successfull  ", 200));
+	public ResponseEntity<Response> resetPassword(BindingResult res,@RequestBody ResetPassword password,@Valid @PathVariable("token") String token) throws UserException {
+		if(res.hasErrors()) {
+	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_RESET_PASSWORD_FAILED,400));
+	     }
+			boolean result=service.verifyUser(token);
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED,  ExceptionMessages.USER_RESET_PASSWORD_SUCESSFULL, result));
 	}
 
 	@ApiOperation(value = "Api to Add User Address", response = Response.class)
 	@PostMapping("/address")
 	public ResponseEntity<Response> address(@RequestBody UserAddressDto addDto, @RequestHeader String token)
 			throws UserException {
-		service.address(addDto, token);
+		UserAddress address=service.address(addDto, token);
 		
 			return ResponseEntity.ok()
-					.body(new Response(HttpStatus.ACCEPTED, " User address added Successfully  ", 200));
+					.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_ADDRESS_STATUS, address));
 	}
 
 	@ApiOperation(value = "Api to Update User Address", response = Response.class)
 	@PutMapping("/update-address/{addressId}")
 	public ResponseEntity<Response> updateAddress(@RequestParam String token, @PathVariable long addressId,
 			@RequestBody UserAddressDto addDto) throws UserException {
-			service.updateAddress(token, addDto, addressId);
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " User updated address Successfully  ", 200));
+			UserAddress address= service.updateAddress(token, addDto, addressId);
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));
 		
 	}
 	

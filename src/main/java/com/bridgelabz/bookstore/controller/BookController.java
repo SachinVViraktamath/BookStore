@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,13 +20,14 @@ import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.ReviewDto;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Reviews;
+import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.BookService;
 import com.bridgelabz.bookstore.service.ElasticSearchService;
-
+import com.bridgelabz.bookstore.service.UserWishListService;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -40,6 +42,10 @@ public class BookController {
 	@Autowired
 	private BookService bookService;
 
+	@Autowired
+	private UserWishListService userWishListService;
+	
+	
 	@ApiOperation(value = "Api diplay all books",response = Iterable.class)
 	@GetMapping("/displayAll")
 	public ResponseEntity<Response> displayAllBooks() throws BookException {
@@ -116,8 +122,6 @@ public class BookController {
 
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", book));
-
-
 }
 	
 
@@ -138,6 +142,35 @@ public class BookController {
 				.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", review));
 }
 	
+	
+	
+	@ApiOperation(value = "Adding the books to the Whishlist",response = Iterable.class)
+	@PostMapping(value="/add_books_WhishList/{token}")
+	public ResponseEntity<Response> addBooksToWhilist(@PathVariable("token") String token,@RequestParam("bookId") long bookId) throws Exception {
+		    Users whishlist = userWishListService.addBooksTiWishList(token, bookId);
+		    		
+			return ResponseEntity.ok()
+					.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", whishlist));
+  	
+	}
+	@ApiOperation(value = "Getting the books from Whishlist",response = Iterable.class)
+	@GetMapping(value="/books_cart/{token}")
+	public ResponseEntity<Response> getBooksfromCart(@PathVariable("token") String token) throws Exception {
+		    List<Book> whishlist = userWishListService.viewAllBooksFromWishList(token);
+		    		
+		    return ResponseEntity.ok()
+					.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", whishlist));
+	}
+	
+	@ApiOperation(value = "Removing the books to the Whishlist",response = Iterable.class)
+	@PostMapping(value="/remove_books_WhishList/{token}")
+	public ResponseEntity<Response> removeBooksToWhilist(@PathVariable("token") String token,@RequestParam("bookId") long bookId) throws Exception {
+		    Users whishlist = userWishListService.removeBooksTiWishList(token, bookId);
+		    		
+			return ResponseEntity.ok()
+					.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", whishlist));
+ 	
+	}
 	
 	
 }
