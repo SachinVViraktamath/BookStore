@@ -15,5 +15,6 @@ public interface CartService {
 	 public List<CartDetails> getBooksfromCart(String token)throws UserException;
 	
     List<CartDetails> removeBooksFromCart(Long bookId,String token)throws UserException, BookException;
+    List<CartDetails> addBooksQuantityToCart(String token, long noteId, long quantity)throws UserException,BookException;
 
 }

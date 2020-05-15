@@ -91,7 +91,7 @@ public class SellerServiceImplementation implements SellerService {
 				Seller seller=repository.getSellerById(id).orElseThrow(() -> new SellerException(HttpStatus.BAD_REQUEST,ExceptionMessages.SELLER_NOT_FOUND_MSG));
 		if(repository.verify(id)!=true)
 			throw new SellerException(HttpStatus.BAD_REQUEST,ExceptionMessages.SELLER_ALREADY_VRFIED);
-		
+		System.out.println("****");
 		return true;
 		
 	}

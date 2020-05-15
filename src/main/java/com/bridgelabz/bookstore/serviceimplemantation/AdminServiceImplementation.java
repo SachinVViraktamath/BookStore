@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.bridgelabz.bookstore.configuration.Constants;
+import com.bridgelabz.bookstore.dto.AdimRestPassword;
 import com.bridgelabz.bookstore.dto.AdminDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
@@ -97,16 +98,26 @@ public class AdminServiceImplementation implements AdminService{
 	public Admin forgetPassword(String email) throws AdminException {
 
 		Admin adminUser = adminRepository.getAdmin(email)
-				.orElseThrow(() -> new AdminException( HttpStatus.NOT_FOUND,ExceptionMessages.ADMIN_NOT_FOUND_MSG));
+				.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
 		if (adminUser.isAdminIsVerified() == true) {
-			String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,
-					JwtService.generateToken(adminUser.getAdminId(),Token.WITH_EXPIRE_TIME));
-			MailService.sendEmail(adminUser.getEmail(), Constants.VERIFICATION_MSG, mailResponse);
+			String mailResponse = response.fromMessage(Constants.REST_LINK,"resetpassword"
+					);
+			MailService.sendEmail(adminUser.getEmail(), Constants.RSET_PASSWORD, mailResponse);
 			return adminUser;
-		} return adminUser;
-		
-	}
+		}
+		return adminUser;
 
+	}
+	@Override
+	@Transactional
+	public boolean resetPassword(AdimRestPassword update) throws AdminException {
+			
+			Admin user = adminRepository.getAdmin(update.getEmail())
+					.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
+			user.setPassword((passwordEncryption.encode(update.getPassword())));
+			adminRepository.restAdminPassword(user);
+			return adminRepository.restAdminPassword(user);
+		}
 	
 	@Transactional
 	@Override

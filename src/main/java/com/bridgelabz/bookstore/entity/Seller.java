@@ -41,10 +41,10 @@ public class Seller {
 	private String password;
 	@Column
 	@NotNull
-	private int mobileNumber;
+	private Long mobileNumber;
 	
 	@NotNull
-	@Column(columnDefinition = "int Default 0", nullable = false)
+	@Column(columnDefinition = "boolean Default false", nullable = false)
 	private boolean isVerified;
 	@Column
 	private LocalDateTime dateTime;

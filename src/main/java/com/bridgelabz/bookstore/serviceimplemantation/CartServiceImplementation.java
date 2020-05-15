@@ -95,4 +95,28 @@ public List<CartDetails> getBooksfromCart(String token) throws UserException {
 		return null;	
 	}
 
+
+
+     @Transactional
+ 	@Override
+ 	public List<CartDetails> addBooksQuantityToCart(String token, long bookId, long quantity) throws UserException,BookException {
+
+     	long id = JwtService.parse(token);
+
+     	Users user = userRepository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));
+ 		Book book = bookRepository.findById(bookId).orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not exist"));
+ 		for(CartDetails cart:user.getBooksCart()) {				
+ 					boolean notExist = cart.getBooksList().stream().noneMatch(books -> books.getBookId() == bookId);
+ 					if (!notExist) {
+ 					if(quantity <= book.getNoOfBooks()) {
+ 					cart.setBooksQuantity(quantity);				
+ 					return userRepository.save(user).getBooksCart();
+ 					}
+ 				} 
+ 			}
+ 			
+ 		return null;
+
+ 	}
+
 }

@@ -66,7 +66,7 @@ public class SellerController {
 	}
 
 	/* API for verifying the token generated for the email */
-	@PostMapping("/verify/{token}")
+	@GetMapping("/verify/{token}")
 	@ApiOperation(value="seller email verification",response = Response.class)
 	public ResponseEntity<Response> verify(@PathVariable("token") String token,BindingResult res) throws Exception {
 		 if(res.hasErrors()) {

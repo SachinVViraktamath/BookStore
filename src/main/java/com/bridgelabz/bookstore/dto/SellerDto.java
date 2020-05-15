@@ -1,5 +1,6 @@
 package com.bridgelabz.bookstore.dto;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
 import com.sun.istack.NotNull;
@@ -14,17 +15,14 @@ import lombok.Setter;
 @Getter
 @NoArgsConstructor
 public class SellerDto {
-	@NotNull
-	@Size(min=3)
+	@NotBlank
 	private String SellerName;
-	@NotNull
+	@NotBlank
 	private String email;
-	@NotNull
-	//@Size(min=6)
+	@NotBlank
 	private String password;
-	@NotNull
-	//@Size(min=10,max=10)
-	private int mobileNumber;
+	@NotBlank
+	private Long mobileNumber;
 	
 
 }

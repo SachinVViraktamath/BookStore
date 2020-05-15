@@ -2,16 +2,13 @@ package com.bridgelabz.bookstore.dto;
 
 import javax.validation.constraints.NotBlank;
 
-
 import lombok.Data;
 
 @Data
-public class ResetPassword {
-
+public class AdimRestPassword {
+	@NotBlank
+	private String email;
 	
 	@NotBlank
-	private String confirmPassword;
-	@NotBlank
-	private String newPassword;
-
+	private String password;
 }

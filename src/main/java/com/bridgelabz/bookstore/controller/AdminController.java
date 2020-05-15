@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.bridgelabz.bookstore.dto.AdimRestPassword;
 import com.bridgelabz.bookstore.dto.AdminDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
@@ -52,6 +54,15 @@ public class AdminController {
 				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.REGISTER_SUCCESSFULL, result));
 	}
 	
+	@ApiOperation(value = "Api for Admin email verification",response = Iterable.class)
+	@GetMapping("/restpassword")
+	public ResponseEntity<Response> resetAdmin(AdimRestPassword reset) throws AdminException {
+		
+		boolean update = service.resetPassword(reset);	
+			return ResponseEntity.ok()
+					.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.AMDIN_VERIFIED_SUCCESSFULL, update));	
+		
+	}
 	
 	@ApiOperation(value = "Api for Admin email verification",response = Iterable.class)
 	@GetMapping("/verifyemail/{token}")

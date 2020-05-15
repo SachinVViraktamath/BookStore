@@ -28,7 +28,20 @@ public class AdminRepositoryImplementation implements AdminRepository {
 		session.saveOrUpdate(userInfromation);
 		return userInfromation;
 	}
-	
+
+	@Override
+	public boolean restAdminPassword(Admin information) {
+		String email=information.getEmail();
+		
+		Session session = entityManager.unwrap(Session.class);
+		Query q = session.createQuery("update Admin set password =:p" + " " + " " + "where email=:email")
+				.setParameter("p", information.getPassword()).setParameter("email", email);
+		int status = q.executeUpdate();
+		if (status > 0) {
+			return true;
+		} else {
+			return false;
+		}}
 	
 	@SuppressWarnings("unchecked")
 	@Override

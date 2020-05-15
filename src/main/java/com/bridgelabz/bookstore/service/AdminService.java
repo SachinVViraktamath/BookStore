@@ -3,6 +3,7 @@ package com.bridgelabz.bookstore.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.bridgelabz.bookstore.dto.AdimRestPassword;
 import com.bridgelabz.bookstore.dto.AdminDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
@@ -26,7 +27,7 @@ public interface AdminService {
 
 	boolean approveBook(Long id) throws BookException;
  	
-
+	public boolean resetPassword(AdimRestPassword update)throws AdminException;
 	
  	public List<Book> getNotapproveBook(String token) throws AdminException;
 

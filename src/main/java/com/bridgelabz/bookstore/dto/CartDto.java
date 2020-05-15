@@ -7,10 +7,10 @@ import lombok.Data;
 @Data
 public class CartDto {
    
-	@NotNull(message = "Name field can't be empty!!!")	
+
     private double price;
 	 
 	
-	@NotNull(message = "Name field can't be empty!!!")
-    private int quantity;
+	
+    private long quantity;
 }

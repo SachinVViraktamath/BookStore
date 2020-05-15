@@ -121,7 +121,7 @@ public class UserServiceImplementation implements UserService {
 	public Users forgetPassword(String email) throws UserException {
 		Users userMail = repository.FindByEmail(email).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 		// log.info("userdetails for forgetpassword" + userMail);		
-			if (userMail.isVerified()) {
+			if (userMail.isVerified()==true) {
 				String responsemail = Constants.USER_VERIFICATION_LINK+
 						JwtService.generateToken(userMail.getUserId(),Token.WITH_EXPIRE_TIME);
 				MailService.sendEmail(userMail.getEmail(), Constants.USER_VERIFICATION_MSG, responsemail);

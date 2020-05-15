@@ -26,7 +26,7 @@ public class CartDetails {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private  Long cartId;
 	
-	private int booksQuantity;
+	private long booksQuantity;
 	
 	private double totalPrice;
 	

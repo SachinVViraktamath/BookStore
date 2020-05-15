@@ -1,5 +1,6 @@
 package com.bridgelabz.bookstore.dto;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -13,20 +14,17 @@ import lombok.NoArgsConstructor;
 
 public class UserDto {
 	
-	@NotNull
-	//@Size(min=3)
+	@NotBlank
 	private String firstName;
-	@NotNull
+	@NotBlank
 	private String lastName;
-	@NotNull
-	//@Size(min=6)
+	@NotBlank
 	private String password;
-	@NotNull
+	@NotBlank
 	private String email;
-	@NotNull
+	@NotBlank
 	private String gender;
-	@NotNull
-	//@Size(min=10,max=10)
+	
 	private Long phNo;
 
 

@@ -1,25 +1,23 @@
 package com.bridgelabz.bookstore.dto;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 public class BookDto {
 
-	@NotNull(message = "Book Name cannot be empty")
+	@NotBlank
 	private String bookName;
 
-	@NotNull(message = "Author Name cannot be empty")
+	@NotBlank
 	private String bookAuthor;
 
-	@NotNull(message = "Book Price cannot be empty")
 	private double bookPrice;
 
-//	@NotNull(message = "Book Image cannot be empty")
-//	private String bookImage;
 
-	@NotNull(message = "Book Description cannot be empty")
+	@NotBlank
 	private String bookDescription;
 
-	@NotNull(message = "Book Quantity cannot be empty")
+	
 	private int noOfBooks;
 
 	public int getNoOfBooks() {
