@@ -60,9 +60,10 @@ public boolean isSellerExist(String email) {
 	public boolean update(ResetPassword update, Long id) {
 		Session session = entityManger.unwrap(Session.class);
 		Query<Seller> q = session.createQuery("update Seller set password=:p" + " " + " where sellerId=:id");
-	
+	System.out.println(update.getConfirmPassword());
 		q.setParameter(" p", update.getConfirmPassword());
 		q.setParameter("id", id);
+		
 		int status = q.executeUpdate();
 		if (status > 0) {
 			return true;

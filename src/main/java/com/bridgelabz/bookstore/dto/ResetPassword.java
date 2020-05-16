@@ -11,7 +11,6 @@ public class ResetPassword {
 	
 	@NotBlank
 	private String confirmPassword;
-	@NotBlank
-	private String newPassword;
+	
 
 }

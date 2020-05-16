@@ -109,7 +109,7 @@ public class SellerServiceImplementation implements SellerService {
 		if (seller.isVerified()!= true) {
 			throw new SellerException(HttpStatus.BAD_REQUEST,ExceptionMessages.SELLER_VRIFICATION_FAIL_MSG);
 		}
-		String mailResponse = Constants.SELLER_VERIFICATION_LINK
+		String mailResponse = Constants.SELLER_RESETPASSWORD_LINK
 				+ JwtService.generateToken(seller.getSellerId(), Token.WITH_EXPIRE_TIME);
 		MailService.sendEmail(email,Constants.SELLER_VERIFICATION_MSG, mailResponse);
 		return seller;
@@ -122,13 +122,13 @@ public class SellerServiceImplementation implements SellerService {
 			Seller seller = repository.getSellerById(id)
 					.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
 
-			if (encoder.matches(encoder.encode(update.getConfirmPassword()), encoder.encode(update.getNewPassword()))){
+			//if (encoder.matches(encoder.encode(update.getConfirmPassword()), encoder.encode(update.getNewPassword()))){
 				
 				update.setConfirmPassword(encoder.encode(update.getConfirmPassword()));
+			repository.save(seller);
+				//repository.update(update, id);	
 			
-				repository.update(update, id);	
-			
-		}
+		
 			return true;	
 	}
 

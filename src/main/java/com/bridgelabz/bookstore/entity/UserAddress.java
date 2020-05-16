@@ -6,9 +6,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
-
 @Data
 @Table(name = "userAddress")
 @Entity
@@ -17,26 +17,22 @@ public class UserAddress {
 	 @Id
 	 @GeneratedValue(strategy = GenerationType.IDENTITY)
 	 private Long addressId;
-	 
-	 
-	 private String street;
-	 
-	
-	 private String town;
-	
-	 private String district;
-	 
-	 
-	 private String state;
-	 
-	
-	 private String country;
-	 
-	 
+	 @NotNull
+	 private String landmark;
+	 @NotNull
+	 private String city;
+	 @NotNull
+	 private String locality;
+	 @NotNull
+	 private String address;
+	 @NotNull
 	 private String addressType;
-	 
-	 
+	 @NotNull
 	 private int pinCode;
+	 @NotNull
+	 private String name;
+	 @NotNull
+	 private long phonenumber;
 
 	 
 	

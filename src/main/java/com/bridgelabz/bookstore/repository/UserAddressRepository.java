@@ -10,7 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.bridgelabz.bookstore.entity.UserAddress;
-
 @Repository
 @Transactional
 public interface UserAddressRepository extends JpaRepository<UserAddress, Long> {
@@ -20,8 +19,8 @@ public interface UserAddressRepository extends JpaRepository<UserAddress, Long> 
 	public Optional<UserAddress> findbyId(long addressId);
 	
 	@Modifying
-	@Query(value = "insert into user_address (street,town,district,state,country,,addressType,pinCode)", nativeQuery = true)
-	void addAddress( String street , String town,String district,String state,String country,String addressType,int pinCode );
+	@Query(value = "insert into user_address (landmark,city,locality,address,addressType,pinCode,name,phonenumber) values (?,?,?,?,?,?,?,?)", nativeQuery = true)
+	void addAddress( String landmark , String city,String locality,String address,String addressType,int pinCode,String name,String phonenumber );
 
  	@Modifying
     @Transactional
@@ -31,7 +30,6 @@ public interface UserAddressRepository extends JpaRepository<UserAddress, Long> 
 
 	@Modifying
 	@Transactional
-	@Query(value = "update user_address set street = ?,town =? ,district = ?,state = ?, country = ?, addressType = ?, pincode = ? where userId = ? and addressId = ?", nativeQuery = true)
-	void updateAdd(String street , String town,String district,String state,String country,String addressType,int pinCode);
-
+	@Query(value = "update user_address set landmark = ?,city =? ,locality = ?,address = ?, addressType = ?, pincode = ?,name=?,phonenumber=? where userId = ? and addressId = ?", nativeQuery = true)
+	void updateAdd( String landmark , String city,String locality,String address,String addressType,int pinCode,String name,String phonenumber );
 }

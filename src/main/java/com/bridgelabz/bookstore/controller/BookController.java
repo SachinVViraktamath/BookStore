@@ -114,13 +114,12 @@ public class BookController {
 	}
 
 	/* API for seller adding books for approval */
-	 @RequestMapping(value = "/addBook", method = RequestMethod.POST, consumes =MediaType.MULTIPART_FORM_DATA_VALUE)
+	 @PostMapping("/addbook")
 	@ApiOperation("seller adding books")
-	public ResponseEntity<Response> addBook(@RequestBody(required=true) BookDto book,
-            @RequestPart(value="file",required=true) @Valid  MultipartFile file, @RequestParam("token") String token)
+	public ResponseEntity<Response> addBook(@RequestBody(required=true) BookDto book, @RequestParam("token") String token)
 			throws SellerException, AmazonServiceException, SdkClientException, IOException{
 
-		Book addBook = bookService.addBook(token, book,file);
+		Book addBook = bookService.addBook(token, book);
 
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, "verification mail has send successfully", addBook));
@@ -182,6 +181,13 @@ public class BookController {
 					.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", whishlist));
  	
 	}
+	@ApiOperation(value="add image to book",response = Iterable.class )
+	@PutMapping("/profile")
+	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws AmazonServiceException, SdkClientException,BookException, IOException{
+		Book book =bookService.addProfile(file, token);
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED,"profile added for book", book));
 	
+	}
 	
 }

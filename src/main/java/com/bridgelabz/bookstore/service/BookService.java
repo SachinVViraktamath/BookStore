@@ -25,7 +25,7 @@ public interface BookService {
 
 	public Book updateBook(String token, Long bookId, BookDto dto) throws BookException;
 
-	public Book addBook(String token, BookDto dto,MultipartFile file) throws SellerException, AmazonServiceException, SdkClientException, IOException;
+	public Book addBook(String token, BookDto dto)throws SellerException;
 
 	public void writeReviewAndRating(String token, ReviewDto rrDTO, Long bookId) throws UserException, BookException;
 
@@ -38,5 +38,8 @@ public interface BookService {
 	List<Book> sortByNewest(Integer page) throws BookException;
 
 	Integer getCountOfBooks();
+
+	public Book addProfile(MultipartFile file, String token)
+			throws BookException, AmazonServiceException, SdkClientException, IOException, SellerException;
 
 }

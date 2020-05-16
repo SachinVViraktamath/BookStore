@@ -26,12 +26,12 @@ public class AwsS3Access{
 	
 	
 	@PostConstruct
-	private void initializeAmazon() {
+	public void initializeAmazon() {
 		AWSCredentials credentials = new BasicAWSCredentials(awsKeyId, acessKey);
 		amazonS3 = new AmazonS3Client(credentials);
 	}
 	
-	private static AmazonS3 amazonS3;
+	public static AmazonS3 amazonS3;
 
 	private static  String bucketName = System.getenv("aws.s3.audio.bucket");
 	private static String region=System.getenv("aws.region");
@@ -43,14 +43,14 @@ public class AwsS3Access{
 		
 				String fileName=file.getOriginalFilename();
 				
-				String url ="https://"+bucketName+".s3."+region+".amazonaws.com/https%3A//" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
+				String url ="https://" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
 				// profile = new BookProfile(url, book);
 				
 				ObjectMetadata data = new ObjectMetadata();
 				
 				data.setContentLength(file.getSize());
 			
-            PutObjectRequest putObject= new PutObjectRequest(bucketName, url, file.getInputStream(), data);
+                PutObjectRequest putObject= new PutObjectRequest(bucketName, url, file.getInputStream(), data);
 
 				amazonS3.putObject(bucketName, url, file.getInputStream(), data);
 				

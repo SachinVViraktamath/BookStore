@@ -21,8 +21,6 @@ import lombok.Data;
 @Entity
 @Table(name="cart")
 public class CartDetails {
-
-	
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

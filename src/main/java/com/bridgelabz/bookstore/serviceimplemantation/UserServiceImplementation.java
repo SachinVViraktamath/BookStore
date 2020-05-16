@@ -134,9 +134,9 @@ public class UserServiceImplementation implements UserService {
 		Users userMail = repository.FindByEmail(email).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 		// log.info("userdetails for forgetpassword" + userMail);		
 			if (userMail.isIsverified()==true) {
-				String responsemail = Constants.USER_VERIFICATION_LINK+
+				String responsemail = Constants.USER_RESETPASSWORD_LINK+
 						JwtService.generateToken(userMail.getUserId(),Token.WITH_EXPIRE_TIME);
-				MailService.sendEmail(userMail.getEmail(), Constants.USER_VERIFICATION_MSG, responsemail);
+				MailService.sendEmail(userMail.getEmail(), Constants.RESET_PASSWORD, responsemail);
 				return userMail;
 			}
 			throw new UserException(HttpStatus.NOT_FOUND,ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE );
@@ -149,12 +149,12 @@ public class UserServiceImplementation implements UserService {
 	@Transactional
 	@Override
 	public boolean resetPassword(ResetPassword password,String token) throws UserException {
-		if(password.getNewPassword().equals(password.getConfirmPassword()));
+		
 		Long id=JwtService.parse(token);
 		Users user=repository.findById(id).orElseThrow(() -> new UserException( HttpStatus.NOT_FOUND,ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 		if(user.isIsverified()) {
 			user.setPassword(new BCryptPasswordEncoder().encode(password.getConfirmPassword()));
-			repository.updateUserPassword(bcrypt.encode(password.getNewPassword()),id);
+			repository.updateUserPassword(bcrypt.encode(password.getConfirmPassword()),id);
 		}
 		return true;
 	}

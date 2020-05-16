@@ -88,7 +88,7 @@ public class UserController {
 	@PostMapping("/forgetpassword")
 	public ResponseEntity<Response> forgetPassword(@RequestParam String email) throws UserException {
 			Users user=service.forgetPassword(email);
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "mail send to email verification Successfully ", user));
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "reset password mail send to email", email));
 
 	}
 
@@ -98,7 +98,7 @@ public class UserController {
 		if(res.hasErrors()) {
 	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_RESET_PASSWORD_FAILED,password));
 	     }
-			boolean result=service.verifyUser(token);
+			boolean result=service.resetPassword(password, token);
 			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED,  ExceptionMessages.USER_RESET_PASSWORD_SUCESSFULL, result));
 	}
 

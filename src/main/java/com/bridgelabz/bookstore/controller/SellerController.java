@@ -90,7 +90,7 @@ public class SellerController {
 	public ResponseEntity<Response> forgotPassword(@RequestParam("email") String email) throws SellerException {
 		
 		Seller seller = service.forgetPassword(email);
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "seller existed", seller));
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "resetpassword mail has send to email successfully", email));
 		
 	}
 
