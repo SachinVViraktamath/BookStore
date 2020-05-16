@@ -29,6 +29,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RequestMapping("/bookImage")
 @RestController
+@CrossOrigin
 public class BookProfileController {
 
 	@Autowired
@@ -36,7 +37,6 @@ public class BookProfileController {
 	
 	
 	@PostMapping("/add")
-	@CrossOrigin
 	@ApiOperation("adding image to book")
 	public ResponseEntity<Response> addProfile(@RequestBody MultipartFile file,
 			@RequestHeader("bookId") Long id) throws BookException {
@@ -48,7 +48,6 @@ public class BookProfileController {
 	/* API for update the bookImage */
 	
 	@PutMapping("/update")
-	@CrossOrigin
 	@ApiOperation("updating image of existing book")
 	public ResponseEntity<Response> update(@RequestBody MultipartFile file, String fileName, String contentType,
 			@RequestHeader("id") Long id) {
@@ -58,8 +57,7 @@ public class BookProfileController {
 	}
 
 	/* API for delete the bookImage */
-	@DeleteMapping("/delete")
-	@CrossOrigin
+	@DeleteMapping("/delete")	
 	@ApiOperation("deleting  bookimage")
 	public ResponseEntity<Response> deleteProfile(@RequestBody String key) {
 		service.deleteobjectFromS3Bucket(key);
