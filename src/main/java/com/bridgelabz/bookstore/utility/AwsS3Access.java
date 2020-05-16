@@ -43,7 +43,7 @@ public class AwsS3Access{
 		
 				String fileName=file.getOriginalFilename();
 				
-				String url = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
+				String url ="https://"+bucketName+".s3."+region+".amazonaws.com/https%3A//" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
 				// profile = new BookProfile(url, book);
 				
 				ObjectMetadata data = new ObjectMetadata();

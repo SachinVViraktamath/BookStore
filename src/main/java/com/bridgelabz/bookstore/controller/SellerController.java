@@ -111,7 +111,7 @@ public class SellerController {
 	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws AmazonServiceException, SdkClientException, AdminException, IOException{
 		Seller seller =service.addProfile(file, token);
 		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.BOOK_APPROVED, seller));
+				.body(new Response(HttpStatus.ACCEPTED,"profile added for seller", seller));
 	
 	}
 	

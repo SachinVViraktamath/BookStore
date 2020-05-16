@@ -26,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.bridgelabz.bookstore.dto.UserAddressDto;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
+import com.bridgelabz.bookstore.configuration.Constants;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
@@ -39,6 +40,8 @@ import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.UserService;
+import com.bridgelabz.bookstore.utility.JwtService;
+import com.bridgelabz.bookstore.utility.JwtService.Token;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -76,7 +79,9 @@ public class UserController {
 	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_FAILED_LOGIN_STATUS,loginDto));
 	     }
 		Users user=service.login(loginDto);
-		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_LOGIN_STATUS, user));
+		String mailResponse = Constants.USER_VERIFICATION_LINK
+				+ JwtService.generateToken(user.getUserId(), Token.WITH_EXPIRE_TIME);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_LOGIN_STATUS, mailResponse));
 	}
 
 	@ApiOperation(value = "Api to check if UserExists or not", response = Response.class)
@@ -120,7 +125,7 @@ public class UserController {
 	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws AmazonServiceException, SdkClientException,UserException, IOException{
 		Users user =service.addProfile(file, token);
 		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.BOOK_APPROVED, user));
+				.body(new Response(HttpStatus.ACCEPTED,"profile added for user", user));
 	
 	}
 	

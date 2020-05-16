@@ -116,7 +116,7 @@ public class BookController {
 	/* API for seller adding books for approval */
 	 @RequestMapping(value = "/addBook", method = RequestMethod.POST, consumes =MediaType.MULTIPART_FORM_DATA_VALUE)
 	@ApiOperation("seller adding books")
-	public ResponseEntity<Response> addBook(@RequestPart(value="dto",required=true) BookDto book,
+	public ResponseEntity<Response> addBook(@RequestBody(required=true) BookDto book,
             @RequestPart(value="file",required=true) @Valid  MultipartFile file, @RequestParam("token") String token)
 			throws SellerException, AmazonServiceException, SdkClientException, IOException{
 
