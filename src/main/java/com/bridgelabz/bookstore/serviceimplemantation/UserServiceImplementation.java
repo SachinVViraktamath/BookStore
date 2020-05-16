@@ -117,7 +117,8 @@ public class UserServiceImplementation implements UserService {
 			String mailResponse = Constants.USER_VERIFICATION_LINK
 					+ JwtService.generateToken(user.getUserId(), Token.WITH_EXPIRE_TIME);
 			MailService.sendEmail(login.getEmail(),Constants.USER_VERIFICATION_MSG, mailResponse);
-			throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_LOGIN_STATUS); 
+			
+			return user;
 		} 
 		String mailResponse =Constants.USER_VERIFICATION_LINK +
 					JwtService.generateToken(user.getUserId(),Token.WITH_EXPIRE_TIME);
