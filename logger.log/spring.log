@@ -4352,3 +4352,5 @@ java.lang.IllegalArgumentException: Could not locate named parameter [ p], expec
 2020-05-16 20:58:30.820  INFO 2332 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
 2020-05-16 20:58:30.822  INFO 2332 --- [main] c.b.bookstore.BookStoreApplication       : Started BookStoreApplication in 6.217 seconds (JVM running for 7.05)
 2020-05-16 20:58:51.843  INFO 2332 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2020-05-16 20:58:51.844  INFO 2332 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2020-05-16 20:58:51.855  INFO 2332 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 11 ms

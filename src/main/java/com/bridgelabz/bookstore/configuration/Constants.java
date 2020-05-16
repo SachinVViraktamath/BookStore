@@ -18,6 +18,7 @@ public class Constants {
 	public static final String SELLER_RESETPASSWORD_LINK="http://localhost:3000/resetpassword/";
 	public static final String SELLER_RESET_PASSWORD = "Reset your password";
 	
+	
 	public static final String USER_RESETPASSWORD_LINK="http://localhost:3000/resetpassword/";
 	public static final String RESET_PASSWORD = "Reset your password";
 }
