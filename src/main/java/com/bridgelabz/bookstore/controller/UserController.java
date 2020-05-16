@@ -79,8 +79,8 @@ public class UserController {
 	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_FAILED_LOGIN_STATUS,loginDto));
 	     }
 		Users user=service.login(loginDto);
-		String mailResponse = Constants.USER_VERIFICATION_LINK
-				+ JwtService.generateToken(user.getUserId(), Token.WITH_EXPIRE_TIME);
+		String mailResponse = 
+				 JwtService.generateToken(user.getUserId(), Token.WITH_EXPIRE_TIME);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_LOGIN_STATUS, mailResponse));
 	}
 
