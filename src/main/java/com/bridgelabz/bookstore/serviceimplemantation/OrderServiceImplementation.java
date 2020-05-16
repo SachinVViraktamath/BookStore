@@ -17,6 +17,7 @@ import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.UserRepository;
+import com.bridgelabz.bookstore.response.MailingandResponseOperation;
 import com.bridgelabz.bookstore.service.OrderService;
 import com.bridgelabz.bookstore.utility.JwtService;
 
@@ -28,7 +29,9 @@ public class OrderServiceImplementation implements OrderService {
 
 	@Autowired
 	private BookRepository bookRepository;
-
+	@Autowired
+	private MailingandResponseOperation response;
+	
 	@Transactional
 	@Override
 	public List<Order> orderTheBook(String token, Long bookId, String adressType) throws BookException, UserException {
@@ -37,7 +40,6 @@ public class OrderServiceImplementation implements OrderService {
 		ArrayList<Book> list = new ArrayList<>();
 		Users userInfo = userRepository.findbyId(id)
 				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
-
 		Order orderDetails = new Order();
 		userInfo.getBooksCart().forEach((cart) -> {
 			cart.getBooksList().forEach(book -> {
@@ -47,21 +49,15 @@ public class OrderServiceImplementation implements OrderService {
 				if (orderId < 0) {
 					orderId = orderId * -1;
 				}
+				
 				orderDetails.setOrderId(orderId);
 				orderDetails.setOrderPlaceTime(LocalDateTime.now());
 				orderDetails.setBooksList(list);
 				userInfo.getOrderBookDetails().add(orderDetails);
-				if (cart.getBooksList() != null) {
-					long quantity = cart.getBooksQuantity();
-					for (Order orderedBooks : userInfo.getOrderBookDetails()) {
-						if (orderedBooks.getOrderId().equals(orderId))
-							orderedBooks.setQuantityOfBooks(quantity);
-						System.out.println("sachin" + orderedBooks);
-					}
-					Long noOfBooks = book.getNoOfBooks() - quantity;
-					book.setNoOfBooks(noOfBooks);
-					bookRepository.save(book);
-				}
+				bookRepository.save(book);
+				//String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,"");							
+			//	MailService.sendEmail("", Constants.VERIFICATION_MSG, "");	    
+				
 			});
 
 		});

@@ -37,7 +37,7 @@ public class Book {
 	
 	private Long noOfBooks;
 	private double bookPrice;
-     private String bookImage;
+ 
 	private String bookDescription;
 
 	private boolean isBookApproved;

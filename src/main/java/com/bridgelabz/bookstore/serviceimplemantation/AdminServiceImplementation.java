@@ -11,8 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.bridgelabz.bookstore.configuration.Constants;
 import com.bridgelabz.bookstore.dto.AdimRestPassword;
-import com.bridgelabz.bookstore.dto.AdminDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
+import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
@@ -47,7 +47,7 @@ public class AdminServiceImplementation implements AdminService{
 	
 	@Transactional
 	@Override
-	public Admin adminRegistartion(AdminDto adminInformation) throws AdminException  {		
+	public Admin adminRegistartion(RegisterDto adminInformation) throws AdminException  {		
 	    	Admin adminInfo = new Admin();
 	    	if (adminRepository.getAdmin(adminInformation.getEmail()).isPresent()) {
 			 throw new AdminException(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.EMAIL_ID_ALREADY_PRASENT);
@@ -70,7 +70,7 @@ public class AdminServiceImplementation implements AdminService{
 			id = JwtService.parse(token);
 			Admin admininfomation=adminRepository.getAdminById(id)
 			.orElseThrow(() -> new AdminException( HttpStatus.NOT_FOUND,ExceptionMessages.ADMIN_NOT_FOUND_MSG));
-			if(admininfomation.isAdminIsVerified())
+			if(admininfomation.isIsverified())
 			{
 				throw new AdminException(HttpStatus.ALREADY_REPORTED, ExceptionMessages.ALREADY_VERIFIED_EMAIL);
 			}	
@@ -83,7 +83,7 @@ public class AdminServiceImplementation implements AdminService{
 		Admin user = adminRepository.getAdmin(information.getEmail())
 				.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
 		
-		if ((user.isAdminIsVerified() == true) && (passwordEncryption.matches(information.getPassword(), user.getPassword()))) {
+		if ((user.isIsverified() == true) && (passwordEncryption.matches(information.getPassword(), user.getPassword()))) {
 			return user;
 		}	String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,
 			JwtService.generateToken(user.getAdminId(),Token.WITH_EXPIRE_TIME));
@@ -99,7 +99,7 @@ public class AdminServiceImplementation implements AdminService{
 
 		Admin adminUser = adminRepository.getAdmin(email)
 				.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
-		if (adminUser.isAdminIsVerified() == true) {
+		if (adminUser.isIsverified() == true) {
 			String mailResponse = response.fromMessage(Constants.REST_LINK,"resetpassword"
 					);
 			MailService.sendEmail(adminUser.getEmail(), Constants.RSET_PASSWORD, mailResponse);

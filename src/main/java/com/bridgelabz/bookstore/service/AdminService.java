@@ -4,8 +4,8 @@ import java.util.List;
 import java.util.Optional;
 
 import com.bridgelabz.bookstore.dto.AdimRestPassword;
-import com.bridgelabz.bookstore.dto.AdminDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
+import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
@@ -15,7 +15,7 @@ import com.bridgelabz.bookstore.exception.BookException;
 
 public interface AdminService {
 
-	Admin adminRegistartion(AdminDto adminInformation)throws AdminException  ;
+	Admin adminRegistartion(RegisterDto adminInformation)throws AdminException  ;
 
 	boolean verifyAdmin(String token) throws AdminException ;
 

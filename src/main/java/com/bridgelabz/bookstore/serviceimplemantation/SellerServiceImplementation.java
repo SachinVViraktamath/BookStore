@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import com.bridgelabz.bookstore.configuration.Constants;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
-import com.bridgelabz.bookstore.dto.SellerDto;
+import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
@@ -48,7 +48,7 @@ public class SellerServiceImplementation implements SellerService {
    
 	@Override
 	@Transactional
-	public Seller register(SellerDto dto)  {
+	public Seller register(RegisterDto dto)  {
 		Seller seller=new Seller();
 		if(repository.getSeller(dto.getEmail()).isPresent()) {
 			throw new SellerException(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_ALREADY_MSG);
@@ -116,14 +116,15 @@ public class SellerServiceImplementation implements SellerService {
 			Seller seller = repository.getSellerById(id)
 					.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
 
-			if (encoder.matches(update.getConfirmPassword(), update.getNewPassword())==true){
+			if (encoder.matches(encoder.encode(update.getConfirmPassword()), encoder.encode(update.getNewPassword()))){
 				
 				update.setConfirmPassword(encoder.encode(update.getConfirmPassword()));
-				return true;
-			}throw new SellerException(HttpStatus.NOT_FOUND,ExceptionMessages.SELLER_UNMATCH_CREDENTAIL);
-				
 			
+				repository.update(update, id);	
 			
 		}
+			return true;	
+	}
+		
 
 }

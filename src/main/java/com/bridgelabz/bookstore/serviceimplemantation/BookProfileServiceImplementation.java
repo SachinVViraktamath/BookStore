@@ -54,11 +54,12 @@ public class BookProfileServiceImplementation implements BookProfileService{
 /*Method for uploading the book image for a book in s3 bucket*/
 	@Transactional
 	@Override
-	public BookProfile uploadFileTos3Bucket(MultipartFile file, String fileName,  Long id) throws BookException {
+	public BookProfile uploadFileTos3Bucket(MultipartFile file,  Long id) throws BookException {
 		try {
 			Book book=bookRepository.findById(id).orElseThrow(() -> new BookException (HttpStatus.NOT_FOUND, "book is not exist"));
 
 			if (book != null) {
+				String fileName=file.getOriginalFilename();
 				
 				String url = "https://" + bucketName + ".s3." + region + ".amazonaws.com/" + fileName;
 				BookProfile profile = new BookProfile(url, book);
@@ -70,7 +71,7 @@ public class BookProfileServiceImplementation implements BookProfileService{
             PutObjectRequest putObject= new PutObjectRequest(bucketName, url, file.getInputStream(), data);
 
 				amazonS3.putObject(bucketName, url, file.getInputStream(), data);
-				System.out.println("$$$$");
+				
 				profile.setBook(book);
 				repository.addProfile(profile);
 				return profile;
@@ -86,20 +87,21 @@ public class BookProfileServiceImplementation implements BookProfileService{
 	/*Method for updating the book image for a book in s3 bucket*/
 	@Transactional
 	@Override
-	public BookProfile updateProfile(MultipartFile file, String originalFilename, String contentType, Long id) {
+	public BookProfile updateProfile(MultipartFile file, Long id) {
 
 		try {
 			Book book=bookRepository.findById(id).orElseThrow(() -> new BookException (HttpStatus.NOT_FOUND, "book is not exist"));
 
 			BookProfile profile = repository.findUserById(id);
 			if (book != null && profile != null) {
+				String fileName=file.getOriginalFilename();
 				deleteobjectFromS3Bucket(profile.getBookImage());
 				repository.delete(profile);
 				ObjectMetadata objectMetadata = new ObjectMetadata();
-				objectMetadata.setContentType(contentType);
-				objectMetadata.setContentLength(file.getSize());
+				//objectMetadata.setContentType(contentType);
+				//objectMetadata.setContentLength(file.getSize());
 
-				amazonS3.putObject(bucketName, originalFilename, file.getInputStream(), objectMetadata);
+				amazonS3.putObject(bucketName, fileName, file.getInputStream(), objectMetadata);
 				repository.addProfile(profile);
 				return profile;
 			}

@@ -12,18 +12,23 @@ import com.bridgelabz.bookstore.exception.UserException;
 
 public interface BookService {
 
-	List<Book> displayBooks() throws BookException;
+	List<Book> displayBooks(Integer page) throws BookException;
 
 	Book displaySingleBook(Long id) throws BookException;
 
-	List<Book> sortByPriceAsc() throws BookException;
+	public Book updateBook(String token, Long bookId, BookDto dto) throws BookException;
 
-	List<Book> sortByPriceDesc() throws BookException;
-
-	List<Book> sortByNewest() throws BookException;
-	public Book updateBook(String token, Long bookId, BookDto dto) throws BookException ;
 	public Book addBook(String token, BookDto dto) throws SellerException;
-	public void writeReviewAndRating(String token, ReviewDto rrDTO, Long bookId)throws UserException,BookException ;
+
+	public void writeReviewAndRating(String token, ReviewDto rrDTO, Long bookId) throws UserException, BookException;
+
 	public List<Reviews> getRatingsOfBook(Long bookId);
 
+	List<Book> sortByPriceAsc(Integer page) throws BookException;
+
+	List<Book> sortByPriceDesc(Integer page) throws BookException;
+
+	List<Book> sortByNewest(Integer page) throws BookException;
+
+	Integer getCountOfBooks();
 }

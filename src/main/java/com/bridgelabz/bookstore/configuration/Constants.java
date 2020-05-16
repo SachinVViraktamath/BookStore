@@ -9,7 +9,7 @@ public class Constants {
 	public static final String REST_LINK = "http://localhost:8080/admin";
 	public static final String RSET_PASSWORD = "Reset your password";
 
-	public static final String SELLER_VERIFICATION_LINK =  "http://localhost:8080/seller/verify/";
+	public static final String SELLER_VERIFICATION_LINK = "http://localhost:8080/seller/verifyemail/";
 	public static final String SELLER_VERIFICATION_MSG = "Verification link";
 	
 	public static final String USER_VERIFICATION_LINK =  "http://localhost:8080/user/verifyemail/";

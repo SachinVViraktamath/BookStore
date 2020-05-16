@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.bridgelabz.bookstore.dto.UserDto;
 import com.bridgelabz.bookstore.dto.UserAddressDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
+import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.UserAddress;
@@ -42,11 +42,11 @@ public class UserController {
 
 	@ApiOperation(value = "Api to Register User  ", response = Response.class)
 	@PostMapping("/register")
-	public ResponseEntity<Response> registration(@Valid @RequestBody UserDto userInfoDto,BindingResult res) throws UserException {
-		
-       if(res.hasErrors()) {
-    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_REGISTER_STATUS_INFO,userInfoDto));
-     }
+	public ResponseEntity<Response> registration(@Valid @RequestBody RegisterDto userInfoDto) throws UserException {
+//		
+//       if(res.hasErrors()) {
+//    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_REGISTER_STATUS_INFO,userInfoDto));
+//     }
         Users user=service.register(userInfoDto);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_REGISTER_SUCESSFULL, user));
 	
@@ -56,10 +56,8 @@ public class UserController {
 
 	@ApiOperation(value = "Api to verify the User ", response = Response.class)
 	@GetMapping("/verifyemail/{token}")
-	public ResponseEntity<Response> verification(@PathVariable("token") String token,BindingResult res) throws UserException {
-		 if(res.hasErrors()) {
-	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_VERIFICATION_FAILED_MESSAGE,token));
-	     }
+	public ResponseEntity<Response> verification(@PathVariable("token") String token) throws UserException {
+		
 		boolean user=service.verifyUser(token);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_VERIFIED_STATUS, user));
 	}
@@ -75,15 +73,15 @@ public class UserController {
 	}
 
 	@ApiOperation(value = "Api to check if UserExists or not", response = Response.class)
-	@PostMapping("/forget-password")
+	@PostMapping("/forgetpassword")
 	public ResponseEntity<Response> forgetPassword(@RequestParam String email) throws UserException {
 			Users user=service.forgetPassword(email);
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "User password changed Successfully ", user));
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "mail send to email verification Successfully ", user));
 
 	}
 
 	@ApiOperation(value = "Api to Reset User Password ", response = Response.class)
-	@PutMapping("/reset-password/{token}")
+	@PutMapping("/resetpassword/{token}")
 	public ResponseEntity<Response> resetPassword(@RequestBody ResetPassword password,@Valid @PathVariable("token") String token,BindingResult res) throws UserException {
 		if(res.hasErrors()) {
 	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_RESET_PASSWORD_FAILED,password));
@@ -103,7 +101,7 @@ public class UserController {
 	}
 
 	@ApiOperation(value = "Api to Update User Address", response = Response.class)
-	@PutMapping("/update-address/{addressId}")
+	@PutMapping("/updateaddress/{addressId}")
 	public ResponseEntity<Response> updateAddress(@RequestParam String token, @PathVariable long addressId,
 			@RequestBody UserAddressDto addDto) throws UserException {
 			UserAddress address= service.updateAddress(token, addDto, addressId);

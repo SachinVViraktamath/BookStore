@@ -32,7 +32,7 @@ public class Seller {
 	private Long sellerId;
 	@Column
 	@NotNull
-	private String sellerName;
+	private String name;
 	@Column
 	@NotNull
 	private String email;

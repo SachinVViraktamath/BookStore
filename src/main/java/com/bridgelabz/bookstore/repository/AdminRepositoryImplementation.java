@@ -22,26 +22,13 @@ public class AdminRepositoryImplementation implements AdminRepository {
 	private EntityManager entityManager;
 	
 	@Override
-	public Admin save(Admin userInfromation) {
+	public Admin save(Admin admin) {
 
 		Session session = entityManager.unwrap(Session.class);
-		session.saveOrUpdate(userInfromation);
-		return userInfromation;
+		session.saveOrUpdate(admin);
+		return admin;
 	}
-
-	@Override
-	public boolean restAdminPassword(Admin information) {
-		String email=information.getEmail();
-		
-		Session session = entityManager.unwrap(Session.class);
-		Query q = session.createQuery("update Admin set password =:p" + " " + " " + "where email=:email")
-				.setParameter("p", information.getPassword()).setParameter("email", email);
-		int status = q.executeUpdate();
-		if (status > 0) {
-			return true;
-		} else {
-			return false;
-		}}
+	
 	
 	@SuppressWarnings("unchecked")
 	@Override
@@ -59,7 +46,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 
 		@SuppressWarnings("unchecked")
 		TypedQuery<Admin> q = session
-				.createQuery("update Admin set adminIsVerified =:p where adminId=:i").setParameter("p", true)
+				.createQuery("update Admin set  isverified =:p where adminId=:i").setParameter("p", true)
 				.setParameter("i", id);
 		int status = q.executeUpdate();
 		if (status > 0) {
@@ -110,6 +97,21 @@ public class AdminRepositoryImplementation implements AdminRepository {
 		}
 	
 	}
+
+
+	@Override
+	public boolean restAdminPassword(Admin information) {
+		String email=information.getEmail();
+		
+		Session session = entityManager.unwrap(Session.class);
+		Query q = session.createQuery("update Admin set password =:p" + " " + " " + "where email=:email")
+				.setParameter("p", information.getPassword()).setParameter("email", email);
+		int status = q.executeUpdate();
+		if (status > 0) {
+			return true;
+		} else {
+			return false;
+		}}
 
 	
 }

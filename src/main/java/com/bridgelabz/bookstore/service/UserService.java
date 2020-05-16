@@ -5,15 +5,15 @@ import java.util.List;
 import javax.validation.Valid;
 
 import com.bridgelabz.bookstore.dto.LoginDto;
+import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.UserAddressDto;
-import com.bridgelabz.bookstore.dto.UserDto;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.UserException;
 public interface UserService {
 
-	public Users register(@Valid UserDto userInfoDto) throws UserException;
+	public Users register(@Valid RegisterDto userInfoDto) throws UserException;
 	boolean verifyUser(String token)throws UserException;
 	Users login(LoginDto login) throws UserException;
 	Users forgetPassword(String email)throws UserException;

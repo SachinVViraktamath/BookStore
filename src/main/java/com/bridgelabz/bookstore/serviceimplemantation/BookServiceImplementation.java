@@ -38,17 +38,22 @@ public class BookServiceImplementation implements BookService {
 	private UserRepository userRepository;
 	@Autowired
 	private ReviewRepository reviwRepository;
-	@Autowired 
+	@Autowired
 	ModelMapper mapper;
+
 	@Override
 	@Transactional
-	public List<Book> displayBooks() throws BookException {
-		List<Book> books = bookRepository.getAllBooks();
-		if (books != null)
-			return books;
-		else
-			throw new BookException(HttpStatus.NOT_FOUND, "No Books to display");
+	public List<Book> displayBooks(Integer page) throws BookException {
+		page = (page - 1) * 12;
+		List<Book> books = bookRepository.getAllBooks(page);
+		return books;
+	}
 
+	@Override
+	@Transactional
+	public Integer getCountOfBooks() {
+		Integer count = bookRepository.getTotalCount();
+		return count;
 	}
 
 	@Override
@@ -61,36 +66,26 @@ public class BookServiceImplementation implements BookService {
 
 	@Override
 	@Transactional
-	public List<Book> sortByPriceAsc() throws BookException {
-		List<Book> books = bookRepository.getAllBooks();
-		if (books != null)
-			return books.stream().sorted(Comparator.comparing(Book::getBookName)).collect(Collectors.toList());
-		else
-			throw new BookException(HttpStatus.NOT_FOUND, "No Books to display");
-
+	public List<Book> sortByPriceAsc(Integer page) throws BookException {
+		page = (page - 1) * 12;
+		List<Book> books = bookRepository.getByPriceAsc(page);
+		return books;
 	}
 
 	@Override
 	@Transactional
-	public List<Book> sortByPriceDesc() throws BookException {
-		List<Book> books = bookRepository.getAllBooks();
-		if (books != null)
-			return books.stream().sorted(Comparator.comparing(Book::getBookName).reversed())
-					.collect(Collectors.toList());
-		else
-			throw new BookException(HttpStatus.NOT_FOUND, "No Books to display");
+	public List<Book> sortByPriceDesc(Integer page) throws BookException {
+		page = (page - 1) * 12;
+		List<Book> books = bookRepository.getByPriceDesc(page);
+		return books;
 	}
 
 	@Override
 	@Transactional
-	public List<Book> sortByNewest() throws BookException {
-		List<Book> books = bookRepository.getAllBooks();
-		if (books != null)
-			return books.stream().sorted(Comparator.comparing(Book::getBookCreatedAt).reversed())
-					.collect(Collectors.toList());
-		else
-			throw new BookException(HttpStatus.NOT_FOUND, "No Books to display");
-
+	public List<Book> sortByNewest(Integer page) throws BookException {
+		page = (page - 1) * 12;
+		List<Book> books = bookRepository.getByDateTime(page);
+		return books;
 	}
 
 	@Override

@@ -1,11 +1,11 @@
 package com.bridgelabz.bookstore.controller;
 
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,12 +15,9 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
-import com.bridgelabz.bookstore.dto.SellerPasswordUpdateDto;
-import com.bridgelabz.bookstore.dto.SellerDto;
-import com.bridgelabz.bookstore.entity.Book;
+import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.SellerException;
@@ -33,6 +30,7 @@ import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/seller")
+@CrossOrigin
 public class SellerController {
 
 	@Autowired
@@ -42,7 +40,7 @@ public class SellerController {
 
 	@PostMapping("/registration")
 	@ApiOperation(value="seller registration",response = Response.class)
-	public ResponseEntity<Response> register(@RequestBody SellerDto dto,BindingResult res) {
+	public ResponseEntity<Response> register(@RequestBody RegisterDto dto,BindingResult res) {
 		 if(res.hasErrors()) {
 	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_ALREADY_MSG,dto));
 	     }
@@ -66,12 +64,10 @@ public class SellerController {
 	}
 
 	/* API for verifying the token generated for the email */
-	@GetMapping("/verify/{token}")
+	@GetMapping("/verifyemail/{token}")
 	@ApiOperation(value="seller email verification",response = Response.class)
-	public ResponseEntity<Response> verify(@PathVariable("token") String token,BindingResult res) throws Exception {
-		 if(res.hasErrors()) {
-	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_NOT_FOUND_MSG,token));
-	     }
+	public ResponseEntity<Response> verify(@PathVariable("token") String token) throws Exception {
+		
 		boolean verification = service.verify(token);
 
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "verified", verification));
@@ -82,10 +78,8 @@ public class SellerController {
 
 	@PostMapping("/forgotpassword")
 	@ApiOperation(value="forgetpassword for seller",response = Response.class)
-	public ResponseEntity<Response> forgotPassword(@RequestParam("email") String email,BindingResult res) throws SellerException {
-		 if(res.hasErrors()) {
-	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_NOT_FOUND_MSG,email));
-	     }
+	public ResponseEntity<Response> forgotPassword(@RequestParam("email") String email) throws SellerException {
+		
 		Seller seller = service.forgetPassword(email);
 			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "seller existed", seller));
 		

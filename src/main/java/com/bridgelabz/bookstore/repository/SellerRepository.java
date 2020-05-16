@@ -59,7 +59,8 @@ public boolean isSellerExist(String email) {
 	@SuppressWarnings("unchecked")
 	public boolean update(ResetPassword update, Long id) {
 		Session session = entityManger.unwrap(Session.class);
-		Query<Seller> q = session.createQuery("update Seller set password=:p" + " " + " where id=:id");
+		Query<Seller> q = session.createQuery("update Seller set password=:p" + " " + " where sellerId=:id");
+	
 		q.setParameter(" p", update.getConfirmPassword());
 		q.setParameter("id", id);
 		int status = q.executeUpdate();

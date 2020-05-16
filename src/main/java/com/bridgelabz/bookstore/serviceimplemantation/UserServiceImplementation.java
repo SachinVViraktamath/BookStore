@@ -11,17 +11,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.bridgelabz.bookstore.dto.UserDto;
 import com.bridgelabz.bookstore.configuration.Constants;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
+import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.UserAddressDto;
 import com.bridgelabz.bookstore.entity.Admin;
+import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
+import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.UserAddressRepository;
 import com.bridgelabz.bookstore.repository.UserRepository;
@@ -58,7 +60,7 @@ public class UserServiceImplementation implements UserService {
 	
 	@Transactional
 	@Override
-	public Users register(@Valid UserDto userInfoDto) throws UserException {
+	public Users register(@Valid RegisterDto userInfoDto) throws UserException {
 		Users user = new Users();		
 		if (repository.FindByEmail(userInfoDto.getEmail()).isPresent()){
 			 throw new UserException(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.EMAIL_ID_ALREADY_PRASENT);
@@ -66,7 +68,7 @@ public class UserServiceImplementation implements UserService {
 			BeanUtils.copyProperties(userInfoDto, user);
 			user.setPassword(bcrypt.encode(userInfoDto.getPassword()));			
 			user.setCreationTime(LocalDateTime.now());
-			user.setUpdateTime(LocalDateTime.now());
+			
 			user=repository.save(user);
 			String mailResponse = Constants.USER_VERIFICATION_LINK +JwtService.generateToken(user.getUserId(),Token.WITH_EXPIRE_TIME);
 			MailService.sendEmail(user.getEmail(),Constants.USER_VERIFICATION_MSG, mailResponse);
@@ -85,8 +87,8 @@ public class UserServiceImplementation implements UserService {
 		Long id =JwtService.parse(token);
 		//System.out.println(id);
 		Users userInfo = repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
-	if(userInfo.isVerified()!=true) {
-		userInfo.setVerified(true);
+	if(userInfo.isIsverified()!=true) {
+		userInfo.setIsverified(true);
 		repository.save(userInfo);
 		throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_VERIFIED_STATUS );
 	}
@@ -105,7 +107,7 @@ public class UserServiceImplementation implements UserService {
 	public Users login(LoginDto login) throws UserException {
 		Users user = repository.FindByEmail(login.getEmail()).
 				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
-		if ((user.isVerified()==true) && (bcrypt.matches(login.getPassword(), user.getPassword()))) {
+		if ((user.isIsverified()==true) && (bcrypt.matches(login.getPassword(), user.getPassword()))) {
 			throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_LOGIN_STATUS); 
 		} 
 		String mailResponse =Constants.USER_VERIFICATION_LINK +
@@ -121,7 +123,7 @@ public class UserServiceImplementation implements UserService {
 	public Users forgetPassword(String email) throws UserException {
 		Users userMail = repository.FindByEmail(email).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 		// log.info("userdetails for forgetpassword" + userMail);		
-			if (userMail.isVerified()==true) {
+			if (userMail.isIsverified()==true) {
 				String responsemail = Constants.USER_VERIFICATION_LINK+
 						JwtService.generateToken(userMail.getUserId(),Token.WITH_EXPIRE_TIME);
 				MailService.sendEmail(userMail.getEmail(), Constants.USER_VERIFICATION_MSG, responsemail);
@@ -134,21 +136,19 @@ public class UserServiceImplementation implements UserService {
      * To reset password by the user with token.  
      * @param String token,UserPasswordDto restpassword
      ********************************************************************/
-
 	@Transactional
 	@Override
-	public boolean resetPassword(ResetPassword information, String token) throws UserException {
-		Long id = null;	
-		boolean passwordupdateflag=false;		
-			id =JwtService.parse(token);
-			Users userinfo=repository.findbyId(id).orElseThrow(() -> new UserException( HttpStatus.NOT_FOUND,ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));                   
-			if(bcrypt.matches(information.getConfirmPassword(),userinfo.getPassword())!=true) {
-			throw new UserException(HttpStatus.NOT_FOUND,ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE);
-			}
-			information.setConfirmPassword(bcrypt.encode(information.getConfirmPassword()));
-			repository.updatePassword(information, id);		
-			return passwordupdateflag;
-			}
+	public boolean resetPassword(ResetPassword password,String token) throws UserException {
+		if(password.getNewPassword().equals(password.getConfirmPassword()));
+		Long id=JwtService.parse(token);
+		Users user=repository.findById(id).orElseThrow(() -> new UserException( HttpStatus.NOT_FOUND,ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
+		if(user.isIsverified()) {
+			user.setPassword(new BCryptPasswordEncoder().encode(password.getConfirmPassword()));
+			repository.updateUserPassword(bcrypt.encode(password.getNewPassword()),id);
+		}
+		return true;
+	}
+			
 	/*********************************************************************
      * To add addresess by the user with token.  
      * @param String token,UserAddressDto addressDto

@@ -35,7 +35,6 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/book")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class BookController {
-
 	@Autowired
 	private ElasticSearchService elasticService;
 
@@ -44,65 +43,62 @@ public class BookController {
 
 	@Autowired
 	private UserWishListService userWishListService;
-	
-	
-	@ApiOperation(value = "Api diplay all books",response = Iterable.class)
-	@GetMapping("/displayAll")
-	public ResponseEntity<Response> displayAllBooks() throws BookException {
-		List<Book> books = bookService.displayBooks();		
-			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "books for user displayed", books));
-		
+
+	@ApiOperation(value = "Api diplay all books", response = Iterable.class)
+	@GetMapping("/displaybooks/{page}")
+	public ResponseEntity<Response> displayAllBooks(@PathVariable("page") Integer page) throws BookException {
+		List<Book> books = bookService.displayBooks(page);
+		return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "books for user displayed", books));
+
 	}
 
+	@ApiOperation(value = "Api count all books", response = Iterable.class)
+	@GetMapping("/count")
+	public ResponseEntity<Response> countOfBooks() throws BookException {
+		Integer count = bookService.getCountOfBooks();
+		return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "books for user displayed", count));
 
-	@ApiOperation(value = "Api diplay single book",response = Iterable.class)
+	}
+
+	@ApiOperation(value = "Api diplay single book", response = Iterable.class)
 	@GetMapping("/display_single_book")
 	public ResponseEntity<Response> displayParticularBook(@RequestParam("id") Long id) throws BookException {
-		Book book = bookService.displaySingleBook(id);		
-			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Particular book not displayed", book));
+		Book book = bookService.displaySingleBook(id);
+		return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Particular book not displayed", book));
 	}
 
-	
-	@ApiOperation(value = "Api search the book",response = Iterable.class)
+	@ApiOperation(value = "Api search the book", response = Iterable.class)
 	@GetMapping("/search")
 	public ResponseEntity<Response> searchBooks(@RequestParam("title") String title) {
-		List<Book> books = null;
-		try {
-			books = elasticService.getBookByTitleAndAuthor(title);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		if (books != null)
-			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Books searched and Found", books));
-		else
-			return ResponseEntity.badRequest()
-					.body(new Response(HttpStatus.NOT_FOUND, "Books searched and not Found", books));
+		List<Book> books = elasticService.getBookByTitleAndAuthor(title);
+		return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Books searched and Found", books));
 
 	}
 
-	@ApiOperation(value = "Api for sort books in asc order by price",response = Iterable.class)
-	@GetMapping("/sortbyprice/Asc")
-	public ResponseEntity<Response> sortByPriceLowtoHigh() throws BookException {
-		List<Book> books = bookService.sortByPriceAsc();		
-			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book by Price low to high Found", books));
-		
-	}
-	@ApiOperation(value = "Api for sort books in desc order by price",response = Iterable.class)
-	@GetMapping("/sortbyprice/Desc")
-	public ResponseEntity<Response> sortByPriceHightoLow() throws BookException {
-		List<Book> books = bookService.sortByPriceDesc();	
-			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book by Price high to low Found", books));
-		
+	@ApiOperation(value = "Api for sort books in asc order by price", response = Iterable.class)
+	@GetMapping("/sortbypriceasc/{page}")
+	public ResponseEntity<Response> sortByPriceLowtoHigh(@PathVariable("page") Integer page) throws BookException {
+		List<Book> books = bookService.sortByPriceAsc(page);
+		return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book by Price low to high Found", books));
 
 	}
 
-	@ApiOperation(value = "Api for sort book by new arrivals",response = Iterable.class)
-	@GetMapping("/sortbynewest")
-	public ResponseEntity<Response> sortByNewestArrivals() throws BookException {
-		List<Book> books = bookService.sortByNewest();		
-			return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book by Newest Arrivals Found", books));
-		
+	@ApiOperation(value = "Api for sort books in desc order by price", response = Iterable.class)
+	@GetMapping("/sortbypricedesc/{page}")
+	public ResponseEntity<Response> sortByPriceHightoLow(@PathVariable("page") Integer page) throws BookException {
+		List<Book> books = bookService.sortByPriceDesc(page);
+		return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book by Price high to low Found", books));
+
 	}
+
+	@ApiOperation(value = "Api for sort book by new arrivals", response = Iterable.class)
+	@GetMapping("/sortbynewest/{page}")
+	public ResponseEntity<Response> sortByNewestArrivals(@PathVariable("page") Integer page) throws BookException {
+		List<Book> books = bookService.sortByNewest(page);
+		return ResponseEntity.ok().body(new Response(HttpStatus.FOUND, "Book by Newest Arrivals Found", books));
+
+	}
+
 	/* API for seller adding books for approval */
 	@PostMapping("/addBook")
 	@ApiOperation("seller adding books")

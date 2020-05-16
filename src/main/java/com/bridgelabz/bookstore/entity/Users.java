@@ -38,11 +38,7 @@ public class Users {
 
 	@Column
 	@NotNull
-	private String firstName;
-
-	@Column
-	@NotNull
-	private String lastName;
+	private String name;
 
 	@Column
 	@NotNull
@@ -52,26 +48,18 @@ public class Users {
 	@Column
 	private String email;
 
-	@Column
-	@NotNull
-	private String gender;
 
 	@Column
 	@NotNull
-	private Long phNo;
+	private Long mobileNumber;
 
 	@Column
 	@NotNull
 	@CreationTimestamp
 	private LocalDateTime creationTime;
 
-	@Column
-	@NotNull
-	@UpdateTimestamp
-	private LocalDateTime updateTime;
-
 	@Column(columnDefinition = "boolean default false", nullable = false)
-	private boolean isVerified;
+	private boolean isverified;
 	
 
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = Order.class)

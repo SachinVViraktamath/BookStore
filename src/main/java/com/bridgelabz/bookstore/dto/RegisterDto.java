@@ -14,14 +14,14 @@ import lombok.Setter;
 @Setter
 @Getter
 @NoArgsConstructor
-public class SellerDto {
-	@NotBlank
-	private String SellerName;
-	@NotBlank
+public class RegisterDto {
+	
+	private String name;
+	
 	private String email;
-	@NotBlank
+	
 	private String password;
-	@NotBlank
+	
 	private Long mobileNumber;
 	
 

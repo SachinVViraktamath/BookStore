@@ -21,10 +21,7 @@ public class Admin {
 	private long adminId;
 	
 	
-	private String adminFirstname;
-	
-	
-	private String adminLastname;
+	private String name;
 	
 	
 	private String email;
@@ -34,12 +31,12 @@ public class Admin {
 	private String password;
 	
 		
-	private Long adminPhoneNumber;
+	private Long mobileNumber;
 	
 	@Column(columnDefinition = "boolean Default false", nullable = false)	
-	private boolean adminIsVerified;
+	private boolean isverified;
 	
-	private String adminRole;
+	
 
 	
 

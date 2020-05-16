@@ -19,8 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.bridgelabz.bookstore.dto.AdimRestPassword;
-import com.bridgelabz.bookstore.dto.AdminDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
+import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
@@ -45,11 +45,11 @@ public class AdminController {
 	
 	@ApiOperation(value = "Api Registerartion Admin",response = Iterable.class)
 	@PostMapping("/registration")
-	public ResponseEntity<Response> registration(@Valid @RequestBody AdminDto admiInformation,BindingResult res) throws AdminException  {
+	public ResponseEntity<Response> registration(@Valid @RequestBody RegisterDto admiInformation) throws AdminException  {
 		Admin result = service.adminRegistartion(admiInformation);
-		   if(res.hasErrors()) {
-	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_REGISTER_STATUS_INFO,admiInformation));
-	     }
+//		   if(res.hasErrors()) {
+//	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_REGISTER_STATUS_INFO,admiInformation));
+//	     }
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.REGISTER_SUCCESSFULL, result));
 	}
