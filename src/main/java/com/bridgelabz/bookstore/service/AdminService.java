@@ -1,8 +1,13 @@
 package com.bridgelabz.bookstore.service;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.dto.AdimRestPassword;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.RegisterDto;
@@ -30,5 +35,6 @@ public interface AdminService {
 	public boolean resetPassword(AdimRestPassword update)throws AdminException;
 	
  	public List<Book> getNotapproveBook(String token) throws AdminException;
+ 	public Admin addProfile(MultipartFile file,String  token)throws AdminException,AmazonServiceException, SdkClientException, IOException;
 
 }

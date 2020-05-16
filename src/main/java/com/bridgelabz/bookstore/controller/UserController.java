@@ -1,5 +1,6 @@
 package com.bridgelabz.bookstore.controller;
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -18,14 +19,21 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.bridgelabz.bookstore.dto.UserAddressDto;
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
+import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.UserAddress;
 import com.bridgelabz.bookstore.entity.Users;
+import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.UserException;
@@ -45,10 +53,7 @@ public class UserController {
 	@ApiOperation(value = "Api to Register User  ", response = Response.class)
 	@PostMapping("/register")
 	public ResponseEntity<Response> registration(@Valid @RequestBody RegisterDto userInfoDto) throws UserException {
-//		
-//       if(res.hasErrors()) {
-//    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_REGISTER_STATUS_INFO,userInfoDto));
-//     }
+
         Users user=service.register(userInfoDto);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_REGISTER_SUCESSFULL, user));
 	
@@ -110,6 +115,15 @@ public class UserController {
 			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));
 		
 	}
+	@ApiOperation(value="add profile to user",response = Iterable.class )
+	@PutMapping("/profile")
+	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws AmazonServiceException, SdkClientException,UserException, IOException{
+		Users user =service.addProfile(file, token);
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.BOOK_APPROVED, user));
+	
+	}
+	
 	
 }
 

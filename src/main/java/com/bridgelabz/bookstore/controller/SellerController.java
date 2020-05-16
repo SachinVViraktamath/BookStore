@@ -1,6 +1,8 @@
 package com.bridgelabz.bookstore.controller;
 
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +16,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.RegisterDto;
+import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Seller;
+import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.response.Response;
@@ -97,5 +106,13 @@ public class SellerController {
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Password updated successfully", passwordUpdate));
 
 	}
-
+	@ApiOperation(value="add profile to seller",response = Iterable.class )
+	@PutMapping("/profile")
+	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws AmazonServiceException, SdkClientException, AdminException, IOException{
+		Seller seller =service.addProfile(file, token);
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.BOOK_APPROVED, seller));
+	
+	}
+	
 	}

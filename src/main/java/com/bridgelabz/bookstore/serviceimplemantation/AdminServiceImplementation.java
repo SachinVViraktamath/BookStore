@@ -2,6 +2,7 @@ package com.bridgelabz.bookstore.serviceimplemantation;
 
 
 
+import java.io.IOException;
 import java.util.List;
 import javax.transaction.Transactional;
 import org.springframework.beans.BeanUtils;
@@ -9,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.configuration.Constants;
 import com.bridgelabz.bookstore.dto.AdimRestPassword;
 import com.bridgelabz.bookstore.dto.LoginDto;
@@ -23,6 +28,7 @@ import com.bridgelabz.bookstore.repository.AdminRepository;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.response.MailingandResponseOperation;
 import com.bridgelabz.bookstore.service.AdminService;
+import com.bridgelabz.bookstore.utility.AwsS3Access;
 import com.bridgelabz.bookstore.utility.JwtService;
 import com.bridgelabz.bookstore.utility.JwtService.Token;
 import com.bridgelabz.bookstore.utility.MailService;
@@ -156,6 +162,19 @@ public class AdminServiceImplementation implements AdminService{
     	return bookRepository.getAllNotAprroveBooks();                   
    
     }
+
+
+	@Override
+	public Admin addProfile(MultipartFile file, String token) throws AdminException, AmazonServiceException, SdkClientException, IOException {
+		Long id =JwtService.parse(token);;
+    Admin admin=adminRepository.getAdminById(id).orElseThrow(() -> new AdminException( HttpStatus.NOT_FOUND,ExceptionMessages.ADMIN_NOT_FOUND_MSG));                   
+		if(admin!=null) {
+			String profile=AwsS3Access.uploadFileTos3Bucket(file, id);
+			admin.setProfile(profile);
+			adminRepository.save(admin);
+		}
+    	return null;
+	}
 
 
 

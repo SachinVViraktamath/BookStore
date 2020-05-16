@@ -26,11 +26,11 @@ public class Admin {
 	
 	private String email;
 	
-	
+	private String  Profile;
 	
 	private String password;
 	
-		
+	
 	private Long mobileNumber;
 	
 	@Column(columnDefinition = "boolean Default false", nullable = false)	

@@ -1,5 +1,6 @@
 package com.bridgelabz.bookstore.serviceimplemantation;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -9,13 +10,20 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.ReviewDto;
+import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Reviews;
 import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.entity.Users;
+import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
+import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.BookRepository;
@@ -23,6 +31,7 @@ import com.bridgelabz.bookstore.repository.ReviewRepository;
 import com.bridgelabz.bookstore.repository.SellerRepository;
 import com.bridgelabz.bookstore.repository.UserRepository;
 import com.bridgelabz.bookstore.service.BookService;
+import com.bridgelabz.bookstore.utility.AwsS3Access;
 import com.bridgelabz.bookstore.utility.JwtService;
 import com.bridgelabz.bookstore.utility.MailService;
 
@@ -90,17 +99,16 @@ public class BookServiceImplementation implements BookService {
 
 	@Override
 	@Transactional
-	public Book addBook(String token, BookDto dto) throws SellerException {
+	public Book addBook(String token, BookDto dto,MultipartFile file) throws SellerException, AmazonServiceException, SdkClientException, IOException {
 		Book book = new Book();
-		Long sellerId = JwtService.parse(token);
-		Seller seller = sellerRepository.getSellerById(sellerId)
+		Long id = JwtService.parse(token);
+		Seller seller = sellerRepository.getSellerById(id)
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "Seller is not exist"));
 
 		if (seller.isVerified() == true) {
 			book = mapper.map(dto, Book.class);
 			book.setBookCreatedAt(LocalDateTime.now());
-			
-			// book.setBookImage(amazonS3.uploadFileToS3Bucket(file));
+			book.setBookimage(AwsS3Access.uploadFileTos3Bucket(file,id));
 			seller.getSellerBooks().add(book);
 			bookRepository.save(book);
 			MailService.sendEmailToAdmin(seller.getEmail(), book);
@@ -125,6 +133,7 @@ public class BookServiceImplementation implements BookService {
 	}
 
 	@Override
+	@Transactional
 	public void writeReviewAndRating(String token, ReviewDto review, Long bookId) throws UserException, BookException {
 		Long id = JwtService.parse(token);
 		
@@ -147,6 +156,7 @@ public class BookServiceImplementation implements BookService {
 
 
 	@Override
+	@Transactional
 	public List<Reviews> getRatingsOfBook(Long bookId)  {
 		Book book=null;
 		try {
@@ -159,5 +169,5 @@ public class BookServiceImplementation implements BookService {
 	return review;
 		
 	}
-
+	
 }

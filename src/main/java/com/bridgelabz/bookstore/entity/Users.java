@@ -61,6 +61,7 @@ public class Users {
 	@Column(columnDefinition = "boolean default false", nullable = false)
 	private boolean isverified;
 	
+	private String profile; 
 
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = Order.class)
 	@JoinColumn(name = "userId")

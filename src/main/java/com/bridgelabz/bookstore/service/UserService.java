@@ -1,9 +1,13 @@
 package com.bridgelabz.bookstore.service;
 
-import java.util.List;
+import java.io.IOException;
 
 import javax.validation.Valid;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
@@ -20,4 +24,5 @@ public interface UserService {
 	boolean resetPassword(ResetPassword resetPassword, String token) throws UserException;
 	UserAddress address( UserAddressDto addressDto, String token )throws UserException;
 	UserAddress updateAddress(String token,UserAddressDto addDto,Long addressId)throws UserException;
+	public Users addProfile(MultipartFile file, String token) throws  AmazonServiceException, SdkClientException, IOException, UserException ;
 }

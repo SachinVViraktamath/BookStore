@@ -102,88 +102,20 @@ public class CartServiceImplementation implements CartService {
 		return null;
 	}
 
-	@Transactional
 	@Override
 	public List<CartDetails> addBooksQuantityToCart(String token, Long bookId, CartDto dto)
 			throws UserException, BookException {
-
-		Long id = JwtService.parse(token);
-		Long quantityId = dto.getCartId();
-		Long quantity = dto.getQuantity();
-		Users user = userRepository.findbyId(id)
-				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));
-		boolean notExist = false;
-		for (CartDetails carts : user.getBooksCart()) {
-			if (!carts.getBooksList().isEmpty()) {
-
-				notExist = carts.getBooksList().stream()
-						.noneMatch(books -> books.getBookId().equals(bookId) && books.getNoOfBooks() > quantity);
-
-				ArrayList<BookQuantity> qt = new ArrayList<BookQuantity>();
-				if (!notExist) {
-
-					for (BookQuantity qant : carts.getQuantityOfBooks()) {
-						if (qant.getQuantityId().equals(quantityId)) {
-
-							BookQuantity qunatityofbook = new BookQuantity(quantity + 1);
-
-							qt.add(qunatityofbook);
-							carts.setQuantityOfBooks(qt);
-							return userRepository.save(user).getBooksCart();
-
-						}
-					}
-
-				}
-			}
-		}
-		if (notExist == false) {
-			throw new UserException(HttpStatus.NOT_FOUND, "User is not exist");
-		}
+		// TODO Auto-generated method stub
 		return null;
-
 	}
 
 	@Override
-	public List<CartDetails> decreasingBooksQuantityInCart(String token, Long bookId, CartDto cartid)
-			throws UserException {
-
-		Long id = JwtService.parse(token);
-		Long quantityId =  cartid.getCartId();
-		Long quantity =cartid.getQuantity();
-		Users user = userRepository.findbyId(id)
-				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "User is not exist"));
-		
-		
-		boolean notExist = false;
-		for (CartDetails carts : user.getBooksCart()) {
-			
-			if (!carts.getBooksList().isEmpty()) {
-				notExist = carts.getBooksList().stream().noneMatch(books -> books.getBookId()==bookId);
-				
-				ArrayList<BookQuantity> qt = new ArrayList<BookQuantity>();
-				if (!notExist) {
-					
-					for (BookQuantity qant : carts.getQuantityOfBooks()) {
-						
-						if (qant.getQuantityId().equals(quantityId)) {
-							BookQuantity qunatityofbook = new BookQuantity(quantity - 1);
-							qt.add(qunatityofbook);
-							
-							carts.setQuantityOfBooks(qt);
-							return userRepository.save(user).getBooksCart();
-
-						}
-					}
-
-				}
-			}
-		}
-		if (notExist == false) {
-			throw new UserException(HttpStatus.NOT_FOUND, "User is not exist");
-		}
+	public List<CartDetails> decreasingBooksQuantityInCart(String token, Long bookId, CartDto cartdetails)
+			throws UserException, BookException {
+		// TODO Auto-generated method stub
 		return null;
-
 	}
+
+
 
 }

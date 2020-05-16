@@ -42,7 +42,7 @@ public class Seller {
 	@Column
 	@NotNull
 	private Long mobileNumber;
-	
+	private String profile;
 	@NotNull
 	@Column(columnDefinition = "boolean Default false", nullable = false)
 	private boolean isVerified;

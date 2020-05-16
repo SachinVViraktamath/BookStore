@@ -1,6 +1,7 @@
 package com.bridgelabz.bookstore.serviceimplemantation;
 
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 import javax.transaction.Transactional;
@@ -9,10 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.configuration.Constants;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.RegisterDto;
+import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
@@ -21,7 +27,7 @@ import com.bridgelabz.bookstore.repository.BookQuantityRepository;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.SellerRepository;
 import com.bridgelabz.bookstore.service.SellerService;
-
+import com.bridgelabz.bookstore.utility.AwsS3Access;
 import com.bridgelabz.bookstore.utility.JwtService;
 import com.bridgelabz.bookstore.utility.JwtService.Token;
 import com.bridgelabz.bookstore.utility.MailService;
@@ -125,6 +131,21 @@ public class SellerServiceImplementation implements SellerService {
 		}
 			return true;	
 	}
+
+	@Override
+	@Transactional
+	public Seller addProfile(MultipartFile file, String token)
+			throws SellerException, AmazonServiceException, SdkClientException, IOException, SellerException {
+			Long id =JwtService.parse(token);;
+	    Seller seller=repository.getSellerById(id).orElseThrow(() -> new SellerException( HttpStatus.NOT_FOUND,ExceptionMessages.SELLER_NOT_FOUND_MSG));                   
+			if(seller!=null) {
+				String profile=AwsS3Access.uploadFileTos3Bucket(file, id);
+				seller.setProfile(profile);
+				repository.save(seller);
+			}
+	    	return null;
+		}
+	
 		
 
 }

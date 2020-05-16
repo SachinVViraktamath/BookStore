@@ -37,6 +37,7 @@ public class Book {
 	
 	private Long noOfBooks;
 	private double bookPrice;
+	private String bookimage;
  
 	private String bookDescription;
 
@@ -50,6 +51,7 @@ public class Book {
 
 	@ManyToMany(cascade = CascadeType.ALL)
 	private List<Book> BooksList;
+	
 
 
 

@@ -1,5 +1,6 @@
 package com.bridgelabz.bookstore.serviceimplemantation;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.configuration.Constants;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.dto.LoginDto;
@@ -28,6 +33,7 @@ import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.UserAddressRepository;
 import com.bridgelabz.bookstore.repository.UserRepository;
 import com.bridgelabz.bookstore.service.UserService;
+import com.bridgelabz.bookstore.utility.AwsS3Access;
 import com.bridgelabz.bookstore.utility.JwtService;
 import com.bridgelabz.bookstore.utility.MailService;
 
@@ -108,6 +114,9 @@ public class UserServiceImplementation implements UserService {
 		Users user = repository.FindByEmail(login.getEmail()).
 				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 		if ((user.isIsverified()==true) && (bcrypt.matches(login.getPassword(), user.getPassword()))) {
+			String mailResponse = Constants.USER_VERIFICATION_LINK
+					+ JwtService.generateToken(user.getUserId(), Token.WITH_EXPIRE_TIME);
+			MailService.sendEmail(login.getEmail(),Constants.USER_VERIFICATION_MSG, mailResponse);
 			throw new UserException(HttpStatus.ACCEPTED,ExceptionMessages.USER_LOGIN_STATUS); 
 		} 
 		String mailResponse =Constants.USER_VERIFICATION_LINK +
@@ -185,4 +194,17 @@ public class UserServiceImplementation implements UserService {
 
 	
 	}
+	@Override
+	@Transactional
+	public Users addProfile(MultipartFile file, String token) throws  AmazonServiceException, SdkClientException, IOException, UserException  {
+		Long id =JwtService.parse(token);;
+    Users user=repository.findbyId(id).orElseThrow(() -> new UserException( HttpStatus.NOT_FOUND,ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));                   
+		if(user!=null) {
+			String profile=AwsS3Access.uploadFileTos3Bucket(file, id);
+			user.setProfile(profile);
+			repository.save(user);
+		}
+    	return null;
+	}
+
 }

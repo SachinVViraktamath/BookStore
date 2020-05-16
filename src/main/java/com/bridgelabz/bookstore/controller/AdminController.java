@@ -1,6 +1,7 @@
 package com.bridgelabz.bookstore.controller;
 
 
+import java.io.IOException;
 import java.util.List;
 
 import javax.validation.Valid;
@@ -17,8 +18,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.dto.AdimRestPassword;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.RegisterDto;
@@ -128,7 +133,14 @@ public class AdminController {
 		
 
 	}
+	@ApiOperation(value="add profile to admin",response = Iterable.class )
+	@PutMapping("/profile")
+	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws AmazonServiceException, SdkClientException, AdminException, IOException{
+		Admin admin =service.addProfile(file, token);
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.BOOK_APPROVED, admin));
 	
+	}
 	
 	
 }
