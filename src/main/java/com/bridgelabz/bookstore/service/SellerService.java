@@ -1,6 +1,5 @@
 package com.bridgelabz.bookstore.service;
 
-
 import java.io.IOException;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -8,16 +7,13 @@ import org.springframework.web.multipart.MultipartFile;
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.dto.LoginDto;
-import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.RegisterDto;
-import com.bridgelabz.bookstore.entity.Admin;
+import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.entity.Seller;
-import com.bridgelabz.bookstore.exception.AdminException;
+import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.SellerException;
 
-
 public interface SellerService {
-	
 
 	public Seller register(RegisterDto dto);
 
@@ -28,8 +24,8 @@ public interface SellerService {
 	public Boolean resetPassword(ResetPassword update, String token);
 
 	public Seller forgetPassword(String email);
-	public Seller addProfile(MultipartFile file,String  token)throws SellerException,AmazonServiceException, SdkClientException, IOException;
 
-	
-	
+	public Seller addProfile(MultipartFile file, String token)
+			throws SellerException, AmazonServiceException, SdkClientException, S3BucketException, IOException;
+
 }

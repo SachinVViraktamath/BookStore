@@ -24,6 +24,7 @@ import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
+import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.BookRepository;
@@ -49,6 +50,8 @@ public class BookServiceImplementation implements BookService {
 	private ReviewRepository reviwRepository;
 	@Autowired
 	ModelMapper mapper;
+	@Autowired
+	AwsS3Access s3;
 
 	@Override
 	@Transactional
@@ -108,7 +111,6 @@ public class BookServiceImplementation implements BookService {
 		if (seller.isVerified() == true) {
 			book = mapper.map(dto, Book.class);
 			book.setBookCreatedAt(LocalDateTime.now());
-			//book.setBookimage(AwsS3Access.uploadFileTos3Bucket(file,id));
 			seller.getSellerBooks().add(book);
 			bookRepository.save(book);
 			MailService.sendEmailToAdmin(seller.getEmail(), book);
@@ -136,52 +138,54 @@ public class BookServiceImplementation implements BookService {
 	@Transactional
 	public void writeReviewAndRating(String token, ReviewDto review, Long bookId) throws UserException, BookException {
 		Long id = JwtService.parse(token);
-		
-		Users user = userRepository.findById(id).				
-				orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Please Verify Email Before Login"));
-				Book books = bookRepository.findById(bookId)
-						.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not exist exist to update"));
-	
-				boolean notExist = books.getReviewRating().stream().noneMatch(reviews -> reviews.getUser().getUserId()==id);
-		if(notExist) {
-			Reviews reviewdetails = new Reviews(review);
-			reviewdetails.setUser(user);		
-			books.getReviewRating().add(reviewdetails);				
-			reviwRepository.save(reviewdetails);
-			 bookRepository.save(books);
-		
-		}
-		
-	}
 
+		Users user = userRepository.findById(id)
+				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Please Verify Email Before Login"));
+		Book books = bookRepository.findById(bookId)
+				.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not exist exist to update"));
+
+		boolean notExist = books.getReviewRating().stream().noneMatch(reviews -> reviews.getUser().getUserId() == id);
+		if (notExist) {
+			Reviews reviewdetails = new Reviews(review);
+			reviewdetails.setUser(user);
+			books.getReviewRating().add(reviewdetails);
+			reviwRepository.save(reviewdetails);
+			bookRepository.save(books);
+
+		}
+
+	}
 
 	@Override
 	@Transactional
-	public List<Reviews> getRatingsOfBook(Long bookId)  {
-		Book book=null;
+	public List<Reviews> getRatingsOfBook(Long bookId) {
+		Book book = null;
 		try {
 			book = bookRepository.findById(bookId)
 					.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not exist exist to update"));
 		} catch (BookException e) {
 			e.printStackTrace();
 		}
-		List<Reviews> review=book.getReviewRating();
-	return review;
-		
+		List<Reviews> review = book.getReviewRating();
+		return review;
+
 	}
+
 	@Override
 	@Transactional
 	public Book addProfile(MultipartFile file, String token)
-			throws BookException, AmazonServiceException, SdkClientException, IOException, SellerException {
-			Long id =JwtService.parse(token);;
-	    Book book=bookRepository.getBookById(id).orElseThrow(() -> new SellerException( HttpStatus.NOT_FOUND,ExceptionMessages.SELLER_NOT_FOUND_MSG));                   
-			if(book!=null) {
-			//	String profile=AwsS3Access.uploadFileTos3Bucket(file, id);
-				String bookimage=AwsS3Access.uploadFileTos3Bucket(file, id);
-				book.setBookimage(bookimage);;
-				bookRepository.save(book);
-			}
-	    	return null;
+			throws BookException, AmazonServiceException, SdkClientException, IOException, S3BucketException {
+		Long id = JwtService.parse(token);
+		;
+		Book book = bookRepository.getBookById(id)
+				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
+		if (book != null) {
+			String bookimage = s3.uploadFileToS3Bucket(file, id);
+			book.setBookimage(bookimage);
+			;
+			bookRepository.save(book);
 		}
-	
+		return null;
+	}
+
 }

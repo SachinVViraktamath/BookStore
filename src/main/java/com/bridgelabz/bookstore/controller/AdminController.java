@@ -33,6 +33,7 @@ import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
+import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.serviceimplemantation.AdminServiceImplementation;
 
@@ -54,9 +55,7 @@ public class AdminController {
 	@PostMapping("/registration")
 	public ResponseEntity<Response> registration(@Valid @RequestBody RegisterDto admiInformation) throws AdminException  {
 		Admin result = service.adminRegistartion(admiInformation);
-//		   if(res.hasErrors()) {
-//	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_REGISTER_STATUS_INFO,admiInformation));
-//	     }
+
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.REGISTER_SUCCESSFULL, result));
 	}
@@ -135,7 +134,7 @@ public class AdminController {
 	}
 	@ApiOperation(value="add profile to admin",response = Iterable.class )
 	@PutMapping("/profile")
-	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws AmazonServiceException, SdkClientException, AdminException, IOException{
+	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws S3BucketException, AmazonServiceException, SdkClientException, AdminException, IOException{
 		Admin admin =service.addProfile(file, token);
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, "profile added for admin", admin));

@@ -27,7 +27,8 @@ public class SellerRepository {
 		session.saveOrUpdate(seller);
 		return seller;
 	}
-	// * Query to get the seller information bby email */
+
+	// * Query to get the seller information by email */
 	@SuppressWarnings("unchecked")
 	public Optional<Seller> getSeller(String email) {
 		Session session = entityManger.unwrap(Session.class);
@@ -35,12 +36,14 @@ public class SellerRepository {
 				.uniqueResultOptional();
 
 	}
-public boolean isSellerExist(String email) {
-	Session session = entityManger.unwrap(Session.class);
-	Query<Seller> q=session.createQuery("FROM Seller where email=:email");
-	q.setParameter("email", email);
-	return true;
-}
+
+	public boolean isSellerExist(String email) {
+		Session session = entityManger.unwrap(Session.class);
+		Query<Seller> q = session.createQuery("FROM Seller where email=:email");
+		q.setParameter("email", email);
+		return true;
+	}
+
 	@SuppressWarnings("unchecked")
 	public boolean verify(Long id) {
 		Session session = entityManger.unwrap(Session.class);
@@ -60,10 +63,10 @@ public boolean isSellerExist(String email) {
 	public boolean update(ResetPassword update, Long id) {
 		Session session = entityManger.unwrap(Session.class);
 		Query<Seller> q = session.createQuery("update Seller set password=:p" + " " + " where sellerId=:id");
-	System.out.println(update.getConfirmPassword());
+
 		q.setParameter(" p", update.getConfirmPassword());
 		q.setParameter("id", id);
-		
+
 		int status = q.executeUpdate();
 		if (status > 0) {
 			return true;
@@ -87,8 +90,7 @@ public boolean isSellerExist(String email) {
 	@SuppressWarnings("unchecked")
 	public Optional<Seller> getSellerById(Long id) {
 		Session session = entityManger.unwrap(Session.class);
-		return session.createQuery("FROM Seller where sellerId=:id").setParameter("id", id)
-				.uniqueResultOptional();
+		return session.createQuery("FROM Seller where sellerId=:id").setParameter("id", id).uniqueResultOptional();
 
 	}
 
@@ -106,6 +108,5 @@ public boolean isSellerExist(String email) {
 		}
 
 	}
-
 
 }

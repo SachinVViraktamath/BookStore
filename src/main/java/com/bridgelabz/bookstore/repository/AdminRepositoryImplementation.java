@@ -13,14 +13,12 @@ import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
 
-
-
 @Repository
 public class AdminRepositoryImplementation implements AdminRepository {
-	
+
 	@PersistenceContext
 	private EntityManager entityManager;
-	
+
 	@Override
 	public Admin save(Admin admin) {
 
@@ -28,26 +26,23 @@ public class AdminRepositoryImplementation implements AdminRepository {
 		session.saveOrUpdate(admin);
 		return admin;
 	}
-	
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Admin> getAdmin(String email) {
 		Session session = entityManager.unwrap(Session.class);
-		return session.createQuery("FROM Admin where email =:email").setParameter("email", email).uniqueResultOptional();
+		return session.createQuery("FROM Admin where email =:email").setParameter("email", email)
+				.uniqueResultOptional();
 
 	}
-	
-	
-	
+
 	@Override
 	public boolean verify(Long id) {
 		Session session = entityManager.unwrap(Session.class);
 
 		@SuppressWarnings("unchecked")
-		TypedQuery<Admin> q = session
-				.createQuery("update Admin set  isverified =:p where adminId=:i").setParameter("p", true)
-				.setParameter("i", id);
+		TypedQuery<Admin> q = session.createQuery("update Admin set  isverified =:p where adminId=:i")
+				.setParameter("p", true).setParameter("i", id);
 		int status = q.executeUpdate();
 		if (status > 0) {
 			return true;
@@ -57,7 +52,6 @@ public class AdminRepositoryImplementation implements AdminRepository {
 
 	}
 
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public Optional<Admin> getAdminById(Long id) {
@@ -65,7 +59,6 @@ public class AdminRepositoryImplementation implements AdminRepository {
 		return session.createQuery("FROM Admin where adminId=:id").setParameter("id", id).uniqueResultOptional();
 
 	}
-
 
 	@Override
 	public boolean upDateAdminPassword(AdminPasswordDto information, Long id) {
@@ -78,31 +71,29 @@ public class AdminRepositoryImplementation implements AdminRepository {
 		} else {
 			return false;
 		}
-	
-	}
 
+	}
 
 	@Override
 	public boolean approvedTheBook(Long BookId) {
-		boolean value=true;
+		boolean value = true;
 		Session session = entityManager.unwrap(Session.class);
 		Query q = session.createQuery("update Book set isBookApproved =:p" + " " + " " + "where bookId=:i");
 		q.setParameter("p", value);
 		q.setParameter("i", BookId);
-        int status = q.executeUpdate();
+		int status = q.executeUpdate();
 		if (status > 0) {
 			return true;
 		} else {
 			return false;
 		}
-	
-	}
 
+	}
 
 	@Override
 	public boolean restAdminPassword(Admin information) {
-		String email=information.getEmail();
-		
+		String email = information.getEmail();
+
 		Session session = entityManager.unwrap(Session.class);
 		Query q = session.createQuery("update Admin set password =:p" + " " + " " + "where email=:email")
 				.setParameter("p", information.getPassword()).setParameter("email", email);
@@ -111,8 +102,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 			return true;
 		} else {
 			return false;
-		}}
+		}
+	}
 
-	
 }
-

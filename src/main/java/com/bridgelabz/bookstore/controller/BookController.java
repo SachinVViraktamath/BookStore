@@ -2,14 +2,8 @@ package com.bridgelabz.bookstore.controller;
 
 import java.io.IOException;
 import java.util.List;
-
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,23 +13,19 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.ReviewDto;
-import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Reviews;
 import com.bridgelabz.bookstore.entity.Users;
-import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
-import com.bridgelabz.bookstore.exception.ExceptionMessages;
+import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
@@ -55,8 +45,6 @@ public class BookController {
 	@Autowired
 	private BookService bookService;
 
-	@Autowired
-	private UserWishListService userWishListService;
 
 	@ApiOperation(value = "Api diplay all books", response = Iterable.class)
 	@GetMapping("/displaybooks/{page}")
@@ -152,38 +140,9 @@ public class BookController {
 				.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", review));
 }
 	
-	
-	
-	@ApiOperation(value = "Adding the books to the Whishlist",response = Iterable.class)
-	@PostMapping(value="/add_books_WhishList/{token}")
-	public ResponseEntity<Response> addBooksToWhilist(@PathVariable("token") String token,@RequestParam("bookId") long bookId) throws Exception {
-		    Users whishlist = userWishListService.addBooksTiWishList(token, bookId);
-		    		
-			return ResponseEntity.ok()
-					.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", whishlist));
-  	
-	}
-	@ApiOperation(value = "Getting the books from Whishlist",response = Iterable.class)
-	@GetMapping(value="/books_cart/{token}")
-	public ResponseEntity<Response> getBooksfromCart(@PathVariable("token") String token) throws Exception {
-		    List<Book> whishlist = userWishListService.viewAllBooksFromWishList(token);
-		    		
-		    return ResponseEntity.ok()
-					.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", whishlist));
-	}
-	
-	@ApiOperation(value = "Removing the books to the Whishlist",response = Iterable.class)
-	@PostMapping(value="/remove_books_WhishList/{token}")
-	public ResponseEntity<Response> removeBooksToWhilist(@PathVariable("token") String token,@RequestParam("bookId") long bookId) throws Exception {
-		    Users whishlist = userWishListService.removeBooksTiWishList(token, bookId);
-		    		
-			return ResponseEntity.ok()
-					.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", whishlist));
- 	
-	}
 	@ApiOperation(value="add image to book",response = Iterable.class )
 	@PutMapping("/profile")
-	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws AmazonServiceException, SdkClientException,BookException, IOException{
+	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws S3BucketException, AmazonServiceException, SdkClientException,BookException, IOException{
 		Book book =bookService.addProfile(file, token);
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED,"profile added for book", book));

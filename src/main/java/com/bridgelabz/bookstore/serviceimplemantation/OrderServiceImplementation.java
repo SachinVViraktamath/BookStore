@@ -31,7 +31,7 @@ public class OrderServiceImplementation implements OrderService {
 	private BookRepository bookRepository;
 	@Autowired
 	private MailingandResponseOperation response;
-	
+
 	@Transactional
 	@Override
 	public List<Order> orderTheBook(String token, Long bookId, String adressType) throws BookException, UserException {
@@ -49,15 +49,15 @@ public class OrderServiceImplementation implements OrderService {
 				if (orderId < 0) {
 					orderId = orderId * -1;
 				}
-				
+
 				orderDetails.setOrderId(orderId);
 				orderDetails.setOrderPlaceTime(LocalDateTime.now());
 				orderDetails.setBooksList(list);
 				userInfo.getOrderBookDetails().add(orderDetails);
 				bookRepository.save(book);
-				//String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,"");							
-			//	MailService.sendEmail("", Constants.VERIFICATION_MSG, "");	    
-				
+				// String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,"");
+				// MailService.sendEmail("", Constants.VERIFICATION_MSG, "");
+
 			});
 
 		});

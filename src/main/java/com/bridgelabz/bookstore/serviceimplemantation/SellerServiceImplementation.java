@@ -1,6 +1,5 @@
 package com.bridgelabz.bookstore.serviceimplemantation;
 
-
 import java.io.IOException;
 import java.time.LocalDateTime;
 
@@ -22,6 +21,7 @@ import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
+import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.repository.BookQuantityRepository;
 import com.bridgelabz.bookstore.repository.BookRepository;
@@ -46,106 +46,103 @@ public class SellerServiceImplementation implements SellerService {
 
 	@Autowired
 	BookQuantityRepository quantityrepo;
-	
+
 	@Autowired
 	private ModelMapper mapper;
-	
 
-   
+	@Autowired
+	AwsS3Access s3;
+
 	@Override
 	@Transactional
-	public Seller register(RegisterDto dto)  {
-		Seller seller=new Seller();
-		if(repository.getSeller(dto.getEmail()).isPresent()) {
-			throw new SellerException(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_ALREADY_MSG);
-			} seller = mapper.map(dto, Seller.class);
+	public Seller register(RegisterDto dto) {
+		Seller seller = new Seller();
+		if (repository.getSeller(dto.getEmail()).isPresent()) {
+			throw new SellerException(HttpStatus.NOT_ACCEPTABLE, ExceptionMessages.SELLER_ALREADY_MSG);
+		}
+		seller = mapper.map(dto, Seller.class);
 		seller.setPassword(encoder.encode(dto.getPassword()));
 		seller.setDateTime(LocalDateTime.now());
 		repository.save(seller);
 		String mailResponse = Constants.SELLER_VERIFICATION_LINK
 				+ JwtService.generateToken(seller.getSellerId(), Token.WITH_EXPIRE_TIME);
 		MailService.sendEmail(dto.getEmail(), Constants.SELLER_VERIFICATION_MSG, mailResponse);
-	
-	return seller;
-}
+
+		return seller;
+	}
 
 	@Transactional
 	@Override
-	public Seller login(LoginDto dto)  {
+	public Seller login(LoginDto dto) {
 		Seller seller = repository.getSeller(dto.getEmail())
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
-		
-		if ((seller.isVerified()==true) && (encoder.matches(dto.getPassword(), seller.getPassword()))!=true) {
-			
+
+		if ((seller.isVerified() == true) && (encoder.matches(dto.getPassword(), seller.getPassword())) != true) {
+
 			String mailResponse = Constants.SELLER_VERIFICATION_LINK
 					+ JwtService.generateToken(seller.getSellerId(), Token.WITH_EXPIRE_TIME);
-			MailService.sendEmail(dto.getEmail(),Constants.SELLER_VERIFICATION_MSG, mailResponse);
-			
-			throw new SellerException(HttpStatus.ACCEPTED,ExceptionMessages.SELLER_VRFIED_YOUR_EMAIL);
-			
-		} 
-		
+			MailService.sendEmail(dto.getEmail(), Constants.SELLER_VERIFICATION_MSG, mailResponse);
+
+			throw new SellerException(HttpStatus.ACCEPTED, ExceptionMessages.SELLER_VRFIED_YOUR_EMAIL);
+
+		}
+
 		return seller;
-		
+
 	}
-	
 
 	@Override
 	@Transactional
 	public Boolean verify(String token) {
 		Long id = (Long) JwtService.parse(token);
-				Seller seller=repository.getSellerById(id).orElseThrow(() -> new SellerException(HttpStatus.BAD_REQUEST,ExceptionMessages.SELLER_NOT_FOUND_MSG));
-		if(repository.verify(id)!=true)
-			throw new SellerException(HttpStatus.BAD_REQUEST,ExceptionMessages.SELLER_ALREADY_VRFIED);
-		System.out.println("****");
-		return true;
-		
-	}
-	
+		Seller seller = repository.getSellerById(id)
+				.orElseThrow(() -> new SellerException(HttpStatus.BAD_REQUEST, ExceptionMessages.SELLER_NOT_FOUND_MSG));
+		if (repository.verify(id) != true)
+			throw new SellerException(HttpStatus.BAD_REQUEST, ExceptionMessages.SELLER_ALREADY_VRFIED);
 
-	public Seller forgetPassword(String email)  {
+		return true;
+
+	}
+
+	public Seller forgetPassword(String email) {
 		Seller seller = repository.getSeller(email)
-				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND,ExceptionMessages.SELLER_NOT_FOUND_MSG));
-		if (seller.isVerified()!= true) {
-			throw new SellerException(HttpStatus.BAD_REQUEST,ExceptionMessages.SELLER_VRIFICATION_FAIL_MSG);
+				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
+		if (seller.isVerified() != true) {
+			throw new SellerException(HttpStatus.BAD_REQUEST, ExceptionMessages.SELLER_VRIFICATION_FAIL_MSG);
 		}
 		String mailResponse = Constants.SELLER_RESETPASSWORD_LINK
 				+ JwtService.generateToken(seller.getSellerId(), Token.WITH_EXPIRE_TIME);
-		MailService.sendEmail(email,Constants.SELLER_VERIFICATION_MSG, mailResponse);
+		MailService.sendEmail(email, Constants.SELLER_VERIFICATION_MSG, mailResponse);
 		return seller;
 	}
 
 	@Override
 	@Transactional
 	public Boolean resetPassword(ResetPassword update, String token) {
-			Long id =  JwtService.parse(token);
-			Seller seller = repository.getSellerById(id)
-					.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
+		Long id = JwtService.parse(token);
+		Seller seller = repository.getSellerById(id)
+				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
 
-			//if (encoder.matches(encoder.encode(update.getConfirmPassword()), encoder.encode(update.getNewPassword()))){
-				
-				update.setConfirmPassword(encoder.encode(update.getConfirmPassword()));
-			repository.save(seller);
-				//repository.update(update, id);	
-			
-		
-			return true;	
+		update.setConfirmPassword(encoder.encode(update.getConfirmPassword()));
+		repository.save(seller);
+
+		return true;
 	}
 
 	@Override
 	@Transactional
-	public Seller addProfile(MultipartFile file, String token)
-			throws SellerException, AmazonServiceException, SdkClientException, IOException, SellerException {
-			Long id =JwtService.parse(token);;
-	    Seller seller=repository.getSellerById(id).orElseThrow(() -> new SellerException( HttpStatus.NOT_FOUND,ExceptionMessages.SELLER_NOT_FOUND_MSG));                   
-			if(seller!=null) {
-				String profile=AwsS3Access.uploadFileTos3Bucket(file, id);
-				seller.setProfile(profile);
-				repository.save(seller);
-			}
-	    	return null;
+	public Seller addProfile(MultipartFile file, String token) throws SellerException, AmazonServiceException,
+			SdkClientException, IOException, SellerException, S3BucketException {
+		Long id = JwtService.parse(token);
+		;
+		Seller seller = repository.getSellerById(id)
+				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
+		if (seller != null) {
+			String profile = s3.uploadFileToS3Bucket(file, id);
+			seller.setProfile(profile);
+			repository.save(seller);
 		}
-	
-		
+		return null;
+	}
 
 }

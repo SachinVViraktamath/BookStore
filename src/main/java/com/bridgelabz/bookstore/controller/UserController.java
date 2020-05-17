@@ -37,6 +37,7 @@ import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
+import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.UserService;
@@ -57,78 +58,83 @@ public class UserController {
 	@PostMapping("/register")
 	public ResponseEntity<Response> registration(@Valid @RequestBody RegisterDto userInfoDto) throws UserException {
 
-        Users user=service.register(userInfoDto);
-		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_REGISTER_SUCESSFULL, user));
-	
-}
+		Users user = service.register(userInfoDto);
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_REGISTER_SUCESSFULL, user));
 
-	
+	}
 
 	@ApiOperation(value = "Api to verify the User ", response = Response.class)
 	@GetMapping("/verifyemail/{token}")
 	public ResponseEntity<Response> verification(@PathVariable("token") String token) throws UserException {
-		
-		boolean user=service.verifyUser(token);
-		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_VERIFIED_STATUS, user));
+
+		boolean user = service.verifyUser(token);
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_VERIFIED_STATUS, user));
 	}
 
 	@ApiOperation(value = "Api to Login User", response = Response.class)
 	@PostMapping("/login")
-	public ResponseEntity<Response> login(@RequestBody LoginDto loginDto,BindingResult res) throws UserException {
-		 if(res.hasErrors()) {
-	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_FAILED_LOGIN_STATUS,loginDto));
-	     }
-		Users user=service.login(loginDto);
-		String mailResponse =
-				 JwtService.generateToken(user.getUserId(), Token.WITH_EXPIRE_TIME);
-		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_LOGIN_STATUS, mailResponse));
+	public ResponseEntity<Response> login(@RequestBody LoginDto loginDto, BindingResult res) throws UserException {
+		if (res.hasErrors()) {
+			return ResponseEntity.badRequest().body(
+					new Response(HttpStatus.NOT_ACCEPTABLE, ExceptionMessages.USER_FAILED_LOGIN_STATUS, loginDto));
+		}
+		Users user = service.login(loginDto);
+		String mailResponse = JwtService.generateToken(user.getUserId(), Token.WITH_EXPIRE_TIME);
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_LOGIN_STATUS, mailResponse));
 	}
 
 	@ApiOperation(value = "Api to check if UserExists or not", response = Response.class)
 	@PostMapping("/forgetpassword")
 	public ResponseEntity<Response> forgetPassword(@RequestParam String email) throws UserException {
-			Users user=service.forgetPassword(email);
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "reset password mail send to email", email));
+		Users user = service.forgetPassword(email);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "reset password mail send to email", email));
 
 	}
 
 	@ApiOperation(value = "Api to Reset User Password ", response = Response.class)
 	@PutMapping("/resetpassword/{token}")
-	public ResponseEntity<Response> resetPassword(@RequestBody ResetPassword password,@Valid @PathVariable("token") String token,BindingResult res) throws UserException {
-		if(res.hasErrors()) {
-	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_RESET_PASSWORD_FAILED,password));
-	     }
-			boolean result=service.resetPassword(password, token);
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED,  ExceptionMessages.USER_RESET_PASSWORD_SUCESSFULL, result));
+	public ResponseEntity<Response> resetPassword(@RequestBody ResetPassword password,
+			@Valid @PathVariable("token") String token, BindingResult res) throws UserException {
+		if (res.hasErrors()) {
+			return ResponseEntity.badRequest().body(
+					new Response(HttpStatus.NOT_ACCEPTABLE, ExceptionMessages.USER_RESET_PASSWORD_FAILED, password));
+		}
+		boolean result = service.resetPassword(password, token);
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_RESET_PASSWORD_SUCESSFULL, result));
 	}
 
 	@ApiOperation(value = "Api to Add User Address", response = Response.class)
 	@PostMapping("/address")
 	public ResponseEntity<Response> address(@RequestBody UserAddressDto addDto, @RequestHeader String token)
 			throws UserException {
-		UserAddress address=service.address(addDto, token);
-		
-			return ResponseEntity.ok()
-					.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_ADDRESS_STATUS, address));
+		UserAddress address = service.address(addDto, token);
+
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_ADDRESS_STATUS, address));
 	}
 
 	@ApiOperation(value = "Api to Update User Address", response = Response.class)
 	@PutMapping("/updateaddress/{addressId}")
 	public ResponseEntity<Response> updateAddress(@RequestParam String token, @PathVariable long addressId,
 			@RequestBody UserAddressDto addDto) throws UserException {
-			UserAddress address= service.updateAddress(token, addDto, addressId);
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));
-		
-	}
-	@ApiOperation(value="add profile to user",response = Iterable.class )
-	@PutMapping("/profile")
-	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws AmazonServiceException, SdkClientException,UserException, IOException{
-		Users user =service.addProfile(file, token);
+		UserAddress address = service.updateAddress(token, addDto, addressId);
 		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED,"profile added for user", user));
-	
-	}
-	
-	
-}
+				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));
 
+	}
+
+	@ApiOperation(value = "add profile to user", response = Iterable.class)
+	@PutMapping("/profile")
+	public ResponseEntity<Response> addProfile(@RequestPart("file") MultipartFile file,
+			@RequestParam("token") String token)
+			throws AmazonServiceException, S3BucketException, SdkClientException, UserException, IOException {
+		Users user = service.addProfile(file, token);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "profile added for user", user));
+
+	}
+
+}

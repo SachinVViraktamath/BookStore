@@ -33,4 +33,9 @@ public class BookStoreExceptionHandler extends ResponseEntityExceptionHandler {
 		ExceptionResponse exp = new ExceptionResponse(ex.getCode(), ex.getMessage());
 		return ResponseEntity.status(exp.getCode()).body(exp);
 	}
+	@ExceptionHandler(S3BucketException.class)
+	public final ResponseEntity<ExceptionResponse> S3BucketException(S3BucketException ex) {
+		ExceptionResponse exp = new ExceptionResponse(ex.getCode(), ex.getMessage());
+		return ResponseEntity.status(exp.getCode()).body(exp);
+	}
 }

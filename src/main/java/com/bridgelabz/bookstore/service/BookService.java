@@ -14,6 +14,7 @@ import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Reviews;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
+import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.exception.UserException;
 
@@ -25,7 +26,7 @@ public interface BookService {
 
 	public Book updateBook(String token, Long bookId, BookDto dto) throws BookException;
 
-	public Book addBook(String token, BookDto dto)throws SellerException;
+	public Book addBook(String token, BookDto dto) throws SellerException;
 
 	public void writeReviewAndRating(String token, ReviewDto rrDTO, Long bookId) throws UserException, BookException;
 
@@ -40,6 +41,6 @@ public interface BookService {
 	Integer getCountOfBooks();
 
 	public Book addProfile(MultipartFile file, String token)
-			throws BookException, AmazonServiceException, SdkClientException, IOException, SellerException;
+			throws BookException, AmazonServiceException, SdkClientException, IOException, S3BucketException;
 
 }

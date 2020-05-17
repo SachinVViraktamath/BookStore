@@ -1,6 +1,5 @@
 package com.bridgelabz.bookstore.controller;
 
-
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +28,7 @@ import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
+import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.SellerService;
@@ -48,11 +48,12 @@ public class SellerController {
 	/* API for seller registration */
 
 	@PostMapping("/registration")
-	@ApiOperation(value="seller registration",response = Response.class)
-	public ResponseEntity<Response> register(@RequestBody RegisterDto dto,BindingResult res) {
-		 if(res.hasErrors()) {
-	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_ALREADY_MSG,dto));
-	     }
+	@ApiOperation(value = "seller registration", response = Response.class)
+	public ResponseEntity<Response> register(@RequestBody RegisterDto dto, BindingResult res) {
+		if (res.hasErrors()) {
+			return ResponseEntity.badRequest()
+					.body(new Response(HttpStatus.NOT_ACCEPTABLE, ExceptionMessages.SELLER_ALREADY_MSG, dto));
+		}
 		Seller reg = service.register(dto);
 
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Seller Registered Successfully", reg));
@@ -61,11 +62,12 @@ public class SellerController {
 
 	/* API for seller login */
 	@PostMapping("/login")
-	@ApiOperation(value="login for seller",response = Response.class)
-	public ResponseEntity<Response> Login(@RequestBody LoginDto login,BindingResult res) {
-		 if(res.hasErrors()) {
-	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_NOT_FOUND_MSG,login));
-	     }
+	@ApiOperation(value = "login for seller", response = Response.class)
+	public ResponseEntity<Response> Login(@RequestBody LoginDto login, BindingResult res) {
+		if (res.hasErrors()) {
+			return ResponseEntity.badRequest()
+					.body(new Response(HttpStatus.NOT_ACCEPTABLE, ExceptionMessages.SELLER_NOT_FOUND_MSG, login));
+		}
 		Seller seller = service.login(login);
 		String token = JwtService.generateToken(seller.getSellerId(), Token.WITH_EXPIRE_TIME);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Login Successfully", token));
@@ -74,9 +76,9 @@ public class SellerController {
 
 	/* API for verifying the token generated for the email */
 	@GetMapping("/verifyemail/{token}")
-	@ApiOperation(value="seller email verification",response = Response.class)
+	@ApiOperation(value = "seller email verification", response = Response.class)
 	public ResponseEntity<Response> verify(@PathVariable("token") String token) throws Exception {
-		
+
 		boolean verification = service.verify(token);
 
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "verified", verification));
@@ -86,33 +88,39 @@ public class SellerController {
 	/* API for seller forgetPassword */
 
 	@PostMapping("/forgotpassword")
-	@ApiOperation(value="forgetpassword for seller",response = Response.class)
+	@ApiOperation(value = "forgetpassword for seller", response = Response.class)
 	public ResponseEntity<Response> forgotPassword(@RequestParam("email") String email) throws SellerException {
-		
+
 		Seller seller = service.forgetPassword(email);
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "resetpassword mail has send to email successfully", email));
-		
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, "resetpassword mail has send to email successfully", email));
+
 	}
 
 	/* API for seller updating password */
 	@PutMapping("/resetpassword")
-	@ApiOperation(value="reset password for seller",response = Response.class)
-	public ResponseEntity<Response> resetPassword(@RequestBody ResetPassword update,@RequestHeader("token") String token,BindingResult res) throws SellerException {
-		 if(res.hasErrors()) {
-	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.SELLER_NOT_FOUND_MSG,update));
-	     }
+	@ApiOperation(value = "reset password for seller", response = Response.class)
+	public ResponseEntity<Response> resetPassword(@RequestBody ResetPassword update,
+			@RequestHeader("token") String token, BindingResult res) throws SellerException {
+		if (res.hasErrors()) {
+			return ResponseEntity.badRequest()
+					.body(new Response(HttpStatus.NOT_ACCEPTABLE, ExceptionMessages.SELLER_NOT_FOUND_MSG, update));
+		}
 		Boolean passwordUpdate = service.resetPassword(update, token);
 
-		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "Password updated successfully", passwordUpdate));
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, "Password updated successfully", passwordUpdate));
 
 	}
-	@ApiOperation(value="add profile to seller",response = Iterable.class )
+
+	@ApiOperation(value = "add profile to seller", response = Iterable.class)
 	@PutMapping("/profile")
-	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws AmazonServiceException, SdkClientException, AdminException, IOException{
-		Seller seller =service.addProfile(file, token);
-		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED,"profile added for seller", seller));
-	
+	public ResponseEntity<Response> addProfile(@RequestPart("file") MultipartFile file,
+			@RequestParam("token") String token)
+			throws S3BucketException, AmazonServiceException, SdkClientException, AdminException, IOException {
+		Seller seller = service.addProfile(file, token);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "profile added for seller", seller));
+
 	}
-	
-	}
+
+}

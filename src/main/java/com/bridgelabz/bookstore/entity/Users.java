@@ -77,7 +77,7 @@ public class Users {
 	private List<UserAddress> address;
 
 
-	@OneToMany(cascade = CascadeType.ALL, targetEntity = CartDetails.class)
+	@ManyToMany(cascade = CascadeType.ALL, targetEntity = CartDetails.class)
 	@JoinColumn(name = "userId")
 	private List<CartDetails> booksCart;
 

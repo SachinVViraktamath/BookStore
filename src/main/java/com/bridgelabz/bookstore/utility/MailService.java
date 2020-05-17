@@ -28,9 +28,9 @@ public class MailService {
 	public static void sendEmail(String toEmail, String subject, String body) {
 
 		String fromEmail = System.getenv("email");
-		System.out.println(fromEmail);
+
 		String password = System.getenv("password");
-		System.out.println(password);
+
 		Properties prop = new Properties();
 		prop.put("mail.smtp.auth", "true");
 		prop.put("mail.smtp.starttls.enable", "true");
@@ -52,14 +52,14 @@ public class MailService {
 	 * book to admin
 	 */
 
-	public static void sendEmailToAdmin( String subject, Book book) {
+	public static void sendEmailToAdmin(String subject, Book book) {
 
 		String fromEmail = System.getenv("email");
-		System.out.println(fromEmail);
+
 		String password = System.getenv("password");
-	System.out.println(password);
-	String toEmail=System.getenv("emailAdmin");
-	String toPassword=System.getenv("passwordAdmin");
+
+		String toEmail = System.getenv("emailAdmin");
+		String toPassword = System.getenv("passwordAdmin");
 		Properties prop = new Properties();
 		prop.put("mail.smtp.auth", "true");
 		prop.put("mail.smtp.starttls.enable", "true");
@@ -86,10 +86,7 @@ public class MailService {
 			book.getBookAuthor();
 			book.getBookDescription();
 			book.getBookPrice();
-			message.setContent(book,"book");
-			//message.setSentDate(date);
-			
-		//	message.setText(Double.toString(book.getBookPrice()));
+			message.setContent(book, "book");
 
 			Transport.send(message);
 		} catch (Exception e) {

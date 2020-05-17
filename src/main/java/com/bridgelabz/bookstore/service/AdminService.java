@@ -16,6 +16,7 @@ import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
+import com.bridgelabz.bookstore.exception.S3BucketException;
 
 
 public interface AdminService {
@@ -35,6 +36,6 @@ public interface AdminService {
 	public boolean resetPassword(AdimRestPassword update)throws AdminException;
 	
  	public List<Book> getNotapproveBook(String token) throws AdminException;
- 	public Admin addProfile(MultipartFile file,String  token)throws AdminException,AmazonServiceException, SdkClientException, IOException;
+ 	public Admin addProfile(MultipartFile file,String  token)throws AdminException,S3BucketException,AmazonServiceException, SdkClientException, IOException;
 
 }

@@ -49,9 +49,9 @@ public class Book {
 	@JoinColumn(name = "bookId")
 	private List<Reviews> reviewRating;
 
-	@ManyToMany(cascade = CascadeType.ALL)
+	/*@ManyToMany(cascade = CascadeType.ALL)
 	private List<Book> BooksList;
-	
+	*/
 
 
 

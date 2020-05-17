@@ -11,20 +11,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.bridgelabz.bookstore.dto.CartDto;
 import com.bridgelabz.bookstore.entity.CartDetails;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.CartService;
-
-import io.swagger.annotations.ApiOperation;
 
 
 
@@ -46,8 +42,8 @@ public ResponseEntity<Response> addBookToCart(@RequestParam("bookId") Long bookI
 
 
 @PutMapping(value="/addQuantity/{token}")
-public ResponseEntity<Response> addBooksQuantityToCart(@PathVariable("token") String token,@RequestParam("bookId") long bookId,@RequestBody CartDto dto) throws Exception {
-	   List<CartDetails> cart = service.addBooksQuantityToCart(token, bookId, dto);
+public ResponseEntity<Response> addBooksQuantityToCart(@PathVariable("token") String token,@RequestParam("bookId") Long bookId) throws Exception {
+	   List<CartDetails> cart = service.addBooksQuantityToCart(token, bookId);
 	   return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "adding book quantity  Successfully", cart));
 		 
 	
@@ -60,8 +56,8 @@ public ResponseEntity<Response> getBooksFromCart(@RequestParam String token) thr
 
 
 @PutMapping(value="/descresingQuantity")
-public ResponseEntity<Response> descBooksQuantityToCart(@RequestHeader(name="token") String token,@RequestParam("bookId") Long bookId,@RequestBody CartDto dto) throws Exception {
-	List<CartDetails> cartdetails = service.decreasingBooksQuantityInCart(token, bookId, dto);		
+public ResponseEntity<Response> descBooksQuantityToCart(@RequestHeader(name="token") String token,@RequestParam("bookId") Long cartId) throws Exception {
+	List<CartDetails> cartdetails = service.decreasingBooksQuantityInCart(token, cartId);		
 	return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "descresing quantity ",cartdetails));	
 }
 
