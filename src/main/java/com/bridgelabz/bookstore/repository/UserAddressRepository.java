@@ -17,7 +17,8 @@ public interface UserAddressRepository extends JpaRepository<UserAddress, Long> 
 
 	@Query(value = "select * from userAddress where address_id=?", nativeQuery = true)
 	public Optional<UserAddress> findbyId(long addressId);
-
+	@Query(value = "select * from userAddress where addressType=?", nativeQuery = true)
+	public Optional<UserAddress> findbyType(String addressType);
 	@Modifying
 	@Query(value = "insert into user_address (landmark,city,locality,address,addressType,pinCode,name,phonenumber) values (?,?,?,?,?,?,?,?)", nativeQuery = true)
 	void addAddress(String landmark, String city, String locality, String address, String addressType, int pinCode,

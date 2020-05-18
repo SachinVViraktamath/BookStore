@@ -19,10 +19,12 @@ import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Seller;
+import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.SellerException;
+import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.BookQuantityRepository;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.repository.SellerRepository;
@@ -144,5 +146,15 @@ public class SellerServiceImplementation implements SellerService {
 		}
 		return null;
 	}
+
+	@Override
+	@Transactional
+	public Seller getSellerById(String token) throws SellerException {
+		Long id = JwtService.parse(token);
+		Seller seller = repository.getSellerById(id).orElseThrow(
+				() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
+		return seller;
+	}
+
 
 }

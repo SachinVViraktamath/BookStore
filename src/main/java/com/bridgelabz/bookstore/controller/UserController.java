@@ -136,5 +136,21 @@ public class UserController {
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "profile added for user", user));
 
 	}
+	@ApiOperation(value="get  the user details by user id" ,response = Iterable.class) 
+	@GetMapping("/getuser")
+	public ResponseEntity<Response> addProfile(@RequestHeader("token") String token)
+			throws AmazonServiceException, S3BucketException, SdkClientException, UserException, IOException {
+		Users user = service.getUserById(token);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " user details are...", user));
+
+	} 
+	@ApiOperation(value = "Api to get  by AddressType ", response = Response.class)
+	@GetMapping("/getaddressbyType/{addressType}")
+	public ResponseEntity<Response> getByAddressType(@RequestParam String token, @PathVariable String addressType
+			) throws UserException {
+			UserAddress address= service.getByAddressType(addressType, token);
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));
+		
+	}
 
 }

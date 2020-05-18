@@ -35,4 +35,6 @@ public interface UserService {
 
 	public Users addProfile(MultipartFile file, String token)
 			throws AmazonServiceException, SdkClientException, IOException, UserException, S3BucketException;
+	public Users getUserById(String token)throws UserException;
+	public UserAddress getByAddressType(String addressType,String token) throws UserException;
 }

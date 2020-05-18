@@ -19,10 +19,12 @@ import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
+import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.S3BucketException;
+import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.repository.AdminRepository;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.response.MailingandResponseOperation;
@@ -177,6 +179,14 @@ public class AdminServiceImplementation implements AdminService {
 			adminRepository.save(admin);
 		}
 		return null;
+	}
+	@Override
+	@Transactional
+	public Admin getAdminById(String token) throws AdminException {
+		Long id = JwtService.parse(token);
+		Admin admin = adminRepository.getAdminById(id).orElseThrow(
+				() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages. ADMIN_NOT_FOUND_MSG));
+		return admin;
 	}
 
 }

@@ -26,10 +26,12 @@ import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Seller;
+import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.SellerException;
+import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.SellerService;
 import com.bridgelabz.bookstore.utility.JwtService;
@@ -122,5 +124,13 @@ public class SellerController {
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "profile added for seller", seller));
 
 	}
+	@ApiOperation(value="get  the seller details by seller id" ,response = Iterable.class) 
+	@GetMapping("/getseller")
+	public ResponseEntity<Response> addProfile(@RequestHeader("token") String token)
+		 {
+		Seller seller = service.getSellerById(token);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " seller details are...", seller));
+
+	} 
 
 }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -30,10 +31,12 @@ import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
+import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.S3BucketException;
+import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.serviceimplemantation.AdminServiceImplementation;
 
@@ -140,6 +143,15 @@ public class AdminController {
 				.body(new Response(HttpStatus.ACCEPTED, "profile added for admin", admin));
 	
 	}
+	@ApiOperation(value="get  the admin details by admin id" ,response = Iterable.class) 
+	@GetMapping("/getadmin")
+	public ResponseEntity<Response> addProfile(@RequestHeader("token") String token)
+			throws AdminException {
+		Admin admin = service.getAdminById(token);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " admin details are...", admin));
+
+	} 
+
 	
 	
 }

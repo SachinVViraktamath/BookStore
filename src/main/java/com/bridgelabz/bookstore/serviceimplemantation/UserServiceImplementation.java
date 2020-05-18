@@ -206,6 +206,14 @@ public class UserServiceImplementation implements UserService {
 		throw new UserException(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE);
 
 	}
+public UserAddress getByAddressType(String addressType,String token) throws UserException{
+		
+		Long id=JwtService.parse(token);
+		Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
+		UserAddress address=userAddressrepository.findbyType(addressType).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));;
+		return address;
+	}
+
 
 	@Override
 	@Transactional
@@ -223,4 +231,13 @@ public class UserServiceImplementation implements UserService {
 		return null;
 	}
 
+	@Override
+	@Transactional
+	public Users getUserById(String token) throws UserException {
+		Long id = JwtService.parse(token);
+		Users user = repository.findbyId(id).orElseThrow(
+				() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
+		return user;
+	}
+	
 }

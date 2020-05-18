@@ -113,7 +113,7 @@ public class BookServiceImplementation implements BookService {
 			book.setBookCreatedAt(LocalDateTime.now());
 			seller.getSellerBooks().add(book);
 			bookRepository.save(book);
-			MailService.sendEmailToAdmin(seller.getEmail(), book);
+		//	MailService.sendEmailToAdmin(seller.getEmail(), book);
 			return book;
 		} else {
 			throw new SellerException(HttpStatus.NOT_FOUND, "no a verified seller ");
