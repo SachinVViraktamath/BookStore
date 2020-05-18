@@ -39,6 +39,8 @@ import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.serviceimplemantation.AdminServiceImplementation;
+import com.bridgelabz.bookstore.utility.JwtService;
+import com.bridgelabz.bookstore.utility.JwtService.Token;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -90,9 +92,10 @@ public class AdminController {
 		   if(res.hasErrors()) {
 	    	   return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_ACCEPTABLE,ExceptionMessages.USER_REGISTER_STATUS_INFO,adminLogin));
 	     }
-		Admin userInformation = service.loginToAdmin(adminLogin);
+		Admin admin = service.loginToAdmin(adminLogin);
+		String mailResponse = JwtService.generateToken(admin.getAdminId(), Token.WITH_EXPIRE_TIME);
 		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.LOGIN_SUCCESSFUL, userInformation));		
+				.body(new Response(HttpStatus.ACCEPTED, "login successfull", mailResponse));		
 	}
 	
 	

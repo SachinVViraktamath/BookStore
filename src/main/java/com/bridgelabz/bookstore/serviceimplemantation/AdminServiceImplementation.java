@@ -90,6 +90,9 @@ public class AdminServiceImplementation implements AdminService {
 
 		if ((user.isIsverified() == true)
 				&& (passwordEncryption.matches(information.getPassword(), user.getPassword()))) {
+			String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,
+					JwtService.generateToken(user.getAdminId(), Token.WITH_EXPIRE_TIME));
+			MailService.sendEmail(information.getEmail(), Constants.VERIFICATION_MSG, mailResponse);
 			return user;
 		}
 		String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,
@@ -106,8 +109,11 @@ public class AdminServiceImplementation implements AdminService {
 		Admin adminUser = adminRepository.getAdmin(email)
 				.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
 		if (adminUser.isIsverified() == true) {
-			String mailResponse = response.fromMessage(Constants.REST_LINK, "resetpassword");
-			MailService.sendEmail(adminUser.getEmail(), Constants.RSET_PASSWORD, mailResponse);
+			String mailResponse = Constants.REST_LINK
+					+ JwtService.generateToken(adminUser.getAdminId(), Token.WITH_EXPIRE_TIME);
+			MailService.sendEmail(email, Constants.RSET_PASSWORD, mailResponse);
+			//String mailResponse = response.fromMessage(Constants.REST_LINK, "resetpassword");
+		//	MailService.sendEmail(adminUser.getEmail(), Constants.RSET_PASSWORD, mailResponse);
 			return adminUser;
 		}
 		return adminUser;
