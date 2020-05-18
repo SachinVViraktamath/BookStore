@@ -199,19 +199,25 @@ public class UserServiceImplementation implements UserService {
 		Long id = JwtService.parse(token);
 		Users user = repository.findbyId(id).orElseThrow(
 				() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
-		UserAddress usersaddress = user.getAddress().stream().filter((address) -> address.getAddressType() == addressType)
-				.findFirst().orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Address is not exist"));
+		UserAddress usersaddress =new UserAddress();
+		if(userAddressrepository.findbyType(addressType).isPresent()!=true){
+		return null;
+	}
 		BeanUtils.copyProperties(addDto, usersaddress);
 		repository.save(user);
 		return usersaddress;
+
 	}
 public UserAddress getByAddressType(String addressType,String token) throws UserException{
 		
 		Long id=JwtService.parse(token);
 		Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
-		UserAddress address=userAddressrepository.findbyType(addressType).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "address is not added by user"));;
-		return address;
+		UserAddress address=new UserAddress();
+		if(userAddressrepository.findbyType(addressType).isPresent()!=true){
+		return null;
 	}
+		return address;
+}
 
 
 	@Override
