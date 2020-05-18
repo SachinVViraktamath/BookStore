@@ -149,7 +149,7 @@ public class UserController {
 	public ResponseEntity<Response> getByAddressType(@RequestParam String token, @PathVariable String addressType
 			) throws UserException {
 			UserAddress address= service.getByAddressType(addressType, token);
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));
+			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "address details fetched for user successfully", address));
 		
 	}
 

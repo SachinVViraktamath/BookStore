@@ -387,3 +387,5 @@ java.sql.SQLSyntaxErrorException: Unknown column 'addressType' in 'where clause'
 2020-05-18 12:02:48.968  INFO 5696 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
 2020-05-18 12:02:48.969  INFO 5696 --- [main] c.b.bookstore.BookStoreApplication       : Started BookStoreApplication in 5.457 seconds (JVM running for 6.188)
 2020-05-18 12:02:56.632  INFO 5696 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2020-05-18 12:02:56.632  INFO 5696 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2020-05-18 12:02:56.642  INFO 5696 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 10 ms
