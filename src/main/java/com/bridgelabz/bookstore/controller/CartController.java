@@ -33,7 +33,7 @@ public class CartController {
 private CartService service;
 
 @PostMapping("/addBooks")
-public ResponseEntity<Response> addBookToCart(@RequestParam("bookId") Long bookId,@RequestParam("token") String token) throws UserException, BookException{
+public ResponseEntity<Response> addBookToCart(@RequestParam("bookId") Long bookId,@RequestHeader("token") String token) throws UserException, BookException{
 	List<CartDetails> book=service.addBooksInTOTheCart(token, bookId);
 	return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "book added to cart Successfully", book));
 
@@ -41,15 +41,15 @@ public ResponseEntity<Response> addBookToCart(@RequestParam("bookId") Long bookI
 }
 
 
-@PutMapping(value="/addQuantity/{token}")
-public ResponseEntity<Response> addBooksQuantityToCart(@PathVariable("token") String token,@RequestParam("cartId") Long cartId) throws Exception {
+@PutMapping(value="/addQuantity/")
+public ResponseEntity<Response> addBooksQuantityToCart(@RequestHeader("token") String token,@RequestParam("cartId") Long cartId) throws Exception {
 	   List<CartDetails> cart = service.addBooksQuantityToCart(token, cartId);
 	   return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "adding book quantity  Successfully", cart));
 		 
 	
 }
 @GetMapping("/getBooks")
-public ResponseEntity<Response> getBooksFromCart(@RequestParam String token) throws UserException{
+public ResponseEntity<Response> getBooksFromCart(@RequestHeader String token) throws UserException{
 	List<CartDetails> book= service.getBooksfromCart(token); 
 	return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "all books are displyed successfull ",book));			 
 }
