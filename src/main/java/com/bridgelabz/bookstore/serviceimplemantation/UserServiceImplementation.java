@@ -182,7 +182,7 @@ public class UserServiceImplementation implements UserService {
 		BeanUtils.copyProperties(addressDto, users);
 		user.getAddress().add(users);
 		userAddressrepository.save(users);
-		throw new UserException(HttpStatus.ACCEPTED, ExceptionMessages.USER_ADDRESS_STATUS);
+		return users;
 
 	}
 
