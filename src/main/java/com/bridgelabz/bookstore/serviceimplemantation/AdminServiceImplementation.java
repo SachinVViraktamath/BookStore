@@ -16,15 +16,18 @@ import com.bridgelabz.bookstore.configuration.Constants;
 import com.bridgelabz.bookstore.dto.AdimRestPassword;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.RegisterDto;
+import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Seller;
+import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.SellerException;
+import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.AdminRepository;
 import com.bridgelabz.bookstore.repository.BookRepository;
 import com.bridgelabz.bookstore.response.MailingandResponseOperation;
@@ -122,15 +125,17 @@ public class AdminServiceImplementation implements AdminService {
 
 	@Override
 	@Transactional
-	public boolean resetPassword(AdimRestPassword update) throws AdminException {
+	public boolean resetPassword(ResetPassword update,String token) throws AdminException {
 
-		Admin user = adminRepository.getAdmin(update.getEmail())
-				.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
-		user.setPassword((passwordEncryption.encode(update.getPassword())));
-		adminRepository.restAdminPassword(user);
-		return adminRepository.restAdminPassword(user);
+		Long id = JwtService.parse(token);
+		Admin admin = adminRepository.getAdminById(id).orElseThrow(
+				() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
+		if (admin.isIsverified()) {
+			admin.setPassword(new BCryptPasswordEncoder().encode(update.getConfirmPassword()));
+			adminRepository.restAdminPassword(passwordEncryption.encode(update.getConfirmPassword()), id);
+		}
+		return true;
 	}
-
 	@Transactional
 	@Override
 	public boolean updatepassword(AdminPasswordDto information, String token) throws AdminException {

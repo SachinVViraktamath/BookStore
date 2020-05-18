@@ -16,9 +16,9 @@ public interface AdminRepository {
 
 	Optional<Admin> getAdminById(Long id);
 
-	public boolean restAdminPassword(Admin information);
+	public boolean restAdminPassword(String information, Long id);
 
-	boolean upDateAdminPassword(AdminPasswordDto information, Long id);
+	boolean upDateAdminPassword(AdminPasswordDto information,Long id);
 
 	boolean approvedTheBook(Long BookId);
 

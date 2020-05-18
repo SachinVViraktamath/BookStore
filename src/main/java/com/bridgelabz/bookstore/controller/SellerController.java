@@ -100,10 +100,10 @@ public class SellerController {
 	}
 
 	/* API for seller updating password */
-	@PutMapping("/resetpassword")
+	@PutMapping("/resetpassword/{token}")
 	@ApiOperation(value = "reset password for seller", response = Response.class)
 	public ResponseEntity<Response> resetPassword(@RequestBody ResetPassword update,
-			@RequestHeader("token") String token, BindingResult res) throws SellerException {
+			@PathVariable("token")String token, BindingResult res) throws SellerException {
 		if (res.hasErrors()) {
 			return ResponseEntity.badRequest()
 					.body(new Response(HttpStatus.NOT_ACCEPTABLE, ExceptionMessages.SELLER_NOT_FOUND_MSG, update));

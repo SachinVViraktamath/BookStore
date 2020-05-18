@@ -61,7 +61,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 	}
 
 	@Override
-	public boolean upDateAdminPassword(AdminPasswordDto information, Long id) {
+	public boolean upDateAdminPassword(AdminPasswordDto information,Long id) {
 		Session session = entityManager.unwrap(Session.class);
 		Query q = session.createQuery("update Admin set password =:p" + " " + " " + "where adminId=:i")
 				.setParameter("p", information.getConfirmPassword()).setParameter("i", id);
@@ -91,12 +91,12 @@ public class AdminRepositoryImplementation implements AdminRepository {
 	}
 
 	@Override
-	public boolean restAdminPassword(Admin information) {
-		String email = information.getEmail();
+	public boolean restAdminPassword(String information,Long id) {
+	
 
 		Session session = entityManager.unwrap(Session.class);
-		Query q = session.createQuery("update Admin set password =:p" + " " + " " + "where email=:email")
-				.setParameter("p", information.getPassword()).setParameter("email", email);
+		Query q = session.createQuery("update Admin set password =:p" + " " + " " + "where id=:id")
+				.setParameter("p", information).setParameter("id", id);
 		int status = q.executeUpdate();
 		if (status > 0) {
 			return true;

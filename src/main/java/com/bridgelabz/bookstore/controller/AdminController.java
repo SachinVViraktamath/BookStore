@@ -28,6 +28,7 @@ import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.dto.AdimRestPassword;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.RegisterDto;
+import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
@@ -66,12 +67,12 @@ public class AdminController {
 	}
 	
 	@ApiOperation(value = "Api for Admin email verification",response = Iterable.class)
-	@PutMapping("/restpassword")
-	public ResponseEntity<Response> resetAdmin(AdimRestPassword reset) throws AdminException {
+	@PutMapping("/restpassword/{token}")
+	public ResponseEntity<Response> resetAdmin(@RequestBody ResetPassword reset ,@PathVariable("token")String token) throws AdminException {
 		
-		boolean update = service.resetPassword(reset);	
+		boolean update = service.resetPassword(reset,token);	
 			return ResponseEntity.ok()
-					.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.AMDIN_VERIFIED_SUCCESSFULL, update));	
+					.body(new Response(HttpStatus.ACCEPTED, "password update successfully", update));	
 		
 	}
 	
@@ -104,7 +105,7 @@ public class AdminController {
 	public ResponseEntity<Response> forgotPassword(@RequestParam("email") String email) throws AdminException {
 		Admin result = service.forgetPassword(email);		
 			return ResponseEntity.ok()
-					.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.PASSWORD_UPDATE_SUCCESFULL, result));		
+					.body(new Response(HttpStatus.ACCEPTED,"reset password mail hasbeen send to admin succeessfully", email));		
 	}
 
 	
