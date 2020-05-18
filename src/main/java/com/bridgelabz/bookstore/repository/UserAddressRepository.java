@@ -15,9 +15,9 @@ import com.bridgelabz.bookstore.entity.UserAddress;
 @Transactional
 public interface UserAddressRepository extends JpaRepository<UserAddress, Long> {
 
-	@Query(value = "select * from userAddress where address_id=?", nativeQuery = true)
+	@Query(value = "select * from user_address where address_id=?", nativeQuery = true)
 	public Optional<UserAddress> findbyId(long addressId);
-	@Query(value = "select * from userAddress where addressType=?", nativeQuery = true)
+	@Query(value = "select * from user_address where address_type=?", nativeQuery = true)
 	public Optional<UserAddress> findbyType(String addressType);
 	@Modifying
 	@Query(value = "insert into user_address (landmark,city,locality,address,addressType,pinCode,name,phonenumber) values (?,?,?,?,?,?,?,?)", nativeQuery = true)
@@ -26,7 +26,7 @@ public interface UserAddressRepository extends JpaRepository<UserAddress, Long> 
 
 	@Modifying
 	@Transactional
-	@Query(value = "delete from user_address where addressId = ? and userId = ?", nativeQuery = true)
+	@Query(value = "delete from user_address where address_id = ? and userId = ?", nativeQuery = true)
 	void removeAddress(long addressId, long userId);
 
 	@Modifying

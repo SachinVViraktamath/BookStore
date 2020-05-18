@@ -210,7 +210,7 @@ public UserAddress getByAddressType(String addressType,String token) throws User
 		
 		Long id=JwtService.parse(token);
 		Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
-		UserAddress address=userAddressrepository.findbyType(addressType).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));;
+		UserAddress address=userAddressrepository.findbyType(addressType).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "address is not added by user"));;
 		return address;
 	}
 
