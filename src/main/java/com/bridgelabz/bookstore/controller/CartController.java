@@ -42,8 +42,8 @@ public ResponseEntity<Response> addBookToCart(@RequestParam("bookId") Long bookI
 
 
 @PutMapping(value="/addQuantity/{token}")
-public ResponseEntity<Response> addBooksQuantityToCart(@PathVariable("token") String token,@RequestParam("bookId") Long bookId) throws Exception {
-	   List<CartDetails> cart = service.addBooksQuantityToCart(token, bookId);
+public ResponseEntity<Response> addBooksQuantityToCart(@PathVariable("token") String token,@RequestParam("cartId") Long cartId) throws Exception {
+	   List<CartDetails> cart = service.addBooksQuantityToCart(token, cartId);
 	   return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "adding book quantity  Successfully", cart));
 		 
 	
@@ -56,7 +56,7 @@ public ResponseEntity<Response> getBooksFromCart(@RequestParam String token) thr
 
 
 @PutMapping(value="/descresingQuantity")
-public ResponseEntity<Response> descBooksQuantityToCart(@RequestHeader(name="token") String token,@RequestParam("bookId") Long cartId) throws Exception {
+public ResponseEntity<Response> descBooksQuantityToCart(@RequestHeader(name="token") String token,@RequestParam("cartId") Long cartId) throws Exception {
 	List<CartDetails> cartdetails = service.decreasingBooksQuantityInCart(token, cartId);		
 	return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "descresing quantity ",cartdetails));	
 }

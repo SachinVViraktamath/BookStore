@@ -141,7 +141,7 @@ public class CartServiceImplementation implements CartService {
 				Book bbb = bookRepository.findById(bookk.getBookId())
 						.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND,
 								ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
-				bbb.setNoOfBooks(bbb.getNoOfBooks() + 1);
+			//	bbb.setNoOfBooks(bbb.getNoOfBooks() + 1);
 				bookRepository.save(bbb);
 				Book bookkk=bookRepository.findById(bookk.getBookId()).orElseThrow(
 						() -> new BookException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
@@ -181,15 +181,15 @@ public class CartServiceImplementation implements CartService {
 			 */
 			userInfo.getBooksCart().add(cartdetails);
 			for (Book bookk : cartdetails.getBooksList()) {
-				Book bbb = bookRepository.findById(bookk.getBookId())
-						.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND,
-								ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
-				bbb.setNoOfBooks(bbb.getNoOfBooks() - 1);
-				bookRepository.save(bbb);
+//				Book bbb = bookRepository.findById(bookk.getBookId())
+//						.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND,
+//								ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
+				//bookk.setNoOfBooks(bookk.getNoOfBooks() - 1);
+				//bookRepository.save(bookk);
 				Book bookkk=bookRepository.findById(bookk.getBookId()).orElseThrow(
 						() -> new BookException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 				Long quant=bookkk.getNoOfBooks();
-				Long quantities=quant-1;
+				Long quantities=quant+1;
 				bookkk.setNoOfBooks(quantities);
 				bookkk.setNoOfBooks(quant);
 				bookRepository.save(bookkk);

@@ -16,7 +16,7 @@ public class BookQuantity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long quantityId;
 	
-	private long bookQty;
+	private Long bookQty;
 	
 	public BookQuantity() {
 		super();
