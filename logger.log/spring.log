@@ -582,3 +582,5 @@ Identify and stop the process that's listening on port 8080 or configure this ap
 2020-05-18 13:45:06.095  INFO 8856 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
 2020-05-18 13:45:06.097  INFO 8856 --- [main] c.b.bookstore.BookStoreApplication       : Started BookStoreApplication in 5.088 seconds (JVM running for 5.78)
 2020-05-18 13:45:46.213  INFO 8856 --- [http-nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2020-05-18 13:45:46.213  INFO 8856 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2020-05-18 13:45:46.219  INFO 8856 --- [http-nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 6 ms
