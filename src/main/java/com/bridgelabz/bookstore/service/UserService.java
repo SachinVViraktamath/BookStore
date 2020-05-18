@@ -31,7 +31,7 @@ public interface UserService {
 
 	UserAddress address(UserAddressDto addressDto, String token) throws UserException;
 
-	UserAddress updateAddress(String token, UserAddressDto addDto, Long addressId) throws UserException;
+	UserAddress updateAddress(String token, UserAddressDto addDto, String addressType) throws UserException;
 
 	public Users addProfile(MultipartFile file, String token)
 			throws AmazonServiceException, SdkClientException, IOException, UserException, S3BucketException;

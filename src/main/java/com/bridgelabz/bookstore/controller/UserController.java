@@ -118,10 +118,10 @@ public class UserController {
 	}
 
 	@ApiOperation(value = "Api to Update User Address", response = Response.class)
-	@PutMapping("/updateaddress/{addressId}")
-	public ResponseEntity<Response> updateAddress(@RequestParam String token, @PathVariable long addressId,
+	@PutMapping("/updateaddress")
+	public ResponseEntity<Response> updateAddress(@RequestParam String token, @RequestParam String  addresstype,
 			@RequestBody UserAddressDto addDto) throws UserException {
-		UserAddress address = service.updateAddress(token, addDto, addressId);
+		UserAddress address = service.updateAddress(token, addDto, addresstype);
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));
 

@@ -956,3 +956,4 @@ Identify and stop the process that's listening on port 8080 or configure this ap
 2020-05-18 14:34:04.833  INFO 17380 --- [http-nio-8080-exec-2] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
 2020-05-18 14:34:04.834  INFO 17380 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
 2020-05-18 14:34:04.840  INFO 17380 --- [http-nio-8080-exec-2] o.s.web.servlet.DispatcherServlet        : Completed initialization in 6 ms
+2020-05-18 16:55:21.729  WARN 17380 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=49m25s535ms475µs700ns).

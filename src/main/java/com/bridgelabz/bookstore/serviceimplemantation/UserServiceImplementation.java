@@ -194,17 +194,16 @@ public class UserServiceImplementation implements UserService {
 
 	@Transactional
 	@Override
-	public UserAddress updateAddress(String token, UserAddressDto addDto, Long addressId) throws UserException {
+	public UserAddress updateAddress(String token, UserAddressDto addDto, String  addressType) throws UserException {
 
 		Long id = JwtService.parse(token);
 		Users user = repository.findbyId(id).orElseThrow(
 				() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
-		UserAddress usersaddress = user.getAddress().stream().filter((address) -> address.getAddressId() == addressId)
+		UserAddress usersaddress = user.getAddress().stream().filter((address) -> address.getAddressType() == addressType)
 				.findFirst().orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Address is not exist"));
 		BeanUtils.copyProperties(addDto, usersaddress);
 		repository.save(user);
-		throw new UserException(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE);
-
+		return usersaddress;
 	}
 public UserAddress getByAddressType(String addressType,String token) throws UserException{
 		
