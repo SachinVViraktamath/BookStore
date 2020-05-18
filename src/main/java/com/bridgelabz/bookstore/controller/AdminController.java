@@ -67,7 +67,7 @@ public class AdminController {
 	}
 	
 	@ApiOperation(value = "Api for Admin email verification",response = Iterable.class)
-	@PutMapping("/restpassword/{token}")
+	@PutMapping("/resetpassword/{token}")
 	public ResponseEntity<Response> resetAdmin(@RequestBody ResetPassword reset ,@PathVariable("token")String token) throws AdminException {
 		
 		boolean update = service.resetPassword(reset,token);	
