@@ -119,14 +119,13 @@ public class UserController {
 
 	@ApiOperation(value = "Api to Update User Address", response = Response.class)
 	@PutMapping("/updateaddress")
-	public ResponseEntity<Response> updateAddress(@RequestParam String token, @RequestParam String  addresstype,
+	public ResponseEntity<Response> updateAddress(@RequestParam String token, @RequestParam String addresstype,
 			@RequestBody UserAddressDto addDto) throws UserException {
 		UserAddress address = service.updateAddress(token, addDto, addresstype);
-		if(address!=null) {
-		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));
+		if (address != null) {
+			return ResponseEntity.ok()
+					.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));
 		}
-		System.out.println("@@@@@");
 		return ResponseEntity.ok().body(new Response(HttpStatus.NOT_FOUND, "address not found", null));
 
 	}
@@ -140,32 +139,36 @@ public class UserController {
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "profile added for user", user));
 
 	}
-	@ApiOperation(value="get  the user details by user id" ,response = Iterable.class) 
+
+	@ApiOperation(value = "get  the user details by user id", response = Iterable.class)
 	@GetMapping("/getuser")
 	public ResponseEntity<Response> addProfile(@RequestHeader("token") String token)
 			throws AmazonServiceException, S3BucketException, SdkClientException, UserException, IOException {
 		Users user = service.getUserById(token);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " user details are...", user));
 
-	} 
+	}
+
 	@ApiOperation(value = "Api to get  by AddressType ", response = Response.class)
 	@GetMapping("/getaddressbyType/{addressType}")
-	public ResponseEntity<Response> getByAddressType(@RequestParam String token, @PathVariable String addressType) throws UserException {
-			UserAddress address= service.getByAddressType(addressType, token);
-			if(address != null) {
-			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "address details fetched for user successfully", address));
-		
-	}
-			return ResponseEntity.ok().body(new Response(HttpStatus.NOT_FOUND, "address not found", null));}
+	public ResponseEntity<Response> getByAddressType(@RequestParam String token, @PathVariable String addressType)
+			throws UserException {
+		UserAddress address = service.getByAddressType(addressType, token);
+		if (address != null) {
+			return ResponseEntity.ok()
+					.body(new Response(HttpStatus.ACCEPTED, "address details fetched for user successfully", address));
 
-	@ApiOperation(value="remove profile to user",response = Iterable.class )
-	@DeleteMapping("/removeprofile")
-	public ResponseEntity<Response> removeProfile(@RequestParam("url") String url,@RequestHeader("token") String token) throws S3BucketException, UserException{
-	Users user=service.removeProfile(token, url);
-		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, "profile pic removed", user));
-	
+		}
+		return ResponseEntity.ok().body(new Response(HttpStatus.NOT_FOUND, "address not found", null));
 	}
-	
+
+	@ApiOperation(value = "remove profile to user", response = Iterable.class)
+	@DeleteMapping("/removeprofile")
+	public ResponseEntity<Response> removeProfile(@RequestParam("url") String url, @RequestHeader("token") String token)
+			throws S3BucketException, UserException {
+		Users user = service.removeProfile(token, url);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "profile pic removed", user));
+
+	}
 
 }

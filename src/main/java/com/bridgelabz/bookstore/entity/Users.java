@@ -64,7 +64,7 @@ public class Users {
 	
 	private String profile; 
 
-	@OneToMany(cascade = CascadeType.ALL, targetEntity = Order.class)
+	@OneToMany(cascade = CascadeType.ALL, targetEntity = Order.class,fetch =FetchType.LAZY )
 	@JoinColumn(name = "userId")
 	private List<Order> orderBookDetails;
 	

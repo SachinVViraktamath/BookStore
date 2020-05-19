@@ -57,7 +57,7 @@ public class CartServiceImplementation implements CartService {
 			cart.setQuantityOfBooks(quantity);
 			cart.setTotalCost(book.getBookPrice());
 			userInfo.getBooksCart().add(cart);
-			userRepository.save(userInfo);
+			 userRepository.save(userInfo);
 			Book bookkk = bookRepository.findById(bookId).orElseThrow(
 					() -> new BookException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 			Long quant = bookkk.getNoOfBooks() - 1;
