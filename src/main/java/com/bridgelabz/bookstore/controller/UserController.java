@@ -125,7 +125,7 @@ public class UserController {
 		if(address!=null) {
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));}
-		return ResponseEntity.ok().body(new Response(HttpStatus.NOT_FOUND, "address not found", null));
+		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_FOUND, "address not found", null));
 
 	}
 
