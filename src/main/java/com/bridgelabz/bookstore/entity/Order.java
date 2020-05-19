@@ -31,11 +31,11 @@ public class Order {
 	
 	private String OrderStatus;
 
-	private Long quantityOfBooks;
+//	private Long quantityOfBooks;
 	
 
 	@ManyToMany(cascade = CascadeType.ALL,targetEntity = Book.class)
-	@JoinColumn(name="book_id")
-	private List<Book> BooksList;
+	@JoinColumn(name="cart_id")
+	private List<CartDetails> cartBook;
 
 }

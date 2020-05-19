@@ -5,6 +5,7 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -77,7 +78,7 @@ public class Users {
 	private List<UserAddress> address;
 
 
-	@ManyToMany(cascade = CascadeType.ALL, targetEntity = CartDetails.class)
+	@ManyToMany(cascade = CascadeType.ALL, targetEntity = CartDetails.class,fetch = FetchType.LAZY)
 	@JoinColumn(name = "userId")
 	private List<CartDetails> booksCart;
 

@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import lombok.Data;
 
@@ -19,10 +20,13 @@ public class CartDetails {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private  Long cartId;
-	private Long QuantityOfBooks;
 	
-	@ManyToMany(cascade = CascadeType.ALL)
-	private List<Book> BooksList;
+	private long quantityOfBooks;
 	
+	private double totalCost;
+	
+	@OneToOne(cascade = CascadeType.ALL,targetEntity = Book.class)
+	private Book books;
+	 
 	
 }
