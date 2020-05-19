@@ -194,26 +194,29 @@ public class UserServiceImplementation implements UserService {
 
 	@Transactional
 	@Override
-	public UserAddress updateAddress(String token, UserAddressDto addDto, String  addressType) throws UserException {
+	public UserAddress updateAddress(String token, UserAddressDto addDto, String addressType) throws UserException {
 
 		Long id = JwtService.parse(token);
 		Users user = repository.findbyId(id).orElseThrow(
 				() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
-		UserAddress usersaddress = user.getAddress().stream().filter((address) -> address.getAddressType() == addressType)
-				.findFirst().orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Address is not exist"));
-		BeanUtils.copyProperties(addDto, usersaddress);
+		UserAddress address = userAddressrepository.findaddressbyType(addressType, id);
+if(address!=null) {
+		BeanUtils.copyProperties(addDto, address);
 		repository.save(user);
-		return usersaddress;
-
+		return address;
+}
+else{
+			return null;
+		}
 	}
-public UserAddress getByAddressType(String addressType,String token) throws UserException{
-		
-		Long id=JwtService.parse(token);
-		Users user=repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
-		UserAddress address=userAddressrepository.findaddressbyType(addressType, id);
+	public UserAddress getByAddressType(String addressType, String token) throws UserException {
+
+		Long id = JwtService.parse(token);
+		Users user = repository.findbyId(id).orElseThrow(
+				() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
+		UserAddress address = userAddressrepository.findaddressbyType(addressType, id);
 		return address;
 	}
-
 
 	@Override
 	@Transactional
@@ -239,5 +242,5 @@ public UserAddress getByAddressType(String addressType,String token) throws User
 				() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 		return user;
 	}
-	
+
 }

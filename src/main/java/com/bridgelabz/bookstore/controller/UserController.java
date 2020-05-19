@@ -124,8 +124,10 @@ public class UserController {
 		UserAddress address = service.updateAddress(token, addDto, addresstype);
 		if(address!=null) {
 		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));}
-		return ResponseEntity.badRequest().body(new Response(HttpStatus.NOT_FOUND, "address not found", null));
+				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));
+		}
+		System.out.println("@@@@@");
+		return ResponseEntity.ok().body(new Response(HttpStatus.NOT_FOUND, "address not found", null));
 
 	}
 
