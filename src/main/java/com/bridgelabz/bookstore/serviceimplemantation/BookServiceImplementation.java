@@ -182,7 +182,7 @@ public class BookServiceImplementation implements BookService {
 		if (book != null) {
 			String bookimage = s3.uploadFileToS3Bucket(file, id);
 			book.setBookimage(bookimage);
-			;
+			
 			bookRepository.save(book);
 		}
 		return null;

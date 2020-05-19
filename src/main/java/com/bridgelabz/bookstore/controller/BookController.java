@@ -142,7 +142,7 @@ public class BookController {
 	
 	@ApiOperation(value="add image to book",response = Iterable.class )
 	@PutMapping("/profile")
-	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws S3BucketException, AmazonServiceException, SdkClientException,BookException, IOException{
+	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestHeader("token") String token) throws S3BucketException, AmazonServiceException, SdkClientException,BookException, IOException{
 		Book book =bookService.addProfile(file, token);
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED,"profile added for book", book));

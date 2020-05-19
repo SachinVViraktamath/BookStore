@@ -2,6 +2,7 @@ package com.bridgelabz.bookstore.utility;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -38,10 +39,10 @@ public class AwsS3Access {
 	}
 
 	@Async
-	public String uploadFileToS3Bucket(MultipartFile multipartFile, Long id) throws S3BucketException {
+	public String uploadFileToS3Bucket(MultipartFile multipartFile, Long id) throws S3BucketException, IOException {
 
 		String fileName = multipartFile.getOriginalFilename();
-		try {
+		
 			// creating the file in the server (temporarily)
 			File file = new File(fileName);
 			FileOutputStream fos = new FileOutputStream(file);
@@ -54,10 +55,8 @@ public class AwsS3Access {
 			String url = "https://" + this.awsS3AudioBucket + ".s3." + region + ".amazonaws.com/" + fileName;
 			file.delete();
 			return url;
-		} catch (Exception ex) {
-			throw new S3BucketException(HttpStatus.NOT_ACCEPTABLE, "Image already exists with same name");
 		}
 
 	}
 
-}
+

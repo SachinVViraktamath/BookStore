@@ -118,7 +118,7 @@ public class SellerController {
 	@ApiOperation(value = "add profile to seller", response = Iterable.class)
 	@PutMapping("/profile")
 	public ResponseEntity<Response> addProfile(@RequestPart("file") MultipartFile file,
-			@RequestParam("token") String token)
+			@RequestHeader("token") String token)
 			throws S3BucketException, AmazonServiceException, SdkClientException, AdminException, IOException {
 		Seller seller = service.addProfile(file, token);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "profile added for seller", seller));

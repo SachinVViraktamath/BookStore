@@ -134,7 +134,7 @@ public class UserController {
 	@ApiOperation(value = "add profile to user", response = Iterable.class)
 	@PutMapping("/profile")
 	public ResponseEntity<Response> addProfile(@RequestPart("file") MultipartFile file,
-			@RequestParam("token") String token)
+			@RequestHeader("token") String token)
 			throws AmazonServiceException, S3BucketException, SdkClientException, UserException, IOException {
 		Users user = service.addProfile(file, token);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "profile added for user", user));

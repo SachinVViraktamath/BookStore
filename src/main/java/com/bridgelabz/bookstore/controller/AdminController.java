@@ -141,7 +141,7 @@ public class AdminController {
 	}
 	@ApiOperation(value="add profile to admin",response = Iterable.class )
 	@PutMapping("/profile")
-	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestParam("token") String token) throws S3BucketException, AmazonServiceException, SdkClientException, AdminException, IOException{
+	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestHeader("token") String token) throws S3BucketException, AmazonServiceException, SdkClientException, AdminException, IOException{
 		Admin admin =service.addProfile(file, token);
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, "profile added for admin", admin));
