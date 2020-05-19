@@ -176,12 +176,26 @@ public class BookServiceImplementation implements BookService {
 	public Book addProfile(MultipartFile file, String token)
 			throws BookException, AmazonServiceException, SdkClientException, IOException, S3BucketException {
 		Long id = JwtService.parse(token);
-		;
+		
 		Book book = bookRepository.getBookById(id)
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
 		if (book != null) {
 			String bookimage = s3.uploadFileToS3Bucket(file, id);
 			book.setBookimage(bookimage);
+			
+			bookRepository.save(book);
+		}
+		return null;
+	}
+
+	@Override
+	public Book removeProfile(String token, String url) throws BookException, S3BucketException {
+		Long id = JwtService.parse(token);
+		Book book = bookRepository.getBookById(id)
+				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
+		if (book != null) {
+			 s3.deleteFileFromS3Bucket(url);
+			book.setBookimage(null);
 			
 			bookRepository.save(book);
 		}

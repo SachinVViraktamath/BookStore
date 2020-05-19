@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,9 +26,11 @@ import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.entity.Admin;
+import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.AdminException;
+import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.SellerException;
@@ -132,5 +135,13 @@ public class SellerController {
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " seller details are...", seller));
 
 	} 
-
+	@ApiOperation(value="remove profile to seller",response = Iterable.class )
+	@DeleteMapping("/removeprofile")
+	public ResponseEntity<Response> removeProfile(@RequestParam("url") String url,@RequestHeader("token") String token) throws S3BucketException{
+	Seller seller=service.removeProfile(token, url);
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, "profile pic removed", seller));
+	
+	}
+	
 }

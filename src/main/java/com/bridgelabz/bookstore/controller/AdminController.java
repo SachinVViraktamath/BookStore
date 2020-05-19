@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -156,7 +157,14 @@ public class AdminController {
 
 	} 
 
+	@ApiOperation(value="remove profile to admin",response = Iterable.class )
+	@DeleteMapping("/removeprofile")
+	public ResponseEntity<Response> removeProfile(@RequestParam("url") String url,@RequestHeader("token") String token) throws S3BucketException, AdminException{
+		Admin admin =service.removeProfile(token, url);
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, "profile pic removed", admin));
 	
+	}
 	
 }
 

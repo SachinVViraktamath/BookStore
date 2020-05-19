@@ -13,6 +13,7 @@ import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.SellerException;
+import com.bridgelabz.bookstore.exception.UserException;
 
 public interface SellerService {
 
@@ -29,4 +30,5 @@ public interface SellerService {
 	public Seller addProfile(MultipartFile file, String token)
 			throws SellerException, AmazonServiceException, SdkClientException, S3BucketException, IOException;
 	public Seller getSellerById(String token)throws SellerException;
+	public Seller removeProfile(String token, String url)throws SellerException, S3BucketException;
 }

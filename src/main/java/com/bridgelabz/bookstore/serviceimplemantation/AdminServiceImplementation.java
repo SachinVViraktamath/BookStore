@@ -181,7 +181,7 @@ public class AdminServiceImplementation implements AdminService {
 	public Admin addProfile(MultipartFile file, String token)
 			throws AdminException, AmazonServiceException, SdkClientException, IOException, S3BucketException {
 		Long id = JwtService.parse(token);
-		;
+		
 		Admin admin = adminRepository.getAdminById(id)
 				.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
 		if (admin != null) {
@@ -198,6 +198,20 @@ public class AdminServiceImplementation implements AdminService {
 		Admin admin = adminRepository.getAdminById(id).orElseThrow(
 				() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages. ADMIN_NOT_FOUND_MSG));
 		return admin;
+	}
+
+	@Override
+	public Admin removeProfile(String token, String url) throws AdminException, S3BucketException {
+Long id = JwtService.parse(token);
+		
+		Admin admin = adminRepository.getAdminById(id)
+				.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
+		if (admin != null) {
+			 s3.deleteFileFromS3Bucket(url);
+			admin.setProfile(null);
+			adminRepository.save(admin);
+		}
+		return null;
 	}
 
 }

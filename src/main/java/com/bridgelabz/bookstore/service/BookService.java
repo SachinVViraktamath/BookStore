@@ -12,6 +12,7 @@ import com.bridgelabz.bookstore.dto.ReviewDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Reviews;
+import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.S3BucketException;
@@ -42,5 +43,5 @@ public interface BookService {
 
 	public Book addProfile(MultipartFile file, String token)
 			throws BookException, AmazonServiceException, SdkClientException, IOException, S3BucketException;
-
+	public Book removeProfile(String token, String url)throws BookException, S3BucketException;
 }

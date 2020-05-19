@@ -18,6 +18,7 @@
 //import com.bridgelabz.bookstore.entity.UserAddress;
 //import com.bridgelabz.bookstore.entity.Users;
 //import com.bridgelabz.bookstore.exception.BookException;
+//import com.bridgelabz.bookstore.exception.ExceptionMessages;
 //import com.bridgelabz.bookstore.exception.UserException;
 //import com.bridgelabz.bookstore.repository.BookRepository;
 //import com.bridgelabz.bookstore.repository.CartRepository;
@@ -43,38 +44,58 @@
 //	CartRepository repository;
 //	@Autowired
 //	OrderRepository orderrepository;
-//@Autowired
-//UserAddressRepository addressRepo;
+//	@Autowired
+//	UserAddressRepository addressRepo;
+//
 //	@Transactional
 //	@Override
 //	public List<Order> orderTheBook(String token, Long cartId, String adressType) throws BookException, UserException {
 //		Long id = JwtService.parse(token);
 //		Users userInfo = userRepository.findbyId(id)
-//				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
+//				  .orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));		
+//		
+//		CartDetails cartdetails = userInfo.getBooksCart().stream().filter((cart) -> cart.getCartId() == cartId)
+//				.findFirst().orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND,ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
+//		
+//		UserAddress address=userInfo.getAddress().stream().filter((add) -> add.getAddressType() == adressType)
+//		.findFirst().orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND,"Please select address "));
+//		
+//		
 //		Order orderDetails = new Order();
 //		
-//		CartDetails details=repository.findbyuserId(cartId,id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "cart does not exist  for user"));
 //		
-//		UserAddress address=addressRepo.findaddressbyType(adressType, id);	
-//		orderDetails.getCartBook().add(details);
-//		orderDetails.setOrderPlaceTime(LocalDateTime.now());		
-//		orderDetails.setOrderStatus(" book ordered ");				
-//	 userInfo.getOrderBookDetails().add(orderDetails);	
-//	 orderrepository.save(orderDetails);
-//	 userRepository.save(userInfo);
-//
-//		 MailService.sendEmail(Constants.VERIFICATION_LINK, Constants.VERIFICATION_MSG, "order verification mail");
-//	 return userInfo.getOrderBookDetails();
-//	}
-//}	
-//		//		Long id = JwtService.parse(token);
+//		
+////		boolean result=true;
+////			result=	repository.findbyuserId( id);
+//			CartDetails details=repository.getCart(cartId).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "cart does not exist"));
+//				ArrayList<CartDetails> list= new ArrayList<>();
+//				list.add(details);
+//			System.out.println("#####");
+//			System.out.println(details);
+//		UserAddress address = addressRepo.findaddressbyType(adressType, id);
+//		orderDetails.setCartBook(list);
+//		System.out.println("#####");
+//		orderDetails.setOrderPlaceTime(LocalDateTime.now());
+//		orderDetails.setOrderStatus(" book ordered ");
+//		System.out.println("*****");
+//		ArrayList<Order> order=new ArrayList<Order>();
+//		userInfo.getOrderBookDetails().add(orderDetails);
+//		System.out.println("!!!!!");
+//		System.out.println();
+//		orderrepository.save(orderDetails);
+//		userRepository.save(userInfo);
+//		return userInfo.getOrderBookDetails();
+//}
+//   }
+////}
+//// Long id = JwtService.parse(token);
 ////		Random random = new Random();
 ////		ArrayList<Book> list = new ArrayList<>();
 ////		Users userInfo = userRepository.findbyId(id)
 ////				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
 ////		Order orderDetails = new Order();
 ////		userInfo.getBooksCart().forEach((cart) -> {
-////			cart..forEach(book -> {
+////			cart.forEach(book -> {
 ////				long orderId;
 ////				list.add(book);
 ////				orderId = random.nextInt(1000);
@@ -98,5 +119,3 @@
 ////		userRepository.save(userInfo);
 ////		return userInfo.getOrderBookDetails();
 ////	}
-//
-//

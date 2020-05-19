@@ -16,6 +16,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.bridgelabz.bookstore.exception.S3BucketException;
 
@@ -56,7 +57,18 @@ public class AwsS3Access {
 			file.delete();
 			return url;
 		}
+	@Async
+	public boolean deleteFileFromS3Bucket(String url) throws S3BucketException {
 
+			
+			String[] urlarr1 = url.split(".amazonaws.com/");
+			String fileName = urlarr1[1];
+			amazonS3.deleteObject(new DeleteObjectRequest(awsS3AudioBucket, fileName));
+			
+			return true;
+			
+	
+	}
 	}
 
 

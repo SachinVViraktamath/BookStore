@@ -155,6 +155,21 @@ public class SellerServiceImplementation implements SellerService {
 				() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
 		return seller;
 	}
+	
+	@Override
+	@Transactional
+	public Seller removeProfile(String url, String token) throws SellerException, S3BucketException {
+		Long id = JwtService.parse(token);
+		
+		Seller seller = repository.getSellerById(id)
+				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
+		if (seller != null) {
+			s3.deleteFileFromS3Bucket(url);
+			seller.setProfile(null);
+			repository.save(seller);
+		}
+		return null;
+	}
 
 
 }

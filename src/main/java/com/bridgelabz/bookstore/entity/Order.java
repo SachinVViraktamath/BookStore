@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import lombok.Data;
@@ -34,7 +35,7 @@ public class Order {
 //	private Long quantityOfBooks;
 	
 
-	@ManyToMany(cascade = CascadeType.ALL,targetEntity = Book.class)
+	@ManyToMany(cascade = CascadeType.ALL,targetEntity = CartDetails.class)
 	@JoinColumn(name="cart_id")
 	private List<CartDetails> cartBook;
 

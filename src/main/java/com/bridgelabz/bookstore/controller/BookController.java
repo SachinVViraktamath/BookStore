@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,9 +22,11 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.ReviewDto;
+import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Reviews;
 import com.bridgelabz.bookstore.entity.Users;
+import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
 import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.SellerException;
@@ -146,6 +149,14 @@ public class BookController {
 		Book book =bookService.addProfile(file, token);
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED,"profile added for book", book));
+	
+	}
+	@ApiOperation(value="remove profile to book",response = Iterable.class )
+	@DeleteMapping("/removeprofile")
+	public ResponseEntity<Response> removeProfile(@RequestParam("url") String url,@RequestHeader("token") String token) throws S3BucketException, BookException{
+		Book book =bookService.removeProfile(token, url);
+		return ResponseEntity.ok()
+				.body(new Response(HttpStatus.ACCEPTED, "profile pic removed", book));
 	
 	}
 	
