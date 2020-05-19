@@ -25,7 +25,8 @@ public class BookQuantity {
 	public BookQuantity(Long quantityOfBook) {
 		super();
 		this.quantityId = quantityOfBook;
+		
 	}
-	
+	     
 		
 }

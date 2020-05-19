@@ -23,6 +23,10 @@ public class Response {
 		this.message = message;
 	}
 
+	public Response(int i, String message2, Object object2) {
+		
+	}
+
 	public HttpStatus getCode() {
 		return code;
 	}

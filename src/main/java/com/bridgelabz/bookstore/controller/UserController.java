@@ -122,8 +122,10 @@ public class UserController {
 	public ResponseEntity<Response> updateAddress(@RequestParam String token, @RequestParam String  addresstype,
 			@RequestBody UserAddressDto addDto) throws UserException {
 		UserAddress address = service.updateAddress(token, addDto, addresstype);
+		if(address!=null) {
 		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));
+				.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.USER_UPDATE_ADDRESS_MESSAGE, address));}
+		return ResponseEntity.ok().body(new Response(HttpStatus.NOT_FOUND, "address not found", null));
 
 	}
 
@@ -146,11 +148,11 @@ public class UserController {
 	} 
 	@ApiOperation(value = "Api to get  by AddressType ", response = Response.class)
 	@GetMapping("/getaddressbyType/{addressType}")
-	public ResponseEntity<Response> getByAddressType(@RequestParam String token, @PathVariable String addressType
-			) throws UserException {
+	public ResponseEntity<Response> getByAddressType(@RequestParam String token, @PathVariable String addressType) throws UserException {
 			UserAddress address= service.getByAddressType(addressType, token);
+			if(address != null) {
 			return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "address details fetched for user successfully", address));
 		
 	}
-
+			return ResponseEntity.ok().body(new Response(HttpStatus.NOT_FOUND, "address not found", null));}
 }
