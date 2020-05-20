@@ -153,8 +153,8 @@ public class BookController {
 	}
 	@ApiOperation(value="remove profile to book",response = Iterable.class )
 	@DeleteMapping("/removeprofile")
-	public ResponseEntity<Response> removeProfile(@RequestParam("url") String url,@RequestHeader("token") String token) throws S3BucketException, BookException{
-		Book book =bookService.removeProfile(token, url);
+	public ResponseEntity<Response> removeProfile(@RequestParam("url") String url,@RequestHeader("token") String token,Long bookId) throws S3BucketException, BookException{
+		Book book =bookService.removeProfile(token, url,bookId);
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, "profile pic removed", book));
 	
