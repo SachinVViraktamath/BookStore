@@ -10,7 +10,7 @@ public class UserAddressDto {
 
 		private String landmark;
 	    private String city;
-	    private String locality;
+	    private String country;
 	    private String address;
 	    private String addressType;
 	    private int pinCode;
