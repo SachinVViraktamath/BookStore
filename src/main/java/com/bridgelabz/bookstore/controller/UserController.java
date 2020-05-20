@@ -65,7 +65,7 @@ public class UserController {
 	}
 
 	@ApiOperation(value = "Api to verify the User ", response = Response.class)
-	@GetMapping("/verifyemail/{token}")
+	@PutMapping("/verifyemail/{token}")
 	public ResponseEntity<Response> verification(@PathVariable("token") String token) throws UserException {
 
 		boolean user = service.verifyUser(token);

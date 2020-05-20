@@ -78,7 +78,7 @@ public class AdminController {
 	}
 	
 	@ApiOperation(value = "Api for Admin email verification",response = Iterable.class)
-	@GetMapping("/verifyemail/{token}")
+	@PutMapping("/verifyemail/token")
 	public ResponseEntity<Response> verficationAdmin( @PathVariable("token") String token) throws AdminException {
 		
 		boolean update = service.verifyAdmin(token);	

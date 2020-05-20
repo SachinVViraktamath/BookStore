@@ -80,7 +80,7 @@ public class SellerController {
 	}
 
 	/* API for verifying the token generated for the email */
-	@GetMapping("/verifyemail/{token}")
+	@PutMapping("/verifyemail/{token}")
 	@ApiOperation(value = "seller email verification", response = Response.class)
 	public ResponseEntity<Response> verify(@PathVariable("token") String token) throws Exception {
 
