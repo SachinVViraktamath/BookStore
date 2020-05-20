@@ -41,7 +41,7 @@ public interface BookService {
 
 	Integer getCountOfBooks();
 
-	public Book addProfile(MultipartFile file, String token)
+	public Book addProfile(MultipartFile file, String token,Long bookId)
 			throws BookException, AmazonServiceException, SdkClientException, IOException, S3BucketException;
-	public Book removeProfile(String token, String url)throws BookException, S3BucketException;
+	public Book removeProfile(String token, String url,Long bookId)throws BookException, S3BucketException;
 }

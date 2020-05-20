@@ -23,12 +23,8 @@ import com.bridgelabz.bookstore.serviceimplemantation.OrderServiceImplementation
 @CrossOrigin
 @RequestMapping("/order")
 public class OrderController {
-
-	
-
 	@Autowired
-	private OrderServiceImplementation service;
-	 
+	private OrderServiceImplementation service;	 
 	@PostMapping("/placeorder")
 	public ResponseEntity<Response> orderTheBooks(@RequestHeader("token") String token,@RequestParam String addressType,@RequestParam("cartId") Long cartId) throws UserException, BookException {
 		List<Order> result = service.orderTheBook( token, cartId, addressType);

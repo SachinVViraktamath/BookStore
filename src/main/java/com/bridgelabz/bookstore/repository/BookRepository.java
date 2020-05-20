@@ -37,5 +37,6 @@ public interface BookRepository extends JpaRepository<Book, Long> {
 	@Query(value = "select count(*) from book where is_book_approved=true", nativeQuery = true)
 	public Integer getTotalCount();
 
-	
+	@Query(value = "select * from book where book_id=? and seller_id=?", nativeQuery = true)
+	public Optional<Book> getBookBysellerId(Long id,Long sellerId);
 }

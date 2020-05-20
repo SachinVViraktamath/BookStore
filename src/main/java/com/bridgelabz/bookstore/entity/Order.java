@@ -32,13 +32,11 @@ public class Order {
 	private LocalDateTime orderPlaceTime;
 	
 	private String OrderStatus;
+	private long orderTackingId;
 
-	private Long quantityOfBooks;
-	
-
-	@ManyToMany(cascade = CascadeType.ALL,targetEntity = Book.class)
+	@ManyToMany(cascade = CascadeType.ALL,targetEntity = CartDetails.class)
 	@JoinColumn(name="bookId")
-	private List<Book> Book;
+	private List<CartDetails> BookDetails;
 	
 	@OneToOne(cascade = CascadeType.ALL,targetEntity = UserAddress.class)
 	@JoinColumn(name="addressId")

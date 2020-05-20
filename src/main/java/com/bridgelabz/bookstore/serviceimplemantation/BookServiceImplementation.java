@@ -173,12 +173,10 @@ public class BookServiceImplementation implements BookService {
 
 	@Override
 	@Transactional
-	public Book addProfile(MultipartFile file, String token)
+	public Book addProfile(MultipartFile file, String token,Long bookId)
 			throws BookException, AmazonServiceException, SdkClientException, IOException, S3BucketException {
 		Long id = JwtService.parse(token);
-		
-		Book book = bookRepository.getBookById(id)
-				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
+		Book book=bookRepository.getBookBysellerId(bookId, id).orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "book not found"));
 		if (book != null) {
 			String bookimage = s3.uploadFileToS3Bucket(file, id);
 			book.setBookimage(bookimage);
@@ -189,10 +187,10 @@ public class BookServiceImplementation implements BookService {
 	}
 
 	@Override
-	public Book removeProfile(String token, String url) throws BookException, S3BucketException {
+	public Book removeProfile(String token, String url,Long bookId) throws BookException, S3BucketException {
 		Long id = JwtService.parse(token);
-		Book book = bookRepository.getBookById(id)
-				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
+		Book book=bookRepository.getBookBysellerId(bookId, id)
+				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "book not found"));
 		if (book != null) {
 			 s3.deleteFileFromS3Bucket(url);
 			book.setBookimage(null);
