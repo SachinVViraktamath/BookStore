@@ -22,7 +22,7 @@ public class UserAddress {
 	 @NotNull
 	 private String city;
 	 @NotNull
-	 private String locality;
+	 private String country;
 	 @NotNull
 	 private String address;
 	 @NotNull
