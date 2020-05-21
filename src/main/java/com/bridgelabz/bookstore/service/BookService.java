@@ -25,7 +25,7 @@ public interface BookService {
 
 	Book displaySingleBook(Long id) throws BookException;
 
-	public Book updateBook(String token, Long bookId, BookDto dto) throws BookException;
+	public Book updateBook(String token, Long bookId, BookDto dto,MultipartFile file) throws BookException,S3BucketException, IOException;
 
 	public Book addBook(String token, BookDto dto,MultipartFile file) throws SellerException, S3BucketException, IOException;
 

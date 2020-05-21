@@ -119,14 +119,17 @@ BookDto dto =objectmapper.readValue(book, BookDto.class);
 				.body(new Response(HttpStatus.ACCEPTED, "book added  successfully", addBook));
 
 	}
-	@PutMapping ("/updateBook")
-	@ApiOperation("updating book details")
-	public ResponseEntity<Response> updateBook(@RequestBody BookDto dto, @RequestHeader("token") String token,@RequestParam Long bookId) throws BookException{
-		Book book=bookService.updateBook(token, bookId, dto);
+	@RequestMapping(value="/updatebook" ,method=RequestMethod.PUT,consumes =MediaType.MULTIPART_FORM_DATA_VALUE)
+	@ApiOperation("seller adding books")
+	public ResponseEntity<Response> updatebook(@RequestParam(required=true ,value="book") String book,@RequestParam Long bookId, @RequestHeader("token") String token,@RequestParam(required=true,value="file") MultipartFile file)
+			throws SellerException, AmazonServiceException, SdkClientException, IOException, S3BucketException, BookException{
+BookDto dto =objectmapper.readValue(book, BookDto.class);
+		Book addBook = bookService.updateBook(token, bookId, dto, file);
 
 		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", book));
-}
+				.body(new Response(HttpStatus.ACCEPTED, "book added  successfully", addBook));
+
+	}
 	
 
 	@ApiOperation(value = "Api for rating and review the book")

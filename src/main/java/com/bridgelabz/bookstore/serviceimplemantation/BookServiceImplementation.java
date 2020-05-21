@@ -125,13 +125,15 @@ public class BookServiceImplementation implements BookService {
 
 	@Override
 	@Transactional
-	public Book updateBook(String token, Long bookId, BookDto dto) throws BookException {
+	public Book updateBook(String token, Long bookId, BookDto dto,MultipartFile file) throws BookException, S3BucketException, IOException {
 		Long id = JwtService.parse(token);
 		sellerRepository.getSellerById(id)
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "Seller is not exist"));
 		Book book = bookRepository.findById(bookId)
 				.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not exist exist to update"));
 		book = mapper.map(dto, Book.class);
+		String bookimage = s3.uploadFileToS3Bucket(file, id);
+		book.setBookimage(bookimage);
 		bookRepository.save(book);
 		return book;
 	}
