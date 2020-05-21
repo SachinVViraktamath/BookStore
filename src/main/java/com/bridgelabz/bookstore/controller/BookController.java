@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,6 +37,7 @@ import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.BookService;
 import com.bridgelabz.bookstore.service.ElasticSearchService;
 import com.bridgelabz.bookstore.service.UserWishListService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.swagger.annotations.ApiOperation;
 
@@ -47,7 +50,7 @@ public class BookController {
 
 	@Autowired
 	private BookService bookService;
-
+ObjectMapper objectmapper=new ObjectMapper();
 
 	@ApiOperation(value = "Api diplay all books", response = Iterable.class)
 	@GetMapping("/displaybooks/{page}")
@@ -105,15 +108,15 @@ public class BookController {
 	}
 
 	/* API for seller adding books for approval */
-	 @PostMapping("/addbook")
+	@RequestMapping(value="/addbook" ,method=RequestMethod.POST,consumes =MediaType.MULTIPART_FORM_DATA_VALUE)
 	@ApiOperation("seller adding books")
-	public ResponseEntity<Response> addBook(@RequestBody(required=true) BookDto book, @RequestParam("token") String token)
-			throws SellerException, AmazonServiceException, SdkClientException, IOException{
-
-		Book addBook = bookService.addBook(token, book);
+	public ResponseEntity<Response> addBook(@RequestParam(required=true ,value="book") String book, @RequestHeader("token") String token,@RequestParam(required=true,value="file") MultipartFile file)
+			throws SellerException, AmazonServiceException, SdkClientException, IOException, S3BucketException{
+BookDto dto =objectmapper.readValue(book, BookDto.class);
+		Book addBook = bookService.addBook(token, dto,file);
 
 		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, "verification mail has send successfully", addBook));
+				.body(new Response(HttpStatus.ACCEPTED, "book added  successfully", addBook));
 
 	}
 	@PutMapping ("/updateBook")
@@ -143,14 +146,7 @@ public class BookController {
 				.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", review));
 }
 	
-	@ApiOperation(value="add image to book",response = Iterable.class )
-	@PutMapping("/profile")
-	public ResponseEntity<Response> addProfile( @RequestPart("file") MultipartFile file ,@RequestHeader("token") String token,@RequestParam("bookId") Long bookId) throws S3BucketException, AmazonServiceException, SdkClientException,BookException, IOException{
-		Book book =bookService.addProfile(file, token,bookId);
-		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED,"profile added for book", book));
 	
-	}
 	@ApiOperation(value="remove profile to book",response = Iterable.class )
 	@DeleteMapping("/removeprofile")
 	public ResponseEntity<Response> removeProfile(@RequestHeader("token") String token,Long bookId) throws S3BucketException, BookException{

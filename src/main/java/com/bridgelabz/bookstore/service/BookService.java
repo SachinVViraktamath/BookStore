@@ -27,7 +27,7 @@ public interface BookService {
 
 	public Book updateBook(String token, Long bookId, BookDto dto) throws BookException;
 
-	public Book addBook(String token, BookDto dto) throws SellerException;
+	public Book addBook(String token, BookDto dto,MultipartFile file) throws SellerException, S3BucketException, IOException;
 
 	public void writeReviewAndRating(String token, ReviewDto rrDTO, Long bookId) throws UserException, BookException;
 
@@ -41,7 +41,6 @@ public interface BookService {
 
 	Integer getCountOfBooks();
 
-	public Book addProfile(MultipartFile file, String token,Long bookId)
-			throws BookException, AmazonServiceException, SdkClientException, IOException, S3BucketException;
+	
 	public Book removeProfile(String token,Long bookId)throws BookException, S3BucketException;
 }

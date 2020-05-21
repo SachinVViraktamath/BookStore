@@ -102,7 +102,7 @@ public class BookServiceImplementation implements BookService {
 
 	@Override
 	@Transactional
-	public Book addBook(String token, BookDto dto) throws SellerException {
+	public Book addBook(String token, BookDto dto,MultipartFile file) throws SellerException, S3BucketException, IOException {
 		Book book = new Book();
 		Long id = JwtService.parse(token);
 		Seller seller = sellerRepository.getSellerById(id)
@@ -112,6 +112,8 @@ public class BookServiceImplementation implements BookService {
 			book = mapper.map(dto, Book.class);
 			book.setBookCreatedAt(LocalDateTime.now());
 			seller.getSellerBooks().add(book);
+			String bookimage = s3.uploadFileToS3Bucket(file, id);
+			book.setBookimage(bookimage);
 			bookRepository.save(book);
 		//	MailService.sendEmailToAdmin(seller.getEmail(), book);
 			return book;
@@ -171,20 +173,7 @@ public class BookServiceImplementation implements BookService {
 
 	}
 
-	@Override
-	@Transactional
-	public Book addProfile(MultipartFile file, String token,Long bookId)
-			throws BookException, AmazonServiceException, SdkClientException, IOException, S3BucketException {
-		Long id = JwtService.parse(token);
-		Book book=bookRepository.getBookBysellerId(bookId, id).orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "book not found"));
-		if (book != null) {
-			String bookimage = s3.uploadFileToS3Bucket(file, id);
-			book.setBookimage(bookimage);
-			
-			bookRepository.save(book);
-		}
-		return null;
-	}
+	
 
 	@Override
 	public Book removeProfile(String token,Long bookId) throws BookException, S3BucketException {
