@@ -39,5 +39,5 @@ public interface UserService {
 	public Users getUserById(String token) throws UserException;
 
 	public UserAddress getByAddressType(String addressType, String token) throws UserException;
-	public Users removeProfile(String token, String url)throws UserException, S3BucketException;
+	public Users removeProfile(String token)throws UserException, S3BucketException;
 }

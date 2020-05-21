@@ -159,8 +159,8 @@ public class AdminController {
 
 	@ApiOperation(value="remove profile to admin",response = Iterable.class )
 	@DeleteMapping("/removeprofile")
-	public ResponseEntity<Response> removeProfile(@RequestParam("url") String url,@RequestHeader("token") String token) throws S3BucketException, AdminException{
-		Admin admin =service.removeProfile(token, url);
+	public ResponseEntity<Response> removeProfile(@RequestHeader("token") String token) throws S3BucketException, AdminException{
+		Admin admin =service.removeProfile(token);
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, "profile pic removed", admin));
 	

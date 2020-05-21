@@ -244,10 +244,11 @@ else{
 	}
 	@Override
 	@Transactional
-	public Users removeProfile(String token, String url) throws UserException, S3BucketException {
+	public Users removeProfile(String token) throws UserException, S3BucketException {
 		Long id = JwtService.parse(token);		
 		Users user = repository.findbyId(id).orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 		if (user != null) {
+			String url=user.getProfile();
 			 s3.deleteFileFromS3Bucket(url);
 			user.setProfile(null);
 			repository.save(user);

@@ -187,11 +187,12 @@ public class BookServiceImplementation implements BookService {
 	}
 
 	@Override
-	public Book removeProfile(String token, String url,Long bookId) throws BookException, S3BucketException {
+	public Book removeProfile(String token,Long bookId) throws BookException, S3BucketException {
 		Long id = JwtService.parse(token);
 		Book book=bookRepository.getBookBysellerId(bookId, id)
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "book not found"));
 		if (book != null) {
+			String url=book.getBookName();
 			 s3.deleteFileFromS3Bucket(url);
 			book.setBookimage(null);
 			

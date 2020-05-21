@@ -164,9 +164,9 @@ public class UserController {
 
 	@ApiOperation(value = "remove profile to user", response = Iterable.class)
 	@DeleteMapping("/removeprofile")
-	public ResponseEntity<Response> removeProfile(@RequestParam("url") String url, @RequestHeader("token") String token)
+	public ResponseEntity<Response> removeProfile( @RequestHeader("token") String token)
 			throws S3BucketException, UserException {
-		Users user = service.removeProfile(token, url);
+		Users user = service.removeProfile(token);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "profile pic removed", user));
 
 	}

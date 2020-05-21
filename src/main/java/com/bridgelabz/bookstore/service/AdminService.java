@@ -41,5 +41,5 @@ public interface AdminService {
  	public List<Book> getNotapproveBook(String token) throws AdminException;
  	public Admin addProfile(MultipartFile file,String  token)throws AdminException,S3BucketException,AmazonServiceException, SdkClientException, IOException;
  	public Admin getAdminById(String token) throws AdminException;
- 	public Admin removeProfile(String token, String url)throws AdminException, S3BucketException;
+ 	public Admin removeProfile(String token)throws AdminException, S3BucketException;
 }

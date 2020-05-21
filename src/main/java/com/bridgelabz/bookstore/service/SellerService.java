@@ -30,5 +30,5 @@ public interface SellerService {
 	public Seller addProfile(MultipartFile file, String token)
 			throws SellerException, AmazonServiceException, SdkClientException, S3BucketException, IOException;
 	public Seller getSellerById(String token)throws SellerException;
-	public Seller removeProfile(String token, String url)throws SellerException, S3BucketException;
+	public Seller removeProfile(String token)throws SellerException, S3BucketException;
 }

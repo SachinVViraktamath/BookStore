@@ -158,12 +158,13 @@ public class SellerServiceImplementation implements SellerService {
 	
 	@Override
 	@Transactional
-	public Seller removeProfile(String url, String token) throws SellerException, S3BucketException {
+	public Seller removeProfile( String token) throws SellerException, S3BucketException {
 		Long id = JwtService.parse(token);
 		
 		Seller seller = repository.getSellerById(id)
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
 		if (seller != null) {
+			String url=seller.getProfile();
 			s3.deleteFileFromS3Bucket(url);
 			seller.setProfile(null);
 			repository.save(seller);

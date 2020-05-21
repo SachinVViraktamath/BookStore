@@ -201,12 +201,13 @@ public class AdminServiceImplementation implements AdminService {
 	}
 
 	@Override
-	public Admin removeProfile(String token, String url) throws AdminException, S3BucketException {
+	public Admin removeProfile(String token) throws AdminException, S3BucketException {
 Long id = JwtService.parse(token);
 		
 		Admin admin = adminRepository.getAdminById(id)
 				.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
 		if (admin != null) {
+			String url=admin.getProfile();
 			 s3.deleteFileFromS3Bucket(url);
 			admin.setProfile(null);
 			adminRepository.save(admin);

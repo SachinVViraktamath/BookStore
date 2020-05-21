@@ -137,8 +137,8 @@ public class SellerController {
 	} 
 	@ApiOperation(value="remove profile to seller",response = Iterable.class )
 	@DeleteMapping("/removeprofile")
-	public ResponseEntity<Response> removeProfile(@RequestParam("url") String url,@RequestHeader("token") String token) throws S3BucketException{
-	Seller seller=service.removeProfile(token, url);
+	public ResponseEntity<Response> removeProfile(@RequestHeader("token") String token) throws S3BucketException{
+	Seller seller=service.removeProfile(token);
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, "profile pic removed", seller));
 	

@@ -43,5 +43,5 @@ public interface BookService {
 
 	public Book addProfile(MultipartFile file, String token,Long bookId)
 			throws BookException, AmazonServiceException, SdkClientException, IOException, S3BucketException;
-	public Book removeProfile(String token, String url,Long bookId)throws BookException, S3BucketException;
+	public Book removeProfile(String token,Long bookId)throws BookException, S3BucketException;
 }
