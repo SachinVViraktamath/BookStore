@@ -30,14 +30,14 @@ public class OrderServiceImplementation implements OrderService {
 
 	@Transactional
 	@Override
-	public List<Order> orderTheBooks(String token, double total, double deliveryCharge, String adressType)
+	public Order orderTheBooks(String token, double total, double deliveryCharge, String adressType)
 			throws UserException, BookException {
-
 
 		Long id = JwtService.parse(token);
 		Random random = new Random();
 		List<CartDetails> CartBookItems = new ArrayList<CartDetails>();
-		long orderId;
+		 long orderId;
+		 long  bookorderId;
 		Order orderDetails = new Order();
 		Users userInfo = userRepository.findbyId(id)
 				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
@@ -52,28 +52,27 @@ public class OrderServiceImplementation implements OrderService {
 
 		if (orderId < 0) {
 			orderId = orderId * -1;
+		
 		}
+		bookorderId=orderId;
 		orderDetails.setOrderPlaceTime(LocalDateTime.now());
-		orderDetails.setOrderStatus("pending");
+		orderDetails.setOrderStatus("success");
 		orderDetails.setOrderTackingId(orderId);
 		orderDetails.setAddress(address);
 		orderDetails.setTotalCost(totalAmount);
 		orderDetails.setBookDetails(CartBookItems);
 		userInfo.getOrderBookDetails().add(orderDetails);
-		userRepository.save(userInfo);
-		List<Order> orders=new ArrayList<Order>();	
+		userRepository.save(userInfo);		
 		Users userInfom = userRepository.findbyId(id)
 				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
-		for (Order orderdetail:	userInfom.getOrderBookDetails())
-		{
-		if(orderdetail.getOrderTackingId()==orderId)
-		{
-			orders.add(orderdetail);
-		}
-		}
-			return orders;
-
-	}
+		
+		Order orderdetails = userInfom.getOrderBookDetails().stream().filter((ordr) -> ordr.getOrderTackingId() == bookorderId)
+				.findFirst().orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND,
+						"order details is not found"));
+	
+		
+			return orderdetails;
+			}
 
 	
 	

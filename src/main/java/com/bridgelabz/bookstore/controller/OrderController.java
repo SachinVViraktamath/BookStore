@@ -37,7 +37,7 @@ public class OrderController {
 	
 	@PostMapping("/placeorders")
 	public ResponseEntity<Response> orderTheBooks(@RequestHeader("token") String token,@RequestParam double total,@RequestParam double deliveryCharge, @RequestParam String addressType) throws UserException, BookException {
-		List<Order> result = service.orderTheBooks( token, total,deliveryCharge, addressType);
+		Order result = service.orderTheBooks( token, total,deliveryCharge, addressType);
 		return ResponseEntity.ok()
 				.body(new Response(HttpStatus.ACCEPTED, "Order Successfully done", result));
 	}
