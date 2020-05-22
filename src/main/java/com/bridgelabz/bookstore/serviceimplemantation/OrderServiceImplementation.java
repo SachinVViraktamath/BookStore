@@ -30,37 +30,52 @@ public class OrderServiceImplementation implements OrderService {
 
 	@Transactional
 	@Override
-	public List<Order> orderTheBook(String token, Long cartId, String adressType) throws BookException, UserException {
+	public List<Order> orderTheBooks(String token, double total, double deliveryCharge, String adressType)
+			throws UserException, BookException {
 
 		Long id = JwtService.parse(token);
-		Random random = new Random();		
-		long orderId;		
+		Random random = new Random();
+		List<CartDetails> CartBookItems = new ArrayList<CartDetails>();
+		long orderId;
 		Order orderDetails = new Order();
 		Users userInfo = userRepository.findbyId(id)
 				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
 		UserAddress address = userInfo.getAddress().stream().filter((add) -> add.getAddressType().equals(adressType))
 				.findFirst().orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "This address is not exist"));
-
-		CartDetails cartdetails = userInfo.getBooksCart().stream().filter((cart) -> cart.getCartId() == cartId)
-				.findFirst().orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND,
-						"Cart is not exist "));
+		double totalAmount = (total + deliveryCharge);
+		for (CartDetails cartItems : userInfo.getBooksCart()) {
+			CartBookItems.add(cartItems);
+		}
+		userInfo.getBooksCart().removeAll(CartBookItems);
 		orderId = random.nextInt(1000000);
 
 		if (orderId < 0) {
 			orderId = orderId * -1;
 		}
-		//orderDetails.setOrderId(orderId);
 		orderDetails.setOrderPlaceTime(LocalDateTime.now());
 		orderDetails.setOrderStatus("pending");
 		orderDetails.setOrderTackingId(orderId);
 		orderDetails.setAddress(address);
-		ArrayList<CartDetails> bookkss = new ArrayList<CartDetails>();
-		bookkss.add(cartdetails);
-		System.out.println(bookkss);
-		orderDetails.setBookDetails(bookkss);
+		orderDetails.setTotalCost(totalAmount);
+		orderDetails.setBookDetails(CartBookItems);
 		userInfo.getOrderBookDetails().add(orderDetails);
-		userRepository.save(userInfo);	
+		userRepository.save(userInfo);
 		return userInfo.getOrderBookDetails();
 
+	}
+
+	
+	
+	
+	@Transactional
+	@Override
+	public List<Order> orderDetails(String token) throws UserException{
+		Long id = JwtService.parse(token);
+		Users userInfo = userRepository.findbyId(id)
+				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
+		
+		return userInfo.getOrderBookDetails();
+	
+		
 	}
 }
