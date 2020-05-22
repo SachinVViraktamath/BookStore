@@ -33,6 +33,7 @@ public class OrderServiceImplementation implements OrderService {
 	public List<Order> orderTheBooks(String token, double total, double deliveryCharge, String adressType)
 			throws UserException, BookException {
 
+
 		Long id = JwtService.parse(token);
 		Random random = new Random();
 		List<CartDetails> CartBookItems = new ArrayList<CartDetails>();
@@ -60,7 +61,17 @@ public class OrderServiceImplementation implements OrderService {
 		orderDetails.setBookDetails(CartBookItems);
 		userInfo.getOrderBookDetails().add(orderDetails);
 		userRepository.save(userInfo);
-		return userInfo.getOrderBookDetails();
+		List<Order> orders=new ArrayList<Order>();	
+		Users userInfom = userRepository.findbyId(id)
+				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "user does not exist"));
+		for (Order orderdetail:	userInfom.getOrderBookDetails())
+		{
+		if(orderdetail.getOrderTackingId()==orderId)
+		{
+			orders.add(orderdetail);
+		}
+		}
+			return orders;
 
 	}
 
