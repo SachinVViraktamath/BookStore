@@ -142,7 +142,7 @@ public class UserController {
 
 	@ApiOperation(value = "get  the user details by user id", response = Iterable.class)
 	@GetMapping("/getuser")
-	public ResponseEntity<Response> addProfile(@RequestHeader("token") String token)
+	public ResponseEntity<Response> getUser(@RequestHeader("token") String token)
 			throws AmazonServiceException, S3BucketException, SdkClientException, UserException, IOException {
 		Users user = service.getUserById(token);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " user details are...", user));

@@ -129,7 +129,7 @@ public class SellerController {
 	}
 	@ApiOperation(value="get  the seller details by seller id" ,response = Iterable.class) 
 	@GetMapping("/getseller")
-	public ResponseEntity<Response> addProfile(@RequestHeader("token") String token)
+	public ResponseEntity<Response> getSeller(@RequestHeader("token") String token)
 		 {
 		Seller seller = service.getSellerById(token);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " seller details are...", seller));
