@@ -132,7 +132,7 @@ public class AdminController {
 	}
 	
 	@ApiOperation(value = "Api for get not approve books from admin",response = Iterable.class)
-	@PostMapping("/get_not_approvebooks")
+	@GetMapping("/get_not_approvebooks")
 	public ResponseEntity<Response> approveTheBook(@RequestParam("bookid") String token) throws BookException, AdminException {
 		List<Book> result = service.getNotapproveBook(token);					
 			return ResponseEntity.ok()
@@ -150,7 +150,7 @@ public class AdminController {
 	}
 	@ApiOperation(value="get  the admin details by admin id" ,response = Iterable.class) 
 	@GetMapping("/getadmin")
-	public ResponseEntity<Response> addProfile(@RequestHeader("token") String token)
+	public ResponseEntity<Response> getAdmin(@RequestHeader("token") String token)
 			throws AdminException {
 		Admin admin = service.getAdminById(token);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, " admin details are...", admin));
