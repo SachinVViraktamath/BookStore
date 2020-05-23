@@ -32,6 +32,7 @@ import com.bridgelabz.bookstore.repository.ReviewRepository;
 import com.bridgelabz.bookstore.repository.SellerRepository;
 import com.bridgelabz.bookstore.repository.UserRepository;
 import com.bridgelabz.bookstore.service.BookService;
+import com.bridgelabz.bookstore.service.ElasticSearchService;
 import com.bridgelabz.bookstore.utility.AwsS3Access;
 import com.bridgelabz.bookstore.utility.JwtService;
 import com.bridgelabz.bookstore.utility.MailService;
@@ -48,6 +49,8 @@ public class BookServiceImplementation implements BookService {
 	private UserRepository userRepository;
 	@Autowired
 	private ReviewRepository reviwRepository;
+	@Autowired
+	private ElasticSearchService elasticService;
 	@Autowired
 	ModelMapper mapper;
 	@Autowired
@@ -102,7 +105,8 @@ public class BookServiceImplementation implements BookService {
 
 	@Override
 	@Transactional
-	public Book addBook(String token, BookDto dto,MultipartFile file) throws SellerException, S3BucketException, IOException {
+	public Book addBook(String token, BookDto dto, MultipartFile file)
+			throws SellerException, S3BucketException, IOException {
 		Book book = new Book();
 		Long id = JwtService.parse(token);
 		Seller seller = sellerRepository.getSellerById(id)
@@ -114,18 +118,22 @@ public class BookServiceImplementation implements BookService {
 			seller.getSellerBooks().add(book);
 			String bookimage = s3.uploadFileToS3Bucket(file, id);
 			book.setBookimage(bookimage);
-			bookRepository.save(book);
-		//	MailService.sendEmailToAdmin(seller.getEmail(), book);
+			Book book1 = bookRepository.save(book);
+			// MailService.sendEmailToAdmin(seller.getEmail(), book);
+			try {
+				elasticService.addBook(book1);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			return book;
 		} else {
-			throw new SellerException(HttpStatus.NOT_FOUND, "no a verified seller ");
+			throw new SellerException(HttpStatus.NOT_FOUND, "not a verified seller ");
 		}
-
 	}
 
 	@Override
 	@Transactional
-	public Book updateBook(String token, Long bookId, BookDto dto,MultipartFile file) throws BookException, S3BucketException, IOException {
+	public Book updateBook(String token, Long bookId, BookDto dto, MultipartFile file) throws Exception {
 		Long id = JwtService.parse(token);
 		sellerRepository.getSellerById(id)
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "Seller is not exist"));
@@ -134,7 +142,12 @@ public class BookServiceImplementation implements BookService {
 		book = mapper.map(dto, Book.class);
 		String bookimage = s3.uploadFileToS3Bucket(file, id);
 		book.setBookimage(bookimage);
-		bookRepository.save(book);
+		Book book1 = bookRepository.save(book);
+		try {
+			elasticService.updateBook(book1);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		return book;
 	}
 
@@ -175,21 +188,31 @@ public class BookServiceImplementation implements BookService {
 
 	}
 
-	
-
 	@Override
-	public Book removeProfile(String token,Long bookId) throws BookException, S3BucketException {
+	@Transactional
+	public Book removeProfile(String token, Long bookId) throws BookException, S3BucketException {
 		Long id = JwtService.parse(token);
-		Book book=bookRepository.getBookBysellerId(bookId, id)
+		Book book = bookRepository.getBookBysellerId(bookId, id)
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "book not found"));
 		if (book != null) {
-			String url=book.getBookName();
-			 s3.deleteFileFromS3Bucket(url);
+			String url = book.getBookName();
+			s3.deleteFileFromS3Bucket(url);
 			book.setBookimage(null);
-			
+
 			bookRepository.save(book);
 		}
 		return null;
 	}
 
+	@Override
+	@Transactional
+	public List<Book> getEachApprovedBook(String token) throws UserException {
+		Long id = JwtService.parse(token);
+
+		Users userInfo = userRepository.findbyId(id).orElseThrow(
+				() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
+
+		List<Book> result = bookRepository.getAllAprrovedBooks();
+		return result;
+	}
 }

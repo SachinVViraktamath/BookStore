@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -40,7 +41,7 @@ public class Book {
 	private String bookimage;
  
 	private String bookDescription;
-
+	@Column(columnDefinition = "boolean Default true", nullable = false)
 	private boolean isBookApproved;
 
 	private LocalDateTime bookCreatedAt;

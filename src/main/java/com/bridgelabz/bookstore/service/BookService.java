@@ -25,7 +25,7 @@ public interface BookService {
 
 	Book displaySingleBook(Long id) throws BookException;
 
-	public Book updateBook(String token, Long bookId, BookDto dto,MultipartFile file) throws BookException,S3BucketException, IOException;
+	public Book updateBook(String token, Long bookId, BookDto dto,MultipartFile file) throws Exception;
 
 	public Book addBook(String token, BookDto dto,MultipartFile file) throws SellerException, S3BucketException, IOException;
 
@@ -40,7 +40,7 @@ public interface BookService {
 	List<Book> sortByNewest(Integer page) throws BookException;
 
 	Integer getCountOfBooks();
-
+	public List<Book> getEachApprovedBook(String token) throws UserException;
 	
 	public Book removeProfile(String token,Long bookId)throws BookException, S3BucketException;
 }

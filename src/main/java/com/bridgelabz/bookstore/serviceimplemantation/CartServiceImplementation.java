@@ -88,6 +88,15 @@ public class CartServiceImplementation implements CartService {
 			bookkk.setNoOfBooks(quant);
 			bookRepository.save(bookkk);
 		}
+		
+		for (Book wishlistBooks : userInfo.getWhilistBooks()) {
+			if (wishlistBooks.getBookId().equals(bookId)) {
+				userInfo.getWhilistBooks().remove(book);
+				userRepository.save(userInfo);
+				break;
+			} 
+		}
+		
 		return userInfo.getBooksCart();
 	}
 

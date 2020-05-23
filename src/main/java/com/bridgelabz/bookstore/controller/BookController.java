@@ -50,7 +50,7 @@ public class BookController {
 
 	@Autowired
 	private BookService bookService;
-ObjectMapper objectmapper=new ObjectMapper();
+	ObjectMapper objectmapper = new ObjectMapper();
 
 	@ApiOperation(value = "Api diplay all books", response = Iterable.class)
 	@GetMapping("/displaybooks/{page}")
@@ -108,55 +108,55 @@ ObjectMapper objectmapper=new ObjectMapper();
 	}
 
 	/* API for seller adding books for approval */
-	@RequestMapping(value="/addbook" ,method=RequestMethod.POST,consumes =MediaType.MULTIPART_FORM_DATA_VALUE)
+	@RequestMapping(value = "/addbook", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@ApiOperation("seller adding books")
-	public ResponseEntity<Response> addBook(@RequestParam(required=true ,value="book") String book, @RequestHeader("token") String token,@RequestParam(required=true,value="file") MultipartFile file)
-			throws SellerException, AmazonServiceException, SdkClientException, IOException, S3BucketException{
-BookDto dto =objectmapper.readValue(book, BookDto.class);
-		Book addBook = bookService.addBook(token, dto,file);
+	public ResponseEntity<Response> addBook(@RequestParam(required = true, value = "book") String book,
+			@RequestHeader("token") String token, @RequestParam(required = true, value = "file") MultipartFile file)
+			throws SellerException, AmazonServiceException, SdkClientException, IOException, S3BucketException {
+		BookDto dto = objectmapper.readValue(book, BookDto.class);
+		Book addBook = bookService.addBook(token, dto, file);
 
-		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, "book added  successfully", addBook));
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "book added  successfully", addBook));
 
 	}
-	@RequestMapping(value="/updatebook" ,method=RequestMethod.PUT,consumes =MediaType.MULTIPART_FORM_DATA_VALUE)
-	@ApiOperation("seller adding books")
-	public ResponseEntity<Response> updatebook(@RequestParam(required=true ,value="book") String book,@RequestParam Long bookId, @RequestHeader("token") String token,@RequestParam(required=true,value="file") MultipartFile file)
-			throws SellerException, AmazonServiceException, SdkClientException, IOException, S3BucketException, BookException{
-BookDto dto =objectmapper.readValue(book, BookDto.class);
+
+	@RequestMapping(value = "/updatebook", method = RequestMethod.PUT, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@ApiOperation("seller updating books")
+	public ResponseEntity<Response> updatebook(@RequestParam(required = true, value = "book") String book,
+			@RequestParam Long bookId, @RequestHeader("token") String token,
+			@RequestParam(required = true, value = "file") MultipartFile file) throws Exception {
+		BookDto dto = objectmapper.readValue(book, BookDto.class);
 		Book addBook = bookService.updateBook(token, bookId, dto, file);
 
-		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, "book added  successfully", addBook));
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "book updated  successfully", addBook));
 
 	}
-	
 
 	@ApiOperation(value = "Api for rating and review the book")
 	@PutMapping("/ratingreview")
-	public ResponseEntity<Response> writeReview(@RequestBody ReviewDto review,@RequestHeader(name="token") String token, @RequestParam Long bookId) throws UserException, BookException{
+	public ResponseEntity<Response> writeReview(@RequestBody ReviewDto review,
+			@RequestHeader(name = "token") String token, @RequestParam Long bookId)
+			throws UserException, BookException {
 		bookService.writeReviewAndRating(token, review, bookId);
 
-		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", review));
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "review added for book successfully", review));
 
 	}
+
 	@ApiOperation(value = "Api for view all rating and review")
 	@GetMapping("/viewratings")
-	public ResponseEntity<Response> getBookRatingAndReview(@RequestParam Long bookId){
-		List<Reviews> review= bookService.getRatingsOfBook(bookId);
-			return	ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, "bookDetails are verified", review));
-}
-	
-	
-	@ApiOperation(value="remove profile to book",response = Iterable.class )
-	@DeleteMapping("/removeprofile")
-	public ResponseEntity<Response> removeProfile(@RequestHeader("token") String token,Long bookId) throws S3BucketException, BookException{
-		Book book =bookService.removeProfile(token,bookId);
-		return ResponseEntity.ok()
-				.body(new Response(HttpStatus.ACCEPTED, "profile pic removed", book));
-	
+	public ResponseEntity<Response> getBookRatingAndReview(@RequestParam Long bookId) {
+		List<Reviews> review = bookService.getRatingsOfBook(bookId);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "reviews for a book are....", review));
 	}
-	
+
+	@ApiOperation(value = "remove profile to book", response = Iterable.class)
+	@DeleteMapping("/removeprofile")
+	public ResponseEntity<Response> removeProfile(@RequestHeader("token") String token, Long bookId)
+			throws S3BucketException, BookException {
+		Book book = bookService.removeProfile(token, bookId);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "profile pic removed", book));
+
+	}
+
 }
