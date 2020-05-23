@@ -30,6 +30,7 @@ import com.bridgelabz.bookstore.entity.Reviews;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
+import com.bridgelabz.bookstore.exception.ExceptionMessages;
 import com.bridgelabz.bookstore.exception.S3BucketException;
 import com.bridgelabz.bookstore.exception.SellerException;
 import com.bridgelabz.bookstore.exception.UserException;
@@ -156,6 +157,16 @@ public class BookController {
 			throws S3BucketException, BookException {
 		Book book = bookService.removeProfile(token, bookId);
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "profile pic removed", book));
+
+	}
+
+	@ApiOperation(value = "Api for getting approved books",response = Iterable.class)
+	@GetMapping("/approvedbooks")
+	public ResponseEntity<Response> getApprovedBooks(@RequestParam("token") String token) throws BookException, UserException {
+		List<Book> result = bookService.getEachApprovedBook(token);					
+			return ResponseEntity.ok()
+					.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.BOOK_APPROVED, result));
+		
 
 	}
 
