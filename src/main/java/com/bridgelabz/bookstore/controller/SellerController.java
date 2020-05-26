@@ -1,6 +1,7 @@
 package com.bridgelabz.bookstore.controller;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -143,5 +144,14 @@ public class SellerController {
 				.body(new Response(HttpStatus.ACCEPTED, "profile pic removed", seller));
 	
 	}
+	
+	@ApiOperation(value = "list of books added by seller", response = Iterable.class)
+	@GetMapping("/bookslist")
+	public ResponseEntity<Response> getBooks(@RequestParam String token) throws SellerException{
+		List<Book> books = service.getBooks(token);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "List of books added by seller ",books));			 
+		
+	}
+	
 	
 }

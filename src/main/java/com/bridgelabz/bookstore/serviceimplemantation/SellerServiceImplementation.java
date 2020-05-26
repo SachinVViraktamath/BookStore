@@ -2,6 +2,7 @@ package com.bridgelabz.bookstore.serviceimplemantation;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import javax.transaction.Transactional;
 import org.modelmapper.ModelMapper;
@@ -18,6 +19,7 @@ import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.entity.Admin;
+import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.AdminException;
@@ -105,7 +107,8 @@ public class SellerServiceImplementation implements SellerService {
 		return true;
 
 	}
-
+@Override
+@Transactional
 	public Seller forgetPassword(String email) {
 		Seller seller = repository.getSeller(email)
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
@@ -170,6 +173,16 @@ public class SellerServiceImplementation implements SellerService {
 			repository.save(seller);
 		}
 		return null;
+	}
+	
+	@Transactional
+	@Override
+	public List<Book> getBooks(String token) throws SellerException{	
+		Long id = JwtService.parse(token);	
+		Seller seller = repository.getSellerById(id)
+				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "No books added by seller"));
+	
+		return seller.getSellerBooks();
 	}
 
 

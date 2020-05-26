@@ -1,6 +1,7 @@
 package com.bridgelabz.bookstore.service;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -9,6 +10,7 @@ import com.amazonaws.SdkClientException;
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
+import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.S3BucketException;
@@ -31,4 +33,8 @@ public interface SellerService {
 			throws SellerException, AmazonServiceException, SdkClientException, S3BucketException, IOException;
 	public Seller getSellerById(String token)throws SellerException;
 	public Seller removeProfile(String token)throws SellerException, S3BucketException;
+	
+	
+	public List<Book> getBooks(String token) throws SellerException;
+
 }
