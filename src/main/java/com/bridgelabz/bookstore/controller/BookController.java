@@ -27,6 +27,7 @@ import com.bridgelabz.bookstore.dto.ReviewDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Reviews;
+import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.entity.Users;
 import com.bridgelabz.bookstore.exception.AdminException;
 import com.bridgelabz.bookstore.exception.BookException;
@@ -166,5 +167,13 @@ public class BookController {
 		
 
 	}
+	@ApiOperation(value = "add image to book", response = Iterable.class)
+	@PutMapping("/profile")
+	public ResponseEntity<Response> addProfile(@RequestPart("file") MultipartFile file,
+			@RequestParam("bookId") Long bookId)
+			throws S3BucketException, AmazonServiceException, SdkClientException, AdminException, IOException, BookException {
+		Book book = bookService.addProfile(bookId, file);
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "profile added for book", book));
 
+	}
 }
