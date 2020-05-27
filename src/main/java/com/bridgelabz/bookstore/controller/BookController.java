@@ -110,7 +110,7 @@ public class BookController {
 	}
 
 	/* API for seller adding books for approval */
-	@RequestMapping(value = "/addbook", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PostMapping( "/addbook" )
 	@ApiOperation("seller adding books")
 	public ResponseEntity<Response> addBook(@RequestBody(required = true) BookDto dto,
 			@RequestHeader("token") String token)
