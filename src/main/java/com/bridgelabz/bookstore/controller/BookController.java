@@ -111,7 +111,7 @@ public class BookController {
 	/* API for seller adding books for approval */
 	@RequestMapping(value = "/addbook", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@ApiOperation("seller adding books")
-	public ResponseEntity<Response> addBook(@RequestParam(required = true, value = "book") String book,
+	public ResponseEntity<Response> addBook(@RequestPart(required = true, value = "book") String book,
 			@RequestHeader("token") String token, @RequestParam(required = true, value = "file") MultipartFile file)
 			throws SellerException, AmazonServiceException, SdkClientException, IOException, S3BucketException {
 		BookDto dto = objectmapper.readValue(book, BookDto.class);
@@ -123,7 +123,7 @@ public class BookController {
 
 	@RequestMapping(value = "/updatebook", method = RequestMethod.PUT, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@ApiOperation("seller updating books")
-	public ResponseEntity<Response> updatebook(@RequestParam(required = true, value = "book") String book,
+	public ResponseEntity<Response> updatebook(@RequestPart(required = true, value = "book") String book,
 			@RequestParam Long bookId, @RequestHeader("token") String token,
 			@RequestParam(required = true, value = "file") MultipartFile file) throws Exception {
 		BookDto dto = objectmapper.readValue(book, BookDto.class);

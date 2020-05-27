@@ -23,6 +23,8 @@ public class RegisterDto {
 	private String password;
 	
 	private Long mobileNumber;
-	
+
+
+
 
 }
