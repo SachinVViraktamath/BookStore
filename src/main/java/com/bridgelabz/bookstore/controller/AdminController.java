@@ -123,17 +123,22 @@ public class AdminController {
 	
 	@ApiOperation(value = "Api for approve books from admin",response = Iterable.class)
 	@PostMapping("/approvebook")
-	public ResponseEntity<Response> approveTheBook(@RequestParam("bookid") Long bookId) throws BookException {
-		boolean result = service.approveBook(bookId);		
-			return ResponseEntity.ok()
+	public ResponseEntity<Response> approveTheBook(@RequestParam("bookid") Long bookId,@RequestParam("approveStatus")String approveStatus) throws BookException {
+		boolean result = service.approveBook(bookId,approveStatus);		
+			if(result) {
+		return ResponseEntity.ok()
 					.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.BOOK_APPROVED, result));
-		
+			}else {
+				return ResponseEntity.ok()
+						.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.BOOK_HOLD_REJECT, result));
+			
+			}
 
 	}
 	
 	@ApiOperation(value = "Api for get not approve books from admin",response = Iterable.class)
 	@GetMapping("/get_not_approvebooks")
-	public ResponseEntity<Response> approveTheBook(@RequestParam("bookid") String token) throws BookException, AdminException {
+	public ResponseEntity<Response> approveTheBook(@RequestHeader("token") String token) throws BookException, AdminException {
 		List<Book> result = service.getNotapproveBook(token);					
 			return ResponseEntity.ok()
 					.body(new Response(HttpStatus.ACCEPTED, ExceptionMessages.BOOK_APPROVED, result));

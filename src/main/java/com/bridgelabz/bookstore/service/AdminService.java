@@ -34,7 +34,7 @@ public interface AdminService {
 
 	boolean updatepassword(AdminPasswordDto information, String token) throws AdminException;
 
-	boolean approveBook(Long id) throws BookException;
+	boolean approveBook(Long id,String approveStatus) throws BookException;
  	
 	public boolean resetPassword(ResetPassword update,String token) throws AdminException;
 	

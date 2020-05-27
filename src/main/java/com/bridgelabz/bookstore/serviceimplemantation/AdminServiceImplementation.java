@@ -154,19 +154,26 @@ public class AdminServiceImplementation implements AdminService {
 
 	@Transactional
 	@Override
-	public boolean approveBook(Long BookId) throws BookException {
-
+	public boolean approveBook(Long BookId,String approveStatus) throws BookException {	
+		boolean value;
 		bookRepository.getBookById(BookId)
 				.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, ExceptionMessages.BOOK_NOT_FOUND));
-		boolean isbookApproved = adminRepository.approvedTheBook(BookId);
-		if (isbookApproved) {
-			return true;
-		} else {
-			throw new BookException(HttpStatus.NOT_FOUND, ExceptionMessages.BOOK_NOT_APPROVED);
+		if(approveStatus.equals(Constants.HOLD)) {
+		 value = false;
+		 adminRepository.approvedTheBook(BookId,approveStatus,value);
+		 return false;
+		}else if(approveStatus.equals(Constants.REJECTED))
+		{
+			value = false;
+			 adminRepository.approvedTheBook(BookId,approveStatus,value);
+			 return false;
+		}else {
+			value = true;
+			 adminRepository.approvedTheBook(BookId,approveStatus,value);
+			 return true;
 		}
-
+		
 	}
-
 	@Transactional
 	@Override
 	public List<Book> getNotapproveBook(String token) throws AdminException {

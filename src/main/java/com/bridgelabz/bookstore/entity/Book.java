@@ -39,7 +39,7 @@ public class Book {
 	private Long noOfBooks;
 	private double bookPrice;
 	private String bookimage;
- 
+	private String approveStatus;
 	private String bookDescription;
 	@Column(columnDefinition = "boolean Default true", nullable = false)
 	private boolean isBookApproved;

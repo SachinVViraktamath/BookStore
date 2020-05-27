@@ -14,7 +14,8 @@ public class ExceptionMessages {
 	public static final String PASSWORD_UPDATE_SUCCESFULL= "Passwor updated successfully";
 	public static final String BOOK_APPROVED= "This book succesfully approved by admin";
 	public static final String ALREADY_VERIFIED_EMAIL= "This book succesfully approved by admin";
-	
+	public static final String BOOK_HOLD_REJECT= "Book is not approved may it is in Hold or Rejected ";
+
 	
 	public static final String SELLER_NOT_FOUND_MSG = "Seller is not exist";
 	public static final String SELLER_ALREADY_MSG = "seller  already exist";

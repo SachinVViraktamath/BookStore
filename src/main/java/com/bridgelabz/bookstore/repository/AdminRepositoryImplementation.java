@@ -1,8 +1,7 @@
 package com.bridgelabz.bookstore.repository;
 
-import java.util.List;
-import java.util.Optional;
 
+import java.util.Optional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -11,7 +10,7 @@ import org.hibernate.Session;
 import org.springframework.stereotype.Repository;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.entity.Admin;
-import com.bridgelabz.bookstore.entity.Book;
+
 
 @Repository
 public class AdminRepositoryImplementation implements AdminRepository {
@@ -75,12 +74,13 @@ public class AdminRepositoryImplementation implements AdminRepository {
 	}
 
 	@Override
-	public boolean approvedTheBook(Long BookId) {
-		boolean value = true;
+	public boolean approvedTheBook(Long BookId,String approveStatus,boolean value) {
+	//	boolean value = true;
 		Session session = entityManager.unwrap(Session.class);
-		Query q = session.createQuery("update Book set isBookApproved =:p" + " " + " " + "where bookId=:i");
+		Query q = session.createQuery("update Book set isBookApproved =:p ,approveStatus=:a" + " " + " " + "where bookId=:i");
 		q.setParameter("p", value);
 		q.setParameter("i", BookId);
+		q.setParameter("a", approveStatus);
 		int status = q.executeUpdate();
 		if (status > 0) {
 			return true;
@@ -89,6 +89,7 @@ public class AdminRepositoryImplementation implements AdminRepository {
 		}
 
 	}
+
 
 	@Override
 	public boolean restAdminPassword(String information,Long id) {

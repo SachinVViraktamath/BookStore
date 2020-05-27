@@ -5,6 +5,7 @@ import java.util.Optional;
 import com.bridgelabz.bookstore.dto.AdminPasswordDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
+import com.bridgelabz.bookstore.exception.BookException;
 
 public interface AdminRepository {
 
@@ -20,6 +21,6 @@ public interface AdminRepository {
 
 	boolean upDateAdminPassword(AdminPasswordDto information,Long id);
 
-	boolean approvedTheBook(Long BookId);
+	boolean approvedTheBook(Long BookId,String approveStatus,boolean value);
 
 }
