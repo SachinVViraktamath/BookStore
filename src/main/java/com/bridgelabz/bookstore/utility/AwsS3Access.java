@@ -40,7 +40,7 @@ public class AwsS3Access {
 	}
 
 	@Async
-	public String uploadFileToS3Bucket(MultipartFile multipartFile, Long id) throws S3BucketException, IOException {
+	public String uploadFileToS3Bucket(MultipartFile multipartFile) throws S3BucketException, IOException {
 
 		String fileName = multipartFile.getOriginalFilename();
 		

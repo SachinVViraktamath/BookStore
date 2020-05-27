@@ -105,7 +105,7 @@ public class BookServiceImplementation implements BookService {
 
 	@Override
 	@Transactional
-	public Book addBook(String token, BookDto dto, MultipartFile file)
+	public Book addBook(String token, BookDto dto)
 			throws SellerException, S3BucketException, IOException {
 		Book book = new Book();
 		Long id = JwtService.parse(token);
@@ -115,9 +115,7 @@ public class BookServiceImplementation implements BookService {
 		if (seller.isVerified() == true) {
 			book = mapper.map(dto, Book.class);
 			book.setBookCreatedAt(LocalDateTime.now());
-			seller.getSellerBooks().add(book);
-			String bookimage = s3.uploadFileToS3Bucket(file, id);
-			book.setBookimage(bookimage);
+			seller.getSellerBooks().add(book);			
 			Book book1 = bookRepository.save(book);
 			// MailService.sendEmailToAdmin(seller.getEmail(), book);
 			try {
@@ -133,15 +131,13 @@ public class BookServiceImplementation implements BookService {
 
 	@Override
 	@Transactional
-	public Book updateBook(String token, Long bookId, BookDto dto, MultipartFile file) throws Exception {
+	public Book updateBook(String token, Long bookId, BookDto dto) throws Exception {
 		Long id = JwtService.parse(token);
 		sellerRepository.getSellerById(id)
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "Seller is not exist"));
 		Book book = bookRepository.findById(bookId)
 				.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not exist exist to update"));
-		book = mapper.map(dto, Book.class);
-		String bookimage = s3.uploadFileToS3Bucket(file, id);
-		book.setBookimage(bookimage);
+		book = mapper.map(dto, Book.class);		
 		Book book1 = bookRepository.save(book);
 		try {
 			elasticService.updateBook(book1);
@@ -214,5 +210,20 @@ public class BookServiceImplementation implements BookService {
 
 		List<Book> result = bookRepository.getAllAprrovedBooks();
 		return result;
+	}
+
+	
+
+	@Override
+	@Transactional
+	public Book addProfile(Long  id, MultipartFile file) throws BookException, S3BucketException, IOException {
+		Book book = bookRepository.findById(id)
+				.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book not found"));
+		if (book != null) {
+			String bookimage = s3.uploadFileToS3Bucket(file);
+			book.setBookimage(bookimage);
+			bookRepository.save(book);
+		}
+		return book;
 	}
 }

@@ -192,7 +192,7 @@ public class AdminServiceImplementation implements AdminService {
 		Admin admin = adminRepository.getAdminById(id)
 				.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
 		if (admin != null) {
-			String profile = s3.uploadFileToS3Bucket(file, id);
+			String profile = s3.uploadFileToS3Bucket(file);
 			admin.setProfile(profile);
 			adminRepository.save(admin);
 		}

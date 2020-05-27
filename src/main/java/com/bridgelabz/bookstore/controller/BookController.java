@@ -111,11 +111,10 @@ public class BookController {
 	/* API for seller adding books for approval */
 	@RequestMapping(value = "/addbook", method = RequestMethod.POST, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@ApiOperation("seller adding books")
-	public ResponseEntity<Response> addBook(@RequestPart(required = true, value = "book") String book,
-			@RequestHeader("token") String token, @RequestParam(required = true, value = "file") MultipartFile file)
+	public ResponseEntity<Response> addBook(@RequestBody(required = true) BookDto dto,
+			@RequestHeader("token") String token)
 			throws SellerException, AmazonServiceException, SdkClientException, IOException, S3BucketException {
-		BookDto dto = objectmapper.readValue(book, BookDto.class);
-		Book addBook = bookService.addBook(token, dto, file);
+		Book addBook = bookService.addBook(token, dto);
 
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "book added  successfully", addBook));
 
@@ -123,11 +122,9 @@ public class BookController {
 
 	@RequestMapping(value = "/updatebook", method = RequestMethod.PUT, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 	@ApiOperation("seller updating books")
-	public ResponseEntity<Response> updatebook(@RequestPart(required = true, value = "book") String book,
-			@RequestParam Long bookId, @RequestHeader("token") String token,
-			@RequestParam(required = true, value = "file") MultipartFile file) throws Exception {
-		BookDto dto = objectmapper.readValue(book, BookDto.class);
-		Book addBook = bookService.updateBook(token, bookId, dto, file);
+	public ResponseEntity<Response> updatebook(@RequestBody(required = true) BookDto dto,
+			@RequestParam Long bookId, @RequestHeader("token") String token) throws Exception {
+		Book addBook = bookService.updateBook(token, bookId, dto);
 
 		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "book updated  successfully", addBook));
 

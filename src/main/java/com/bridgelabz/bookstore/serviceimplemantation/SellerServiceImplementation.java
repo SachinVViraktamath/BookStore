@@ -139,11 +139,11 @@ public class SellerServiceImplementation implements SellerService {
 	public Seller addProfile(MultipartFile file, String token) throws SellerException, AmazonServiceException,
 			SdkClientException, IOException, SellerException, S3BucketException {
 		Long id = JwtService.parse(token);
-		;
+		
 		Seller seller = repository.getSellerById(id)
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, ExceptionMessages.SELLER_NOT_FOUND_MSG));
 		if (seller != null) {
-			String profile = s3.uploadFileToS3Bucket(file, id);
+			String profile = s3.uploadFileToS3Bucket(file);
 			seller.setProfile(profile);
 			repository.save(seller);
 		}

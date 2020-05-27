@@ -227,7 +227,7 @@ else{
 		Users user = repository.findbyId(id).orElseThrow(
 				() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
 		if (user != null) {
-			String profile = s3.uploadFileToS3Bucket(file, id);
+			String profile = s3.uploadFileToS3Bucket(file);
 			user.setProfile(profile);
 			repository.save(user);
 		}
