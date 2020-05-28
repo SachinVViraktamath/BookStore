@@ -35,7 +35,7 @@ public class BookServiceImplementationTest {
 		dto.setBookDescription("ccccccc");
 		dto.setBookName("aaaaaa");
 		dto.setBookPrice(100);
-		dto.setNoOfBooks(10);
+		dto.setNoOfBooks(10L);
 		Mockito.when(service.addBook(
 				"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6M30.J7bbcxYxFXsWCWRY3DMIuSAFZ_PwgmvlOShtZh5ew2UEOFwiSnfIyon0sUYuZx5RO1VVwHvFFOhEfl5a-daIOA",
 				dto)).thenReturn(book);
@@ -51,7 +51,7 @@ public void updateBook() throws Exception {
 	dto.setBookDescription("asha");
 	dto.setBookName("hfkhfk");
 	dto.setBookPrice(100);
-	dto.setNoOfBooks(10);
+	dto.setNoOfBooks(10L);
 	Mockito.when(service.updateBook(
 			"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpZCI6M30.J7bbcxYxFXsWCWRY3DMIuSAFZ_PwgmvlOShtZh5ew2UEOFwiSnfIyon0sUYuZx5RO1VVwHvFFOhEfl5a-daIOA",
 			1L,dto)).thenReturn(book);

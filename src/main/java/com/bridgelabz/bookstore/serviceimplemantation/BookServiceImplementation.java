@@ -115,6 +115,7 @@ public class BookServiceImplementation implements BookService {
 		if (seller.isVerified() == true) {
 			book = mapper.map(dto, Book.class);
 			book.setBookCreatedAt(LocalDateTime.now());
+			book.setApproveStatus("Hold");
 			seller.getSellerBooks().add(book);			
 			Book book1 = bookRepository.save(book);
 			// MailService.sendEmailToAdmin(seller.getEmail(), book);
@@ -135,12 +136,18 @@ public class BookServiceImplementation implements BookService {
 		Long id = JwtService.parse(token);
 		sellerRepository.getSellerById(id)
 				.orElseThrow(() -> new SellerException(HttpStatus.NOT_FOUND, "Seller is not exist"));
-		Book book = bookRepository.findById(bookId)
+		Book book = bookRepository.getBookBysellerId(bookId, id)
 				.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not exist exist to update"));
-		book = mapper.map(dto, Book.class);		
-		Book book1 = bookRepository.save(book);
+		book.setBookAuthor(dto.getBookAuthor());
+		book.setBookDescription(dto.getBookDescription());
+		book.setBookName(dto.getBookName());
+		book.setBookPrice(dto.getBookPrice());
+		book.setNoOfBooks(dto.getNoOfBooks());
+		book.setBookCreatedAt(LocalDateTime.now());
+		bookRepository.saveAndFlush(book);
+
 		try {
-			elasticService.updateBook(book1);
+			elasticService.updateBook(book);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
