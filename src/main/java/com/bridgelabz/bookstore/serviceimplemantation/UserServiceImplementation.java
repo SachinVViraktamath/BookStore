@@ -119,18 +119,15 @@ public class UserServiceImplementation implements UserService {
 	public Users login(LoginDto login) throws UserException {
 		Users user = repository.FindByEmail(login.getEmail()).orElseThrow(
 				() -> new UserException(HttpStatus.NOT_FOUND, ExceptionMessages.USER_NOT_FOUND_EXCEPTION_MESSAGE));
-		if ((user.isIsverified() == true) && (bcrypt.matches(login.getPassword(), user.getPassword()))) {
-			String mailResponse = Constants.USER_VERIFICATION_LINK
-					+ JwtService.generateToken(user.getUserId(), Token.WITH_EXPIRE_TIME);
-			MailService.sendEmail(login.getEmail(), Constants.USER_VERIFICATION_MSG, mailResponse);
 
-			return user;
+		if ((user.isIsverified() == true) && (bcrypt.matches(login.getPassword(), user.getPassword())) != true) {
+
+			
+			throw new UserException(HttpStatus.ACCEPTED, "please enter correct email and password ");
+
 		}
-		String mailResponse = Constants.USER_VERIFICATION_LINK
-				+ JwtService.generateToken(user.getUserId(), Token.WITH_EXPIRE_TIME);
-		MailService.sendEmail(login.getEmail(), Constants.USER_VERIFICATION_MSG, mailResponse);
-		throw new UserException(HttpStatus.ACCEPTED, ExceptionMessages.USER_FAILED_LOGIN_STATUS);
-	}
+		return user;}
+
 
 	@Transactional
 	@Override

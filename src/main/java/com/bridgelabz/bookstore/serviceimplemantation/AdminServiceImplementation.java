@@ -84,25 +84,19 @@ public class AdminServiceImplementation implements AdminService {
 		}
 		return adminRepository.verify(id);
 	}
-
 	@Transactional
 	@Override
 	public Admin loginToAdmin(LoginDto information) throws AdminException {
 		Admin user = adminRepository.getAdmin(information.getEmail())
 				.orElseThrow(() -> new AdminException(HttpStatus.NOT_FOUND, ExceptionMessages.ADMIN_NOT_FOUND_MSG));
 
-		if ((user.isIsverified() == true)
-				&& (passwordEncryption.matches(information.getPassword(), user.getPassword()))) {
-			String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,
-					JwtService.generateToken(user.getAdminId(), Token.WITH_EXPIRE_TIME));
-			MailService.sendEmail(information.getEmail(), Constants.VERIFICATION_MSG, mailResponse);
-			return user;
-		}
-		String mailResponse = response.fromMessage(Constants.VERIFICATION_LINK,
-				JwtService.generateToken(user.getAdminId(), Token.WITH_EXPIRE_TIME));
-		MailService.sendEmail(information.getEmail(), Constants.VERIFICATION_MSG, mailResponse);
-		throw new AdminException(HttpStatus.ACCEPTED, ExceptionMessages.LOGIN_UNSUCCESSFUL);
+		if ((user.isIsverified() == true) && (passwordEncryption.matches(information.getPassword(), user.getPassword())) != true) {
 
+			
+			throw new AdminException(HttpStatus.ACCEPTED, "please enter correct email and password ");
+
+		}
+		return user;
 	}
 
 	@Transactional

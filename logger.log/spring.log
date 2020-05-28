@@ -4978,3 +4978,14 @@ Identify and stop the process that's listening on port 8080 or configure this ap
 2020-05-27 18:13:39.689  INFO 15092 --- [main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: forgotPasswordUsingPOST_1
 2020-05-27 18:13:39.693  INFO 15092 --- [main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: removeProfileUsingDELETE_2
 2020-05-27 18:13:39.699  INFO 15092 --- [main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: addProfileUsingPUT_3
+2020-05-27 18:13:39.706  INFO 15092 --- [main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: registrationUsingPOST_1
+2020-05-27 18:13:39.708  INFO 15092 --- [main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: removeProfileUsingDELETE_3
+2020-05-27 18:13:39.709  INFO 15092 --- [main] .d.s.w.r.o.CachingOperationNameGenerator : Generating unique operation named: resetPasswordUsingPUT_1
+2020-05-27 18:13:39.738  INFO 15092 --- [main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port(s): 8080 (http) with context path ''
+2020-05-27 18:13:39.740  INFO 15092 --- [main] c.b.bookstore.BookStoreApplication       : Started BookStoreApplication in 5.515 seconds (JVM running for 6.2)
+2020-05-27 21:03:09.107  WARN 15092 --- [HikariPool-1 housekeeper] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Thread starvation or clock leap detected (housekeeper delta=12m1s719ms311µs900ns).
+2020-05-27 23:42:49.456  INFO 15092 --- [RMI TCP Connection(334)-127.0.0.1] inMXBeanRegistrar$SpringApplicationAdmin : Application shutdown requested.
+2020-05-27 23:42:49.531  INFO 15092 --- [RMI TCP Connection(334)-127.0.0.1] o.s.s.concurrent.ThreadPoolTaskExecutor  : Shutting down ExecutorService 'applicationTaskExecutor'
+2020-05-27 23:42:49.547  INFO 15092 --- [RMI TCP Connection(334)-127.0.0.1] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2020-05-27 23:42:49.577  INFO 15092 --- [RMI TCP Connection(334)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2020-05-27 23:42:49.587  INFO 15092 --- [RMI TCP Connection(334)-127.0.0.1] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
