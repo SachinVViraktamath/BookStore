@@ -121,7 +121,7 @@ public class BookController {
 
 	}
 
-	@RequestMapping(value = "/updatebook", method = RequestMethod.PUT, consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PutMapping(value = "/updatebook")
 	@ApiOperation("seller updating books")
 	public ResponseEntity<Response> updatebook(@RequestBody(required = true) BookDto dto,
 			@RequestParam Long bookId, @RequestHeader("token") String token) throws Exception {
