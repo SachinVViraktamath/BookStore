@@ -17,6 +17,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -45,15 +47,11 @@ public class Book {
 	private boolean isBookApproved;
 
 	private LocalDateTime bookCreatedAt;
-	
-	@OneToMany(cascade = CascadeType.ALL)
-	@JoinColumn(name = "bookId")
+//	@JsonBackReference
+	@ManyToMany(cascade = CascadeType.ALL )
 	private List<Reviews> reviewRating;
 
-	/*@ManyToMany(cascade = CascadeType.ALL)
-	private List<Book> BooksList;
-	*/
-
+	
 
 
 }

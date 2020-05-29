@@ -29,7 +29,7 @@ public interface BookService {
 
 	public Book addBook(String token, BookDto dto) throws SellerException, S3BucketException, IOException;
 
-	public void writeReviewAndRating(String token, ReviewDto rrDTO, Long bookId) throws UserException, BookException;
+	public List<Reviews>  writeReviewAndRating(String token, ReviewDto rrDTO, Long bookId) throws UserException, BookException;
 
 	public List<Reviews> getRatingsOfBook(Long bookId);
 

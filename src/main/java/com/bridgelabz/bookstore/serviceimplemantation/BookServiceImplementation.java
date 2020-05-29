@@ -18,6 +18,8 @@ import com.bridgelabz.bookstore.dto.BookDto;
 import com.bridgelabz.bookstore.dto.ReviewDto;
 import com.bridgelabz.bookstore.entity.Admin;
 import com.bridgelabz.bookstore.entity.Book;
+import com.bridgelabz.bookstore.entity.CartDetails;
+import com.bridgelabz.bookstore.entity.Order;
 import com.bridgelabz.bookstore.entity.Reviews;
 import com.bridgelabz.bookstore.entity.Seller;
 import com.bridgelabz.bookstore.entity.Users;
@@ -105,8 +107,7 @@ public class BookServiceImplementation implements BookService {
 
 	@Override
 	@Transactional
-	public Book addBook(String token, BookDto dto)
-			throws SellerException, S3BucketException, IOException {
+	public Book addBook(String token, BookDto dto) throws SellerException, S3BucketException, IOException {
 		Book book = new Book();
 		Long id = JwtService.parse(token);
 		Seller seller = sellerRepository.getSellerById(id)
@@ -116,7 +117,7 @@ public class BookServiceImplementation implements BookService {
 			book = mapper.map(dto, Book.class);
 			book.setBookCreatedAt(LocalDateTime.now());
 			book.setApproveStatus("Hold");
-			seller.getSellerBooks().add(book);			
+			seller.getSellerBooks().add(book);
 			Book book1 = bookRepository.save(book);
 			// MailService.sendEmailToAdmin(seller.getEmail(), book);
 			try {
@@ -156,24 +157,44 @@ public class BookServiceImplementation implements BookService {
 
 	@Override
 	@Transactional
-	public void writeReviewAndRating(String token, ReviewDto review, Long bookId) throws UserException, BookException {
+	public List<Reviews> writeReviewAndRating(String token, ReviewDto review, Long bookId)
+			throws UserException, BookException {
 		Long id = JwtService.parse(token);
-
+		int flag = 0;
 		Users user = userRepository.findById(id)
 				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Please Verify Email Before Login"));
 		Book books = bookRepository.findById(bookId)
 				.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not exist exist to update"));
+		if (user.getOrderBookDetails().isEmpty()) {
+			throw new BookException(HttpStatus.NOT_FOUND,
+					"Please purchase this book first then and rating and reviews");
+		} else if (user.getOrderBookDetails() != null) {
+			for (Order order : user.getOrderBookDetails()) {
+				for (CartDetails cartdetails : order.getBookDetails()) {
+					Book book = cartdetails.getBooks();
+					if (book.getBookId() == bookId) {
+						flag = 1;
+						break;
+					}
+				}
+			}
+		} else {
+			throw new BookException(HttpStatus.NOT_FOUND,
+					"Please purchase this book first then and rating and reviews");
+		}
+		if (flag == 1) {
 
-		boolean notExist = books.getReviewRating().stream().noneMatch(reviews -> reviews.getUser().getUserId() == id);
-		if (notExist) {
-			Reviews reviewdetails = new Reviews(review);
-			reviewdetails.setUser(user);
+			Reviews reviewdetails = new Reviews();
+			reviewdetails = mapper.map(review, Reviews.class);
+			// reviewdetails.setUser(user);
+			reviewdetails.setCreatedAt(LocalDateTime.now());
 			books.getReviewRating().add(reviewdetails);
-			reviwRepository.save(reviewdetails);
 			bookRepository.save(books);
 
+		} else {
+			throw new BookException(HttpStatus.BAD_REQUEST, "book is not purchased by user");
 		}
-
+		return books.getReviewRating();
 	}
 
 	@Override
@@ -219,11 +240,9 @@ public class BookServiceImplementation implements BookService {
 		return result;
 	}
 
-	
-
 	@Override
 	@Transactional
-	public Book addProfile(Long  id, MultipartFile file) throws BookException, S3BucketException, IOException {
+	public Book addProfile(Long id, MultipartFile file) throws BookException, S3BucketException, IOException {
 		Book book = bookRepository.findById(id)
 				.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book not found"));
 		if (book != null) {

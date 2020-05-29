@@ -132,7 +132,7 @@ public class BookController {
 	}
 
 	@ApiOperation(value = "Api for rating and review the book")
-	@PutMapping("/ratingreview")
+	@PostMapping("/ratingreview")
 	public ResponseEntity<Response> writeReview(@RequestBody ReviewDto review,
 			@RequestHeader(name = "token") String token, @RequestParam Long bookId)
 			throws UserException, BookException {
