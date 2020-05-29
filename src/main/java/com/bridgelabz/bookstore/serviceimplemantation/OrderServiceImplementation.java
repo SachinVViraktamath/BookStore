@@ -73,10 +73,6 @@ public class OrderServiceImplementation implements OrderService {
 		
 			return orderdetails;
 			}
-
-	
-	
-	
 	@Transactional
 	@Override
 	public List<Order> orderDetails(String token) throws UserException{

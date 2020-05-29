@@ -154,7 +154,7 @@ public class BookServiceImplementation implements BookService {
 		}
 		return book;
 	}
-
+         
 	@Override
 	@Transactional
 	public List<Reviews> writeReviewAndRating(String token, ReviewDto review, Long bookId)
@@ -165,7 +165,7 @@ public class BookServiceImplementation implements BookService {
 				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Please Verify Email Before Login"));
 		Book books = bookRepository.findById(bookId)
 				.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not exist exist to update"));
-		if (user.getOrderBookDetails().isEmpty()) {
+		if (user.getOrderBookDetails().isEmpty()) {  
 			throw new BookException(HttpStatus.NOT_FOUND,
 					"Please purchase this book first then and rating and reviews");
 		} else if (user.getOrderBookDetails() != null) {
@@ -186,7 +186,7 @@ public class BookServiceImplementation implements BookService {
 
 			Reviews reviewdetails = new Reviews();
 			reviewdetails = mapper.map(review, Reviews.class);
-			// reviewdetails.setUser(user);
+		
 			reviewdetails.setCreatedAt(LocalDateTime.now());
 			books.getReviewRating().add(reviewdetails);
 			bookRepository.save(books);
@@ -196,14 +196,14 @@ public class BookServiceImplementation implements BookService {
 		}
 		return books.getReviewRating();
 	}
-
+    
 	@Override
 	@Transactional
 	public List<Reviews> getRatingsOfBook(Long bookId) {
 		Book book = null;
 		try {
 			book = bookRepository.findById(bookId)
-					.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not exist exist to update"));
+					.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not  exist to update"));
 		} catch (BookException e) {
 			e.printStackTrace();
 		}

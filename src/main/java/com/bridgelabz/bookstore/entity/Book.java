@@ -25,8 +25,6 @@ import lombok.ToString;
 
 @Entity
 @Data
-
-
 @Table(name = "book")
 public class Book {
 
@@ -47,8 +45,8 @@ public class Book {
 	private boolean isBookApproved;
 
 	private LocalDateTime bookCreatedAt;
-//	@JsonBackReference
-	@ManyToMany(cascade = CascadeType.ALL )
+
+	@ManyToMany(cascade = CascadeType.ALL)
 	private List<Reviews> reviewRating;
 
 	

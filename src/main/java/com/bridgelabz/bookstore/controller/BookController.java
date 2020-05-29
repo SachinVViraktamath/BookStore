@@ -136,9 +136,9 @@ public class BookController {
 	public ResponseEntity<Response> writeReview(@RequestBody ReviewDto review,
 			@RequestHeader(name = "token") String token, @RequestParam Long bookId)
 			throws UserException, BookException {
-		bookService.writeReviewAndRating(token, review, bookId);
+		List<Reviews> reviews=bookService.writeReviewAndRating(token, review, bookId);
 
-		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "review added for book successfully", review));
+		return ResponseEntity.ok().body(new Response(HttpStatus.ACCEPTED, "review added for book successfully", reviews));
 
 	}
 
