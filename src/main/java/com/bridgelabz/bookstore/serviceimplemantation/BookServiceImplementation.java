@@ -186,7 +186,7 @@ public class BookServiceImplementation implements BookService {
 
 			Reviews reviewdetails = new Reviews();
 			reviewdetails = mapper.map(review, Reviews.class);
-		
+			reviewdetails.setReviewedBy(user.getName());
 			reviewdetails.setCreatedAt(LocalDateTime.now());
 			books.getReviewRating().add(reviewdetails);
 			bookRepository.save(books);

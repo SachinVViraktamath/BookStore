@@ -8,6 +8,6 @@ public class ReviewDto {
 	
 	private double rating;
 	
-	private String reviewedBy;
+	
 	private String review;
 }

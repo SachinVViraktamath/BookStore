@@ -12,37 +12,51 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import com.bridgelabz.bookstore.dto.LoginDto;
 import com.bridgelabz.bookstore.dto.RegisterDto;
 import com.bridgelabz.bookstore.dto.ResetPassword;
 import com.bridgelabz.bookstore.entity.Book;
 import com.bridgelabz.bookstore.entity.Seller;
+import com.bridgelabz.bookstore.response.Response;
 import com.bridgelabz.bookstore.service.SellerService;
 import com.bridgelabz.bookstore.utility.JwtService;
 import com.bridgelabz.bookstore.utility.JwtService.Token;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
 @RunWith(MockitoJUnitRunner.class)
 public class SellerServiceImplementationTest {
-	 @Mock
+	    @Mock
 	    RegisterDto sellerDto;
 	    @Mock
 	    SellerService sellerServiceImpl;
 	    Seller seller = new Seller();
 	    String token=null;
 	    
-	    @Test
-		public void registerSeller() throws Exception {
-			Seller seller = new Seller();
-			sellerDto.setEmail("csandhyait@gmail.com");
-			sellerDto.setName("sandy");
-			sellerDto.setPassword("sandy");
-			sellerDto.setMobileNumber(8087968370L);
-			Mockito.when(sellerServiceImpl.register(sellerDto)).thenReturn(seller);
-			assertThat(seller).isEqualTo(seller);
-		}
+//	    @Test
+//		public void register_seller_user_with_valid_seller_informations() throws Exception {
+//			Seller seller = new Seller();
+//			seller.setEmail("shswdjdgdke");
+//			ResponseEntity<Response> responseEntity = ResponseEntity.status(HttpStatus.ACCEPTED)
+//					.body(new Response(208, "test" + user.getEmail() + "<=== please verify your email first"));
+//			ObjectMapper objectMapper = new ObjectMapper();
+//			String newUserDto = objectMapper.writeValueAsString(seller);
+//			MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post(REGISTER_SELLER_URI)
+//					.content(newUserDto).contentType(MediaType.APPLICATION_JSON);
+//			Mockito.when(userService.register(Mockito.any())).thenReturn(responseEntity);
+//
+//			MockHttpServletResponse fetchedResponse = mockMvc.perform(requestBuilder).andReturn().getResponse();
+//
+//			log.info("fetch result : " + fetchedResponse.getStatus());
+//			Assert.assertEquals("Checking failure scenario of add address", fetchedResponse.getStatus(),
+//					202);
+//		}
 
 		@Test
 		public void testLogin() throws Exception {
