@@ -71,8 +71,6 @@ public class Users {
 	@ManyToMany(cascade = CascadeType.ALL)
 	private List<Book> whilistBooks;
 
-	
-
 	@OneToMany(cascade = CascadeType.ALL, targetEntity = UserAddress.class)
 	@JoinColumn(name = "userId")
 	private List<UserAddress> address;
@@ -81,5 +79,8 @@ public class Users {
 	@ManyToMany(cascade = CascadeType.ALL, targetEntity = CartDetails.class,fetch = FetchType.LAZY)
 	@JoinColumn(name = "userId")
 	private List<CartDetails> booksCart;
+
+
+	
 
 }

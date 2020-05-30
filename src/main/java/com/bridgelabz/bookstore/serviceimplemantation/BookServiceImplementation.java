@@ -2,6 +2,7 @@ package com.bridgelabz.bookstore.serviceimplemantation;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -154,7 +155,7 @@ public class BookServiceImplementation implements BookService {
 		}
 		return book;
 	}
-         
+
 	@Override
 	@Transactional
 	public List<Reviews> writeReviewAndRating(String token, ReviewDto review, Long bookId)
@@ -165,7 +166,7 @@ public class BookServiceImplementation implements BookService {
 				.orElseThrow(() -> new UserException(HttpStatus.NOT_FOUND, "Please Verify Email Before Login"));
 		Book books = bookRepository.findById(bookId)
 				.orElseThrow(() -> new BookException(HttpStatus.NOT_FOUND, "book is not exist exist to update"));
-		if (user.getOrderBookDetails().isEmpty()) {  
+		if (user.getOrderBookDetails().isEmpty()) {
 			throw new BookException(HttpStatus.NOT_FOUND,
 					"Please purchase this book first then and rating and reviews");
 		} else if (user.getOrderBookDetails() != null) {
@@ -183,20 +184,28 @@ public class BookServiceImplementation implements BookService {
 					"Please purchase this book first then and rating and reviews");
 		}
 		if (flag == 1) {
-
 			Reviews reviewdetails = new Reviews();
 			reviewdetails = mapper.map(review, Reviews.class);
 			reviewdetails.setReviewedBy(user.getName());
 			reviewdetails.setCreatedAt(LocalDateTime.now());
-			books.getReviewRating().add(reviewdetails);
+			books.getReviewRating().add(reviewdetails);		
 			bookRepository.save(books);
-
+			List<Reviews> reviewss = books.getReviewRating();
+			int ratings = 0;
+			int size = reviewss.size();
+			for (Reviews rating : books.getReviewRating()) {
+				System.out.println(rating);
+				ratings += rating.getRating();
+			}
+			double sum = (double) ratings / size;
+			books.setAvgRate(sum);
+			bookRepository.save(books);
 		} else {
 			throw new BookException(HttpStatus.BAD_REQUEST, "book is not purchased by user");
 		}
 		return books.getReviewRating();
 	}
-    
+
 	@Override
 	@Transactional
 	public List<Reviews> getRatingsOfBook(Long bookId) {
@@ -207,8 +216,8 @@ public class BookServiceImplementation implements BookService {
 		} catch (BookException e) {
 			e.printStackTrace();
 		}
-		List<Reviews> review = book.getReviewRating();
-		return review;
+		List<Reviews> reviewss = book.getReviewRating();
+		return reviewss;
 
 	}
 

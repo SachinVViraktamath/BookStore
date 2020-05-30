@@ -43,6 +43,7 @@ public class Book {
 	private String bookDescription;
 	@Column(columnDefinition = "boolean Default true", nullable = false)
 	private boolean isBookApproved;
+	private double avgRate;
 
 	private LocalDateTime bookCreatedAt;
 

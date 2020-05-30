@@ -6,7 +6,7 @@ import lombok.Data;
 public class ReviewDto {
 
 	
-	private double rating;
+	private int rating;
 	
 	
 	private String review;
